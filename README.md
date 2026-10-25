@@ -1,1 +1,0 @@
-# thymidin.github.io
