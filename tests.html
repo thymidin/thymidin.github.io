@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tests du portail</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    main { max-width: 900px; }
+    .ok { color: #1d7a46; font-weight: 700; }
+    .ko { color: var(--p1); font-weight: 700; }
+    td { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header><h1>Tests du portail</h1>
+    <div class="sub">Vérifie les clés de cotation des échelles, les intitulés et le calcul des échéances de surveillance.
+    À ouvrir après toute modification de <code>js/echelles.js</code>, <code>js/intitules.js</code> ou <code>js/config.js</code>.
+    Cette page ne lit ni ne modifie aucune donnée patient.</div></header>
+  <main>
+    <p id="bilan"></p>
+    <div class="wrap"><table style="min-width:0"><thead><tr><th>Test</th><th>Attendu</th><th>Obtenu</th><th></th></tr></thead><tbody id="resultats"></tbody></table></div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/outils.js"></script>
+  <script>
+    // Contexte minimal (aucune donnée patient lue) : les modules n'utilisent ici que des fonctions de calcul.
+    var patients = [];
+  </script>
+  <script src="js/surveillance.js"></script>
+  <script src="js/intitules.js"></script>
+  <script src="js/echelles.js"></script>
+  <script>
+    const lignes = [];
+    const test = (nom, attendu, obtenu) => {
+      const ok = JSON.stringify(attendu) === JSON.stringify(obtenu);
+      lignes.push({ nom, attendu, obtenu, ok });
+    };
+    const tous = (n, v) => Array(n).fill(v);
+    const couvre = (listes, n) => JSON.stringify(listes.flat().sort((a, b) => a - b)) === JSON.stringify(Array.from({ length: n }, (_, i) => i + 1));
+
+    // QIDS-SR16
+    test('QIDS : toutes réponses 0', 0, calculerQids(tous(16, 0)).total);
+    test('QIDS : toutes réponses 3', 27, calculerQids(tous(16, 3)).total);
+    test('QIDS : maximum par domaine (sommeil, appétit, psychomotricité)', 14, calculerQids([3,0,0,0, 2, 0,1,0,0, 1,1,2, 1,1, 0,2]).total);
+    test('QIDS : alerte item 12', 1, calculerQids([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]).alertes.length);
+    // AQ
+    test('AQ : 24 items cotés « d’accord »', 24, calculerAq(tous(50, 0)).total);
+    test('AQ : 26 items cotés « en désaccord »', 26, calculerAq(tous(50, 3)).total);
+    test('AQ : 5 sous-échelles de 10 items couvrant les 50 items', true, couvre(ECHELLES.aq.sousEchelles.map(s => s[1]), 50) && ECHELLES.aq.sousEchelles.every(s => s[1].length === 10));
+    test('AQ : exemple de la feuille de cotation du service (macro)', 33, calculerAq([1,4,2,1,2,2,3,2,4,3,4,2,1,1,4,1,4,4,3,4,4,1,2,4,3,1,2,4,3,4,2,3,1,3,2,2,3,4,2,2,2,2,1,4,3,2,4,3,3,2].map(c => c - 1)).total);
+    // EQ
+    test('EQ : 21 items positifs × 2 points', 42, calculerEq(tous(60, 0)).total);
+    test('EQ : 19 items négatifs × 2 points', 38, calculerEq(tous(60, 3)).total);
+    test('EQ : 21 + 19 + 20 non cotés = 60 items distincts', true, couvre([ECHELLES.eq.positifs, ECHELLES.eq.negatifs, ECHELLES.eq.nonCotes], 60));
+    test('EQ : maximum 80', 80, calculerEq(Array.from({ length: 60 }, (_, i) => ECHELLES.eq.positifs.includes(i + 1) ? 0 : 3)).total);
+    // RAADS-R
+    test('RAADS-R : « vrai maintenant et avant 16 ans » partout', 189, calculerRaads(tous(80, 0)).total);
+    test('RAADS-R : « jamais vrai » partout (17 items inversés × 3)', 51, calculerRaads(tous(80, 3)).total);
+    test('RAADS-R : 4 sous-échelles couvrant les 80 items', true, couvre(ECHELLES.raads.sousEchelles.map(s => s[1]), 80));
+    test('RAADS-R : seuil 65 atteint à 65 (≥)', true, (() => { const r = tous(80, 3); let t = calculerRaads(r).total; for (let i = 0; i < 80 && t < 65; i++) { if (!ECHELLES.raads.inverses.includes(i + 1)) { r[i] = 2; t = calculerRaads(r).total; } } return t === 65 ? calculerRaads(r).niveau === 'retard' : 'score 65 non atteint'; })());
+    // PHQ-9 / GAD-7
+    test('PHQ-9 : maximum 27', 27, calculerPhq9(tous(9, 3)).total);
+    test('PHQ-9 : alerte item 9', 1, calculerPhq9([0,0,0,0,0,0,0,0,1]).alertes.length);
+    test('GAD-7 : maximum 21', 21, calculerGad7(tous(7, 3)).total);
+    test('GAD-7 : 10 = anxiété modérée', 'Anxiété modérée (10-14)', calculerGad7([2,2,2,2,2,0,0]).interpretation);
+    // Intitulés
+    test('Intitulés QIDS : 16 items × 4 propositions', [16, true], [INTITULES_OFFICIELS.qids.titres.length, INTITULES_OFFICIELS.qids.options.every(o => o.length === 4 && o.every(Boolean))]);
+    test('Intitulés AQ / EQ / RAADS-R', [50, 60, 80], [INTITULES_OFFICIELS.aq.titres.length, INTITULES_OFFICIELS.eq.titres.length, INTITULES_OFFICIELS.raads.titres.length]);
+    test('Intitulé AQ 39 corrigé', true, /que je répète/.test(INTITULES_OFFICIELS.aq.titres[38]));
+    // Surveillance
+    const iso = d => versIso(d);
+    const ilYa = j => iso(ajouterJours(aujourdhui(), -j));
+    test('Lithium introduit il y a 3 j : lithémie due à J5', iso(ajouterJours(aujourdhui(), 2)),
+      iso(calculerEcheances({ nom: 'Lithium', intro: ilYa(3), bil: {} }).find(e => e.bilan.id === 'li').echeance));
+    test('Lithium : changement de dose il y a 6 j sans lithémie → en retard', 'retard',
+      calculerEcheances({ nom: 'Lithium', intro: ilYa(400), chg: ilYa(6), bil: { li: ilYa(30) } }).find(e => e.bilan.id === 'li').statut);
+    test('Lamotrigine : pas d’alerte « pré-thérapeutique »', 0,
+      listerAlertes({ trt: [{ nom: 'Lamotrigine (Lamictal)', intro: aujourdhuiIso(), bil: {} }] }).filter(a => /pré-thérapeutique/.test(a.libelle)).length);
+    test('Escitalopram reconnu (règle QT)', 'Risque d’allongement du QT', (trouverRegle('Escitalopram (Seroplex)') || {}).nom);
+
+    const echecs = lignes.filter(l => !l.ok).length;
+    document.getElementById('bilan').innerHTML = echecs
+      ? `<span class="ko">${echecs} test(s) en échec sur ${lignes.length}.</span>`
+      : `<span class="ok">Les ${lignes.length} tests sont réussis.</span>`;
+    document.getElementById('resultats').innerHTML = lignes.map(l => `<tr style="cursor:default"><td>${echapper(l.nom)}</td>
+      <td>${echapper(JSON.stringify(l.attendu))}</td><td>${echapper(JSON.stringify(l.obtenu))}</td>
+      <td class="${l.ok ? 'ok' : 'ko'}">${l.ok ? 'OK' : 'ÉCHEC'}</td></tr>`).join('');
+  </script>
+</body>
+</html>

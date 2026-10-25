@@ -1,0 +1,760 @@
+/* =====================================================================
+   STYLE.CSS — apparence de l'application
+   Les couleurs sont regroupées en variables au début : modifiez-les ici
+   pour changer toute l'apparence (thème clair + thème sombre automatique).
+   ===================================================================== */
+
+/* ---------- Couleurs (thème clair) ---------- */
+:root {
+  --bg: #f3f6f7;          /* fond de page */
+  --surf: #ffffff;        /* cartes, champs */
+  --ink: #16252b;         /* texte principal */
+  --mute: #5b6e76;        /* texte secondaire */
+  --line: #d5dfe2;        /* bordures */
+  --pri: #0f5e6b;         /* couleur d'accent (boutons principaux) */
+  --priink: #ffffff;      /* texte sur l'accent */
+
+  /* Priorités / alertes : p1 = rouge (urgent), p2 = orange, p3 = bleu, p4 = gris.
+     Suffixe « b » = fond clair associé. */
+  --p1: #b3261e;  --p1b: #fbe4e2;
+  --p2: #a85a00;  --p2b: #fdebd3;
+  --p3: #1d5fa8;  --p3b: #dfeaf8;
+  --p4: #55656b;  --p4b: #e8edef;
+}
+
+/* ---------- Couleurs (thème sombre, selon le réglage du système) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101a1e;  --surf: #18262b;  --ink: #e6eef0;  --mute: #95a9b0;
+    --line: #2c3f46;  --pri: #4fb3c3;  --priink: #06232a;
+    --p1: #ff9c94;  --p1b: #4a1f1c;
+    --p2: #f5b866;  --p2b: #46300f;
+    --p3: #8fbdf0;  --p3b: #17304d;
+    --p4: #b3c1c6;  --p4b: #26353b;
+  }
+}
+/* Thème sombre choisi explicitement (bouton de thème) */
+:root[data-theme="dark"] {
+    --bg: #101a1e;  --surf: #18262b;  --ink: #e6eef0;  --mute: #95a9b0;
+    --line: #2c3f46;  --pri: #4fb3c3;  --priink: #06232a;
+    --p1: #ff9c94;  --p1b: #4a1f1c;
+    --p2: #f5b866;  --p2b: #46300f;
+    --p3: #8fbdf0;  --p3b: #17304d;
+    --p4: #b3c1c6;  --p4b: #26353b;
+  }
+
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+/* L'attribut « hidden » doit toujours masquer l'élément, même si une règle plus bas
+   lui donne un display (flex, grid…). Sans cette ligne, l'avis « Compris » ne se masquait pas. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+header { padding: 18px 20px 8px; max-width: 1280px; margin: auto; }
+h1     { font-size: 22px; margin: 0 0 2px; font-weight: 650; }
+.sub   { color: var(--mute); font-size: 13px; }
+main   { max-width: 1280px; margin: auto; padding: 0 20px 40px; }
+
+/* ---------- Avis de confidentialité ---------- */
+.notice {
+  background: var(--p2b);
+  border-left: 4px solid var(--p2);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 13px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.notice button { margin-left: auto; white-space: nowrap; }
+
+/* ---------- Onglets : file active / relais CMP ---------- */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 14px 0 0;
+  border-bottom: 2px solid var(--line);
+}
+.tabs button {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  padding: 9px 18px;
+  font-weight: 600;
+  color: var(--mute);
+  margin-bottom: -2px;
+}
+.tabs button[aria-selected=true] { color: var(--pri); border-bottom-color: var(--pri); background: var(--surf); }
+.tabs .n {
+  background: var(--p4b);
+  color: var(--p4);
+  border-radius: 99px;
+  padding: 1px 8px;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+/* ---------- Compteurs ---------- */
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.stat {
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 14px;
+  min-width: 110px;
+}
+.stat b    { display: block; font-size: 22px; line-height: 1.1; }
+.stat span { font-size: 12px; color: var(--mute); }
+
+/* ---------- Champs et boutons ---------- */
+input, select, textarea, button { font: inherit; color: inherit; }
+
+input, select, textarea {
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 7px 9px;
+  width: 100%;
+}
+textarea { min-height: 90px; resize: vertical; }
+
+button {
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+button:hover       { border-color: var(--pri); }
+button.main        { background: var(--pri); color: var(--priink); border-color: var(--pri); font-weight: 600; }
+button.danger      { color: var(--p1); }
+:focus-visible     { outline: 3px solid var(--pri); outline-offset: 1px; }
+
+/* ---------- Barre d'outils ---------- */
+.bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+.bar input[type=search] { flex: 1 1 220px; width: auto; }
+.bar select             { width: auto; }
+
+/* ---------- Tableau ---------- */
+.wrap {
+  overflow-x: auto;
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+table { border-collapse: collapse; width: 100%; min-width: 1050px; }
+th, td {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  font-size: 12.5px;
+  color: var(--mute);
+  font-weight: 600;
+  background: var(--bg);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+tbody tr       { cursor: pointer; }
+tbody tr:hover { background: var(--bg); }
+td.syn         { max-width: 340px; color: var(--mute); font-size: 13.5px; }
+.empty         { padding: 40px; text-align: center; color: var(--mute); }
+
+/* Ligne de titre dans la « Vue par CMP » */
+.grp td {
+  background: var(--bg);
+  font-weight: 650;
+  border-top: 2px solid var(--pri);
+  cursor: default;
+}
+
+/* ---------- Pastilles de priorité (t1 = urgent … t4 = faible) ---------- */
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.t1 { background: var(--p1b); color: var(--p1); }
+.t2 { background: var(--p2b); color: var(--p2); }
+.t3 { background: var(--p3b); color: var(--p3); }
+.t4 { background: var(--p4b); color: var(--p4); }
+
+/* ---------- Petits textes ---------- */
+.st            { font-size: 13px; }
+.st.clos       { color: #1d7a46; font-weight: 600; }   /* relais effectué */
+.sec           { color: var(--mute); font-size: 13px; }
+.vig           { color: var(--p1); font-weight: 700; font-size: 12.5px; }
+.texte-retard  { color: var(--p1); font-weight: 700; font-size: 12.5px; }
+.texte-bientot { color: var(--p2); font-weight: 700; font-size: 12.5px; }
+
+/* ---------- Fenêtres (fiche patient, paramètres) ---------- */
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surf);
+  color: var(--ink);
+  width: min(900px, 96vw);
+  padding: 0;
+  max-height: 94vh;
+}
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+form             { padding: 18px 20px; }
+form h2          { margin: 0 0 12px; font-size: 18px; }
+
+/* Grille des champs du formulaire ; .full = ligne entière */
+.g       { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; }
+.g .full { grid-column: 1 / -1; }
+label    { font-size: 12.5px; color: var(--mute); display: block; margin-bottom: 3px; }
+
+.chk       { display: flex; gap: 8px; align-items: center; }
+.chk input { width: auto; }
+.chk label { margin: 0; color: var(--ink); font-size: 14px; }
+
+.act     { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
+.act .sp { flex: 1; }
+
+/* ---------- Traitements et surveillance (dans la fiche patient) ---------- */
+.tg  { margin: 8px 0 14px; }                       /* un groupe : fond / symptomatique */
+.tgh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.tc  {                                              /* une ligne de traitement */
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--bg);
+}
+.mon { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 6px; }
+.mr  {                                              /* une ligne de bilan */
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 150px minmax(170px, auto) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.mr small { color: var(--mute); display: block; }
+.mr input { padding: 5px 7px; }
+
+/* Pastilles d'état d'un bilan */
+.badge          { font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+.badge.retard   { background: var(--p1b); color: var(--p1); }
+.badge.bientot  { background: var(--p2b); color: var(--p2); }
+.badge.ok,
+.badge.termine  { background: var(--p3b); color: var(--p3); }
+
+/* ---------- Encadré des référentiels ---------- */
+.src         { margin-top: 14px; font-size: 13px; color: var(--mute); }
+.src summary { cursor: pointer; }
+
+/* ---------- Petits écrans ---------- */
+@media (max-width: 700px) {
+  .mr { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------- Impression : masque les boutons et élargit le tableau ---------- */
+@media print {
+  body { background: #fff; color: #000; }
+  .notice, .bar, .stats, .act, button { display: none !important; }
+  .wrap { border: 0; overflow: visible; }
+  table { min-width: 0; font-size: 11px; }
+  td.syn { max-width: none; }
+}
+
+/* ---------- Ordonnance de bilans (fenêtre, aperçu et impression) ---------- */
+.ordo-choix { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+@media (max-width: 800px) { .ordo-choix { grid-template-columns: 1fr; } }
+.ordo-groupe { margin-bottom: 8px; }
+.ligne-case { display: flex; gap: 8px; align-items: center; margin: 3px 0; color: var(--ink); font-size: 13.5px; }
+.ligne-case input { width: auto; }
+.ordo-alerte {
+  background: var(--p2b); border-left: 4px solid var(--p2); padding: 8px 12px;
+  border-radius: 4px; font-size: 13px; margin-bottom: 10px;
+}
+.info-cps {
+  background: var(--p3b); border-left: 4px solid var(--p3); padding: 8px 12px;
+  border-radius: 4px; font-size: 13px; margin-bottom: 12px;
+}
+.apercu { background: #fff; color: #000; border: 1px solid var(--line); border-radius: 6px; padding: 18px; margin-top: 8px; }
+
+/* Le document lui-même (même rendu à l'écran et sur papier) */
+.ordo { font-family: Georgia, "Times New Roman", serif; font-size: 14px; line-height: 1.5; color: #000; }
+.ordo-entete { border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 14px; }
+.ordo h2 { font-size: 17px; margin: 0 0 4px; text-align: center; }
+.ordo-date { text-align: right; margin: 0 0 12px; }
+.ordo-examens { margin: 6px 0 10px 18px; padding: 0; }
+.ordo-consignes { font-style: italic; }
+.ordo-signature { margin-top: 26px; margin-left: 55%; border: 1px solid #000; height: 100px; padding: 6px 8px; font-size: 12px; }
+/* Mention ALD (ordonnance bizone) */
+.ordo-ald { border: 1px solid #000; padding: 5px 9px; margin: 8px 0 12px; }
+.ordo .manquant { color: #888; }
+
+/* Marges de la feuille imprimée (A4) */
+@page { size: A4; margin: 22mm 20mm 20mm 20mm; }
+
+/* Zone d'impression : invisible à l'écran, seule visible quand on imprime une ordonnance */
+#zoneOrdonnance { display: none; }
+@media print {
+  body.impression-ordonnance > *:not(#zoneOrdonnance) { display: none !important; }
+  body.impression-ordonnance #zoneOrdonnance { display: block; }
+}
+
+/* =====================================================================
+   PORTAIL UNIFIÉ : observation, courbe de l'humeur, échelles, MDPH
+   ===================================================================== */
+.tabs { overflow-x: auto; scrollbar-width: thin; }
+.tabs button { white-space: nowrap; }
+
+.carte {
+  background: var(--surf); border: 1px solid var(--line); border-radius: 8px;
+  padding: 14px 16px; margin: 12px 0;
+}
+.h3 { font-size: 15.5px; margin: 0 0 8px; }
+.sp { flex: 1; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.on { background: var(--pri); color: var(--priink); border-color: var(--pri); }
+
+/* Rubriques repliables / encadrées */
+fieldset.rubrique { margin: 12px 0; }
+fieldset.rubrique legend, details.rubrique summary { font-weight: 650; padding: 0 4px; cursor: pointer; }
+details.rubrique > summary { list-style-position: outside; }
+.cases { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+
+/* ---------- Courbe de l'humeur ---------- */
+.defile { overflow-x: auto; max-width: 100%; }
+svg.frise { display: block; min-width: 720px; width: 100%; height: auto; }
+.groupe-boutons { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.groupe-boutons button { padding: 5px 10px; }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 12.5px; }
+.puce { border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; display: inline-flex; gap: 6px; align-items: center; }
+.puce i, i.pastille { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.hum-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.hum-niveaux { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+.hum-niveaux button { text-align: left; border-left-width: 8px; }
+.hum-niveaux button.on { background: var(--surf); color: var(--ink); outline: 2px solid var(--pri); }
+
+/* ---------- Échelles ---------- */
+.ech-grille { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 0 14px; align-items: start; }
+.ech-resultat { position: sticky; top: 8px; }
+.ech-items { margin-top: 8px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2px 14px; }
+.ech-ligne {
+  display: flex; align-items: center; gap: 8px; padding: 3px 6px; border-radius: 5px;
+  border: 1px solid transparent;
+}
+.ech-ligne:focus { outline: none; border-color: var(--pri); background: var(--bg); }
+.ech-ligne.vide .ech-num { color: var(--p2); }
+.ech-ligne.remplissage { opacity: .55; }
+.ech-num { width: 26px; text-align: right; font-weight: 650; font-variant-numeric: tabular-nums; }
+.ech-lib { flex: 1; font-size: 13px; }
+.ech-choix { display: inline-flex; gap: 3px; margin-left: auto; }
+.ech-choix button { width: 32px; padding: 4px 0; font-weight: 600; }
+.ech-total b { font-size: 40px; line-height: 1; }
+.ech-total span { color: var(--mute); font-size: 18px; }
+.ech-jauge { height: 8px; background: var(--bg); border-radius: 99px; overflow: hidden; margin: 8px 0; }
+.ech-jauge i { display: block; height: 100%; background: var(--p3); }
+.ech-jauge i.bientot { background: var(--p2); }
+.ech-jauge i.retard { background: var(--p1); }
+table.ech-sous { min-width: 0; font-size: 13px; }
+table.ech-sous td { padding: 4px 6px; }
+#vueEchelles .act button.main:disabled { background: var(--line); border-color: var(--line); color: var(--mute); }
+
+/* ---------- MDPH ---------- */
+table.grille-mdph { min-width: 0; width: auto; }
+table.grille-mdph td { padding: 3px 8px 3px 0; border: 0; font-size: 13.5px; }
+table.grille-mdph select { width: auto; min-width: 260px; }
+
+/* ---------- Observation ---------- */
+.obs-grille { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr); gap: 0 14px; align-items: start; }
+.obs-sortie { position: sticky; top: 8px; }
+#obsTexte { min-height: 60vh; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12.5px; line-height: 1.5; }
+.obs-champ { display: grid; grid-template-columns: 170px 1fr; gap: 8px; align-items: start; }
+.obs-lib { font-size: 12.5px; color: var(--mute); padding-top: 5px; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 5px; }
+.pastille-choix { border-radius: 99px; padding: 4px 11px; font-size: 13px; }
+.pastille-choix.normal { border-style: dashed; }
+.pastille-choix.on { background: var(--pri); color: var(--priink); border-color: var(--pri); border-style: solid; }
+.obs-hist { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid var(--line); font-size: 13px; }
+
+/* ---------- Documents imprimés (certificat, observation, courbe) ---------- */
+.doc h3 { font-size: 14.5px; margin: 16px 0 6px; border-bottom: 1px solid #999; padding-bottom: 2px; }
+.doc p { margin: 4px 0; }
+.sec-doc { font-size: 12px; color: #444; text-align: center; margin-top: 0; }
+table.tableau-doc { min-width: 0; width: auto; margin: 2px 0 8px; font-size: 13px; }
+table.tableau-doc td { padding: 2px 14px 2px 0; border-bottom: 1px dotted #bbb; }
+
+@media (max-width: 900px) {
+  .ech-grille, .obs-grille, .hum-grille { grid-template-columns: 1fr; }
+  .ech-resultat, .obs-sortie { position: static; }
+  .obs-champ { grid-template-columns: 1fr; gap: 3px; }
+  #obsTexte { min-height: 40vh; }
+}
+
+/* Impression : couleurs claires, quel que soit le thème de l'écran */
+@media print {
+  :root {
+    --bg: #fff; --surf: #fff; --ink: #000; --mute: #555; --line: #ccc;
+    --pri: #0f5e6b; --priink: #fff;
+  }
+  .tabs, .carte, form#obsForm, #mdphForm { display: none !important; }
+  svg.frise { min-width: 0; }
+}
+
+#mdphForm, #obsForm { padding: 0; }
+fieldset.rubrique { min-width: 0; }
+
+/* ---------- Certificat MDPH (Cerfa 15695*01) ---------- */
+.mdph-form { max-width: 980px; }
+.mdph-titre { font-size: 16px; margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--pri); color: var(--pri); }
+.mdph-titre:first-child { margin-top: 0; }
+.mdph-sous { font-weight: 650; margin: 14px 0 6px; font-size: 14px; }
+.mdph-note { font-size: 12.5px; color: var(--mute); margin: 4px 0 8px; font-style: italic; }
+.mdph-ligne { margin: 8px 0; }
+.mdph-ligne > label { font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+.retrait { margin-left: 26px; border-left: 3px solid var(--line); padding-left: 10px; }
+.mdph-case { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--ink); margin: 5px 0; cursor: pointer; }
+.mdph-case input { width: auto; margin: 0; }
+.mdph-case.bascule { color: var(--pri); font-weight: 600; }
+.segments { display: inline-flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.segments button { border: 0; border-right: 1px solid var(--line); border-radius: 0; padding: 7px 14px; background: var(--surf); }
+.segments button:last-child { border-right: 0; }
+.segments button.on { background: var(--pri); color: var(--priink); }
+.segments.abcd button { width: 50px; padding: 7px 0; font-weight: 700; }
+.mdph-abcd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.mdph-legende { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; background: var(--bg); border-radius: 6px; padding: 8px 10px; margin: 12px 0; }
+.mdph-legende .sec { width: 100%; }
+@media (max-width: 700px) {
+  .mdph-abcd { flex-direction: column; align-items: flex-start; }
+  .retrait { margin-left: 8px; }
+}
+
+/* Échelles : une ligne par item, réponses libellées selon l'échelle */
+.ech-items { grid-template-columns: 1fr; gap: 2px; }
+.ech-ligne { align-items: center; padding: 6px 8px; border-bottom: 1px solid var(--line); border-radius: 0; }
+.ech-lib { font-size: 14px; line-height: 1.35; }
+.ech-choix.larges button { width: auto; min-width: 92px; padding: 6px 9px; font-weight: 500; font-size: 12.5px; line-height: 1.2; }
+.ech-ligne.avec-propositions { flex-wrap: wrap; }
+.ech-ligne.avec-propositions .ech-lib { flex: 1 1 calc(100% - 40px); font-weight: 650; }
+.ech-choix.propositions { display: grid; grid-template-columns: 1fr; gap: 4px; width: 100%; margin-left: 34px; }
+.ech-choix.propositions button { width: 100%; text-align: left; font-weight: 400; padding: 6px 10px; }
+.ech-choix.propositions button b { display: inline-block; width: 18px; }
+@media (max-width: 900px) {
+  .ech-ligne { flex-wrap: wrap; }
+  .ech-lib { flex: 1 1 calc(100% - 40px); }
+  .ech-choix { margin-left: 34px; flex-wrap: wrap; }
+  .ech-choix.propositions { margin-left: 0; }
+}
+
+/* Échelles : intitulé sur toute la largeur, réponses en dessous (4 colonnes égales) */
+.ech-grille { grid-template-columns: minmax(0, 2fr) minmax(250px, 0.85fr); }
+.ech-ligne { flex-wrap: wrap; align-items: flex-start; gap: 4px 8px; padding: 8px 6px; }
+.ech-ligne .ech-num { padding-top: 1px; }
+.ech-ligne .ech-lib { flex: 1 1 calc(100% - 40px); font-size: 14.5px; }
+.ech-choix.larges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; width: calc(100% - 34px); margin-left: 34px; }
+.ech-choix.larges button { min-width: 0; width: 100%; white-space: normal; }
+.ech-choix:not(.larges):not(.propositions) { margin-left: 34px; }
+@media (max-width: 600px) { .ech-choix.larges { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Certificat MDPH : mise en page (rubriques en cartes, grille 12 colonnes) ---------- */
+.mdph-form { max-width: 1040px; margin: 0 auto; }
+.mdph-section {
+  background: var(--surf); border: 1px solid var(--line); border-radius: 10px;
+  padding: 20px 24px 22px; margin: 16px 0; box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+.mdph-section .mdph-titre { margin: 0 0 14px; font-size: 17px; font-weight: 650; border: 0; padding: 0; color: var(--pri); }
+.mdph-grille { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px 18px; align-items: end; }
+.mdph-grille > [hidden] { display: none !important; }
+.mdph-grille > * { min-width: 0; margin: 0; }
+.mdph-grille .debut-ligne { grid-column-start: 1; }
+.mdph-champ > label { display: block; font-size: 13px; color: var(--ink); margin: 0 0 5px; line-height: 1.35; }
+.mdph-champ input, .mdph-champ textarea { width: 100%; }
+.mdph-champ textarea { min-height: 0; resize: vertical; }
+.mdph-sous { font-weight: 650; font-size: 14px; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); align-self: start; }
+.mdph-note { font-size: 12.5px; color: var(--mute); font-style: italic; align-self: start; }
+.mdph-case { display: flex; gap: 9px; align-items: center; font-size: 14px; color: var(--ink); cursor: pointer; min-height: 36px; margin: 0; }
+.mdph-case input { width: 17px; height: 17px; margin: 0; flex: none; }
+.mdph-case.bascule { color: var(--pri); font-weight: 600; }
+.mdph-abcd { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 6px 0; border-bottom: 1px dashed var(--line); margin: 0; }
+.mdph-legende { margin: 0; }
+.segments { max-width: 100%; }
+/* Tableau des signes cliniques (calqué sur le Cerfa) */
+.mdph-signes table { width: 100%; min-width: 0; border-collapse: separate; border-spacing: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.mdph-signes th { background: var(--bg); font-size: 12.5px; color: var(--ink); font-weight: 600; padding: 8px 10px; text-align: center; cursor: default; white-space: normal; }
+.mdph-signes th:nth-child(2) { text-align: left; }
+.mdph-signes th small { display: block; font-weight: 400; color: var(--mute); font-size: 11px; }
+.mdph-signes td { padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: middle; }
+.mdph-signes td.num { width: 28px; color: var(--mute); font-weight: 650; text-align: center; }
+.mdph-signes td.frequence { width: 104px; text-align: center; }
+.mdph-signes textarea { width: 100%; min-height: 0; resize: vertical; }
+.pastille-freq { width: 30px; height: 30px; padding: 0; border-radius: 6px; font-weight: 700; font-size: 16px; line-height: 1; }
+.pastille-freq.on { background: var(--pri); color: var(--priink); border-color: var(--pri); }
+@media (max-width: 760px) {
+  .mdph-section { padding: 16px 14px; }
+  .mdph-grille { grid-template-columns: 1fr; }
+  .mdph-grille > * { grid-column: 1 / -1 !important; }
+  .mdph-abcd { flex-direction: column; align-items: flex-start; }
+  .mdph-signes td.frequence { width: 64px; padding: 6px 4px; }
+}
+.choix-multiples { display: flex; flex-wrap: wrap; gap: 6px; }
+.choix-multiples button { border-radius: 99px; padding: 6px 13px; font-size: 13.5px; }
+.choix-multiples button.on { background: var(--pri); color: var(--priink); border-color: var(--pri); }
+.mdph-abcd + .mdph-abcd, .mdph-case.debut-ligne + .mdph-case.debut-ligne { margin-top: -8px; }
+
+/* =====================================================================
+   ÉCRAN CONSULTATION
+   ===================================================================== */
+.cons-barre { padding: 10px 16px; }
+.cons-entete { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; padding: 18px 22px; }
+.cons-nom { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.cons-diag { margin-top: 6px; font-weight: 600; }
+.cons-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.cons-actions button { padding: 10px 16px; font-size: 15px; }
+.drapeaux { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.drapeau { font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.drapeau.rouge { background: var(--p1b); color: var(--p1); }
+.drapeau.orange { background: var(--p2b); color: var(--p2); }
+.drapeau.bleu { background: var(--p3b); color: var(--p3); }
+.drapeau.gris { background: var(--p4b); color: var(--p4); }
+.cons-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 14px; align-items: start; }
+.cons-carte { margin: 0 0 14px; }
+.cons-large { grid-column: span 2; }
+.cons-note { white-space: pre-wrap; font-size: 13.5px; line-height: 1.5; max-height: 280px; overflow: auto; background: var(--bg); padding: 10px 12px; border-radius: 6px; }
+.cons-trt { padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.cons-trt:last-of-type { border-bottom: 0; }
+.cons-echelle { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.sparkline { flex: none; }
+.mini-humeur { width: 100%; height: 70px; display: block; background: var(--bg); border-radius: 6px; }
+@media (max-width: 1000px) { .cons-grille { grid-template-columns: 1fr; } .cons-large { grid-column: auto; } }
+
+/* ---------- Recherche globale (Ctrl+K) ---------- */
+.palette-fond { position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 50; display: flex; justify-content: center; align-items: flex-start; padding-top: 12vh; }
+.palette-fond[hidden] { display: none !important; }
+.palette { background: var(--surf); border-radius: 12px; width: min(620px, 92vw); box-shadow: 0 20px 60px rgba(0, 0, 0, .3); overflow: hidden; }
+.palette input { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 14px 16px; font-size: 17px; }
+.palette-item { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid var(--line); }
+.palette-item.actif, .palette-item:hover { background: var(--p3b); }
+.palette-aide { padding: 8px 16px; }
+
+/* ---------- Échelles : courbes, mode tablette ---------- */
+.courbes-echelles { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.courbe-echelle { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+.courbe-scores { width: 100%; height: auto; display: block; }
+.tablette { position: fixed; inset: 0; z-index: 60; background: var(--surf); display: flex; flex-direction: column; padding: 18px clamp(16px, 5vw, 60px); overflow: auto; }
+.tablette[hidden] { display: none !important; }
+body.mode-tablette { overflow: hidden; }
+.tablette-haut { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--mute); font-size: 15px; }
+.tablette-quitter { border: 0; background: transparent; font-size: 18px; color: var(--mute); padding: 4px 10px; }
+.tablette-progression { height: 6px; background: var(--bg); border-radius: 99px; margin: 12px 0 28px; overflow: hidden; }
+.tablette-progression i { display: block; height: 100%; background: var(--pri); transition: width .2s; }
+.tablette-item { font-size: clamp(20px, 3vw, 28px); line-height: 1.35; font-weight: 600; margin-bottom: 26px; }
+.tablette-choix { display: grid; gap: 12px; }
+.tablette-choix button { font-size: clamp(16px, 2.2vw, 20px); padding: 18px 20px; text-align: left; border-radius: 12px; border-width: 2px; }
+.tablette-choix button.on { background: var(--pri); color: var(--priink); border-color: var(--pri); }
+.tablette-bas { display: flex; justify-content: space-between; margin-top: auto; padding-top: 24px; }
+.tablette-bas button { padding: 12px 18px; font-size: 16px; }
+.tablette-fin { margin: auto; text-align: center; font-size: 18px; }
+.tablette-fin button { padding: 14px 26px; font-size: 18px; margin-top: 16px; }
+
+/* ---------- Documents ---------- */
+.doc-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 8px; }
+.doc-types .sec { margin-bottom: 5px; font-weight: 600; }
+#docTexte { min-height: 60vh; font-family: Georgia, "Times New Roman", serif; font-size: 13.5px; line-height: 1.55; }
+.doc.plan-securite { font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+
+/* En-tête : outils globaux (recherche, sauvegarde) */
+.entete-portail { position: relative; }
+.entete-outils { float: right; display: flex; gap: 6px; flex-wrap: wrap; margin-left: 12px; }
+.entete-outils kbd { font: 11px ui-monospace, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+@media (max-width: 700px) { .entete-outils { float: none; margin: 0 0 8px; } }
+@media print { .entete-outils { display: none !important; } }
+.cons-groupe { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--mute); font-weight: 650; margin: 10px 0 2px; }
+.cons-groupe:first-of-type { margin-top: 0; }
+.cons-groupe.somat { color: var(--p3); }
+
+/* =====================================================================
+   MISE EN PAGE (version 3) : barre d'application, navigation latérale,
+   bandeau patient, tableau de bord, notifications. Ces règles complètent
+   et remplacent les précédentes quand elles se recoupent.
+   ===================================================================== */
+:root { color-scheme: light; --ombre: 0 1px 2px rgba(16, 24, 32, .05), 0 1px 1px rgba(16, 24, 32, .03); --rayon: 10px; }
+:root[data-theme="dark"] { color-scheme: dark; --ombre: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --ombre: none; } }
+
+body { font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+button { border-radius: 7px; transition: background-color .12s, border-color .12s, color .12s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--pri); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pri) 18%, transparent); }
+.carte, .mdph-section, .wrap { border-radius: var(--rayon); box-shadow: var(--ombre); }
+.selecteur-masque { display: none !important; }
+
+/* ---------- Barre d'application ---------- */
+header.barre-app {
+  position: sticky; top: 0; z-index: 30; max-width: none; margin: 0;
+  display: flex; align-items: center; gap: 14px; padding: 8px 20px;
+  background: color-mix(in srgb, var(--surf) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.marque { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; width: 196px; flex: none; }
+.logo { width: 30px; height: 30px; border-radius: 8px; background: var(--pri); color: var(--priink); display: grid; place-items: center; font-size: 18px; }
+.bandeau-patient { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.bandeau-nom { display: flex; align-items: baseline; gap: 10px; min-width: 0; border: 1px solid var(--line); background: var(--bg); padding: 5px 12px; text-align: left; }
+.bandeau-nom b { white-space: nowrap; }
+.bandeau-nom .sec { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bandeau-vide { border: 1px dashed var(--line); background: transparent; color: var(--mute); padding: 6px 12px; }
+.pastille-bandeau { font-size: 12px; font-weight: 650; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.pastille-bandeau.allergie { background: var(--p2b); color: var(--p2); }
+.pastille-bandeau.vigilance { background: var(--p1b); color: var(--p1); }
+.entete-outils { float: none; margin: 0; display: flex; gap: 6px; flex: none; }
+.outil { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; background: transparent; border-color: transparent; color: var(--ink); }
+.outil:hover { background: var(--bg); border-color: var(--line); }
+.icone { flex: none; display: block; }
+[data-icone] { display: inline-flex; }
+
+/* ---------- Corps : navigation latérale + contenu ---------- */
+main { max-width: 1520px; padding: 16px 20px 48px; display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 24px; align-items: start; }
+main > * { grid-column: 2; min-width: 0; }
+main > nav.tabs {
+  grid-column: 1; grid-row: 1 / span 40; position: sticky; top: 66px;
+  display: flex; flex-direction: column; gap: 2px; margin: 0; border: 0; overflow: visible;
+}
+nav.tabs button {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin: 0;
+  padding: 8px 11px; border: 0; border-radius: 8px; background: transparent; color: var(--mute); font-weight: 560; font-size: 14.5px;
+}
+nav.tabs button:hover { background: var(--surf); color: var(--ink); }
+nav.tabs button[aria-selected=true] { background: color-mix(in srgb, var(--pri) 13%, transparent); color: var(--pri); border: 0; }
+nav.tabs .n { margin-left: auto; background: var(--p4b); color: var(--p4); }
+#nbAccueil:not(:empty) { background: var(--p1b); color: var(--p1); }
+nav.tabs .n:empty { display: none; }
+nav.tabs .nouveau-patient { background: var(--pri); color: var(--priink); justify-content: center; margin-bottom: 10px; font-weight: 650; }
+nav.tabs .nouveau-patient:hover { background: var(--pri); color: var(--priink); filter: brightness(1.08); }
+nav.tabs .tabs-reglage { font-size: 13.5px; font-weight: 500; }
+.tabs-separateur { height: 1px; background: var(--line); margin: 8px 6px; }
+.notice { margin: 0 0 12px; border-radius: 8px; align-items: center; }
+.notice button { white-space: nowrap; }
+
+/* ---------- Menu « Plus » (file active) ---------- */
+.menu-plus { position: relative; }
+.menu-plus summary { list-style: none; cursor: pointer; border: 1px solid var(--line); border-radius: 7px; padding: 7px 12px; background: var(--surf); }
+.menu-plus summary::-webkit-details-marker { display: none; }
+.menu-plus summary::after { content: ' ▾'; color: var(--mute); }
+.menu-plus-liste { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; background: var(--surf); border: 1px solid var(--line); border-radius: 8px; padding: 4px; min-width: 250px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); display: grid; }
+.menu-plus-liste button { border: 0; text-align: left; background: transparent; padding: 8px 10px; }
+.menu-plus-liste button:hover { background: var(--bg); }
+
+/* ---------- Aujourd'hui ---------- */
+.accueil-entete { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin: 4px 0 14px; }
+.accueil-entete h2 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+.accueil-sauvegarde { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--mute); }
+.accueil-sauvegarde.alerte { color: var(--p2); font-weight: 600; }
+.accueil-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; align-items: start; }
+.accueil-carte { margin: 0; }
+.accueil-carte h3 { display: flex; align-items: center; gap: 8px; }
+.accueil-carte h3 .n { background: var(--p4b); color: var(--p4); border-radius: 99px; padding: 0 8px; font-size: 12px; }
+.accueil-carte.accent { border-top: 3px solid var(--pri); }
+.accueil-carte.rouge { border-top: 3px solid var(--p1); }
+.accueil-carte.rouge h3 .n { background: var(--p1b); color: var(--p1); }
+.accueil-ligne { display: flex; flex-direction: column; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; padding: 8px 4px; }
+.accueil-ligne:hover { background: var(--bg); }
+.accueil-ligne.rouge b { color: var(--p1); }
+.accueil-bienvenue h2 { margin-top: 0; }
+
+/* ---------- Rappels (écran Consultation) ---------- */
+.rappel { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.rappel input { width: 17px; height: 17px; flex: none; }
+.rappel span { flex: 1; }
+.rappel.echu b { color: var(--p1); }
+.rappel.fait { opacity: .55; text-decoration: line-through; }
+.rappel .outil { padding: 3px 5px; }
+.rappel-ajout { display: grid; gap: 8px; margin-top: 10px; }
+.rappel-ajout .choix-multiples button { padding: 4px 10px; font-size: 12.5px; }
+
+/* ---------- Aide ---------- */
+.aide-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.aide-touches td { border: 0; padding: 4px 8px 4px 0; font-size: 14px; }
+.aide-etapes { padding-left: 18px; margin: 0; font-size: 14px; }
+.aide-etapes li { margin: 4px 0; }
+kbd { font: 12px ui-monospace, monospace; background: var(--bg); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+#fenetreAide { width: min(820px, 96vw); }
+
+/* ---------- Notifications ---------- */
+.toasts { position: fixed; right: 18px; bottom: 18px; z-index: 80; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--ink); color: var(--surf); padding: 10px 14px; border-radius: 9px; font-size: 14px; max-width: 380px; box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+  opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
+.toast.visible { opacity: 1; transform: none; }
+.toast.alerte { background: var(--p1); color: #fff; }
+
+/* ---------- Petits écrans ---------- */
+@media (max-width: 1100px) {
+  .libelle-outil, .entete-outils kbd { display: none; }
+  .marque { width: auto; }
+}
+@media (max-width: 960px) {
+  header.barre-app { padding: 6px 12px; gap: 8px; flex-wrap: wrap; }
+  .marque-texte { display: none; }
+  .bandeau-patient { order: 3; flex-basis: 100%; }
+  .bandeau-nom .sec { display: none; }
+  main { display: block; padding: 10px 12px 40px; }
+  main > nav.tabs { position: sticky; top: 98px; z-index: 20; flex-direction: row; overflow-x: auto; gap: 4px; margin: 0 -12px 12px; padding: 6px 12px;
+    background: var(--bg); border-bottom: 1px solid var(--line); scrollbar-width: none; }
+  nav.tabs button { width: auto; flex: none; padding: 7px 10px; }
+  nav.tabs .nouveau-patient { margin: 0; }
+  nav.tabs .nouveau-patient .libelle-onglet, nav.tabs .tabs-reglage .libelle-onglet { display: none; }
+  .tabs-separateur { width: 1px; height: auto; margin: 4px 2px; }
+  .notice { flex-direction: column; align-items: stretch; }
+  .ech-grille, .obs-grille, .hum-grille, .cons-grille, .aide-grille { grid-template-columns: 1fr !important; }
+  .ech-resultat, .obs-sortie { position: static; }
+  .cons-large { grid-column: auto; }
+  .accueil-grille { grid-template-columns: 1fr; }
+}
+@media print {
+  header.barre-app, main > nav.tabs, .toasts { display: none !important; }
+  main { display: block; }
+}
+.accueil-calme { margin: 14px 2px; }
+@media (max-width: 960px) {
+  .notice { flex-direction: row; flex-wrap: wrap; font-size: 12.5px; padding: 8px 10px; gap: 6px 8px; }
+  .notice > div { flex-basis: 100%; }
+  .notice button { padding: 5px 10px; }
+}
+/* ---------- Mes phrases types ---------- */
+.phrases { margin-top: 12px; }
+.phrases summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.phrases-liste { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.phrase { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); max-width: 100%; }
+.phrase button { border: 0; background: transparent; text-align: left; font-size: 13px; padding: 5px 8px; }
+.phrase button.suppr { color: var(--mute); padding: 5px 7px; }
+.phrase button:hover { color: var(--pri); }
+.phrases-ajout { display: flex; gap: 6px; }
+
+/* Allergies / CI affichées en clair dans le bandeau */
+button.pastille-bandeau { border: 1px solid transparent; cursor: pointer; font-family: inherit; line-height: 1.5; }
+.pastille-bandeau.allergie { max-width: 320px; overflow: hidden; text-overflow: ellipsis; border-color: var(--p2); }
+.pastille-bandeau.allergie:hover { filter: brightness(0.95); }
+@media (max-width: 960px) { .pastille-bandeau.allergie { max-width: 170px; } }
+.bandeau-nom { flex-shrink: 0; }
+.pastille-bandeau.allergie { flex-shrink: 1; min-width: 90px; }
+@media (max-width: 1250px) { .bandeau-nom .sec { display: none; } }
+/* Sur écran moyen, outils du haut en icônes seules : la place va au bandeau patient (allergies, vigilance) */
+@media (max-width: 1600px) {
+  #btnSauvegardeChiffree .libelle-outil, #btnRestaurer .libelle-outil, #btnRechercheGlobale kbd { display: none; }
+}
+/* Fiche patient : raccourcis vers les modules regroupés dans un menu « Ouvrir… » */
+.menu-fiche .menu-plus-liste { right: auto; left: 0; top: auto; bottom: calc(100% + 4px); min-width: 230px; }
+#formPatient > .act { flex-wrap: wrap; }
+/* La marque « Portail psy » ramène à l'accueil */
+button.marque { border: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; padding: 4px 6px; margin-left: -6px; border-radius: 8px; cursor: pointer; text-align: left; }
+button.marque:hover { background: var(--bg); }

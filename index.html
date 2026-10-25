@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portail de suivi psychiatrique</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- ============================================================
+       STRUCTURE DE LA PAGE
+       Les textes affichés (libellés, avis) sont ici.
+       Les réglages cliniques (calendriers, listes) sont dans js/config.js.
+       ============================================================ -->
+
+  <!-- Barre d'application : marque, patient courant, outils globaux -->
+  <header class="barre-app">
+    <button type="button" class="marque" onclick="changerOnglet('accueil')" title="Retour à l’accueil (Aujourd’hui) · données enregistrées uniquement dans ce navigateur">
+      <span class="logo" aria-hidden="true">Ψ</span><span class="marque-texte">Portail psy</span>
+    </button>
+    <div class="bandeau-patient" id="bandeauPatient"></div>
+    <div class="entete-outils">
+      <button id="btnRechercheGlobale" class="outil" title="Rechercher un patient (Ctrl+K)"><span data-icone="recherche"></span><span class="libelle-outil">Rechercher</span><kbd>Ctrl K</kbd></button>
+      <button id="btnSauvegardeChiffree" class="outil" title="Sauvegarde complète de toutes les données, chiffrée par mot de passe"><span data-icone="sauver"></span><span class="libelle-outil">Sauvegarder</span></button>
+      <button id="btnRestaurer" class="outil" title="Restaurer une sauvegarde chiffrée (.portail)"><span data-icone="restaurer"></span><span class="libelle-outil">Restaurer</span></button>
+      <button id="btnTheme" class="outil" title="Thème : automatique, clair ou sombre"><span data-icone="theme"></span></button>
+      <button id="btnAide" class="outil" title="Aide et raccourcis clavier (?)"><span data-icone="aide"></span></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Rappel de sauvegarde (js/sauvegarde.js) -->
+    <div class="notice" id="rappelSauvegarde" hidden></div>
+
+    <!-- Avis de confidentialité (masquable, mémorisé dans le navigateur) -->
+    <div class="notice" id="avis">
+      <div>
+        <b>Données de santé.</b> Rien n’est envoyé sur Internet : tout reste dans ce navigateur,
+        sur cet appareil. Utilisez un ordinateur professionnel sécurisé, privilégiez un
+        identifiant pseudonymisé (initiales + n° de dossier) et exportez régulièrement une
+        sauvegarde. Le dossier médical officiel reste dans le logiciel de l’établissement.
+      </div>
+      <button id="btnAvisCompris">Compris</button>
+    </div>
+
+    <!-- Navigation (colonne latérale sur grand écran, barre défilante sur petit écran) -->
+    <nav class="tabs" role="tablist" aria-label="Navigation">
+      <button type="button" class="main nouveau-patient" id="btnNouveauGlobal"><span data-icone="plus"></span><span class="libelle-onglet">Nouveau patient</span></button>
+      <button role="tab" id="ongletAccueil" aria-selected="false"><span data-icone="accueil"></span><span class="libelle-onglet">Aujourd’hui</span><span class="n" id="nbAccueil"></span></button>
+      <button role="tab" id="ongletConsultation" aria-selected="false"><span data-icone="consultation"></span><span class="libelle-onglet">Consultation</span></button>
+      <button role="tab" id="ongletObservation" aria-selected="false"><span data-icone="note"></span><span class="libelle-onglet">Observation</span></button>
+      <button role="tab" id="ongletEchelles" aria-selected="false"><span data-icone="echelle"></span><span class="libelle-onglet">Échelles</span></button>
+      <button role="tab" id="ongletHumeur" aria-selected="false"><span data-icone="courbe"></span><span class="libelle-onglet">Humeur</span></button>
+      <button role="tab" id="ongletDocuments" aria-selected="false"><span data-icone="document"></span><span class="libelle-onglet">Documents</span></button>
+      <button role="tab" id="ongletMdph" aria-selected="false"><span data-icone="mdph"></span><span class="libelle-onglet">MDPH</span></button>
+      <span class="tabs-separateur" aria-hidden="true"></span>
+      <button role="tab" id="ongletActive" aria-selected="true"><span data-icone="liste"></span><span class="libelle-onglet">File active</span><span class="n" id="nbActive"></span></button>
+      <button role="tab" id="ongletRelais" aria-selected="false"><span data-icone="relais"></span><span class="libelle-onglet">Relais CMP</span><span class="n" id="nbRelais"></span></button>
+      <span class="tabs-separateur" aria-hidden="true"></span>
+      <button type="button" class="tabs-reglage" id="btnPraticien"><span data-icone="praticien"></span><span class="libelle-onglet">Profil praticien</span></button>
+      <button type="button" class="tabs-reglage" id="btnParametres"><span data-icone="reglages"></span><span class="libelle-onglet">Paramètres</span></button>
+    </nav>
+
+    <!-- ===== Vues « file active » et « relais CMP » (tableau des patients) ===== -->
+    <section id="vuePatients">
+
+    <!-- Compteurs (remplis par js/interface.js) -->
+    <div class="stats" id="statistiques"></div>
+
+    <!-- Barre d'outils : recherche, filtres, vues, import/export -->
+    <div class="bar">
+      <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
+      <select id="filtrePriorite" class="relais-seul" aria-label="Filtrer par priorité"></select>
+      <select id="filtreStatut" class="relais-seul" aria-label="Filtrer par statut du relais"></select>
+      <select id="filtreBilans" aria-label="Filtrer les bilans">
+        <option value="">Bilans : tous</option>
+        <option value="1">Bilans en retard</option>
+      </select>
+      <select id="vue" aria-label="Affichage"></select>
+
+      <button class="main" id="btnNouveau">+ Nouveau patient</button>
+      <details class="menu-plus">
+        <summary>Plus</summary>
+        <div class="menu-plus-liste">
+          <button id="btnImprimer">Imprimer la liste</button>
+          <button id="btnCsv">Export tableur (CSV)</button>
+          <button id="btnJson">Sauvegarde JSON (non chiffrée)</button>
+          <button id="btnImporter">Importer une sauvegarde JSON</button>
+          <button id="btnDemo" onclick="chargerDemo()">Charger les patients fictifs (démonstration)</button>
+          <button id="btnRetirerDemo" onclick="retirerDemo()">Retirer les patients fictifs</button>
+        </div>
+      </details>
+      <input type="file" id="fichierImport" accept=".json" hidden>
+    </div>
+
+    <!-- Tableau principal (l'en-tête change selon la vue choisie) -->
+    <div class="wrap">
+      <table>
+        <thead id="enteteTableau"></thead>
+        <tbody id="lignesTableau"></tbody>
+      </table>
+      <div class="empty" id="messageVide" hidden>
+        Aucun patient. Cliquez sur « Nouveau patient » pour commencer.
+      </div>
+    </div>
+
+    <details class="src">
+      <summary>Référentiels de surveillance utilisés (à vérifier avant usage)</summary>
+      <p>
+        Lithium : lithémie à J5, J10, 1 mois, 3 mois puis tous les 6 mois ; bilan (créatinine/DFG,
+        ionogramme-calcémie, TSH, NFS) à J15, 3 mois puis tous les 6 mois.
+        Valproate / carbamazépine : NFS + bilan hépatique mensuels 6 mois, trimestriels 1 an, puis
+        tous les 6 mois. Agomélatine : transaminases à 3, 6, 12 et 24 semaines (RCP/ANSM), séquence
+        à renouveler après augmentation de dose. Antipsychotiques : bilan trimestriel 1 an,
+        semestriel 1 an, puis annuel. Clozapine : PNN hebdomadaire 18 semaines, mensuel jusqu’à
+        1 an, puis allégé selon l’actualisation ANSM 2026.
+      </p>
+      <p>
+        Sources : La Revue du Praticien (bilans biologiques en psychiatrie), RCP et communications
+        ANSM (Valdoxan, Léponex, lithium). Les délais sont des repères calculés à partir des dates
+        saisies : ils ne remplacent ni le RCP en vigueur ni le protocole de votre service. Les
+        éléments marqués « indicatif » ne figurent pas dans ces sources. Adaptation au sexe : β-hCG chez la femme en âge de procréer, prolactinémie chez la femme de moins de 25 ans, programme de prévention de la grossesse (femme) ou réévaluation annuelle par un spécialiste (homme) pour le valproate (ANSM / PRAC). Traitements anciens : la case « traitement ancien / suivi repris » dispense des bilans initiaux et fait repartir le suivi à la date de reprise.
+      </p>
+    </details>
+    </section>
+
+    <!-- ===== Première observation clinique (js/observation.js) ===== -->
+    <section id="vueObservation" hidden></section>
+
+    <!-- ===== Courbe de l'humeur (js/humeur.js) ===== -->
+    <section id="vueHumeur" hidden></section>
+
+    <!-- ===== Échelles (js/echelles.js) ===== -->
+    <section id="vueEchelles" hidden></section>
+
+    <!-- ===== Certificat médical MDPH (js/mdph.js) ===== -->
+    <section id="vueMdph" hidden></section>
+
+    <!-- ===== Aujourd'hui : tableau de bord (js/accueil.js) ===== -->
+    <section id="vueAccueil" hidden></section>
+
+    <!-- ===== Consultation (js/consultation.js) ===== -->
+    <section id="vueConsultation" hidden></section>
+
+    <!-- ===== Documents : courriers, plan de sécurité, certificats de soins sans consentement (js/documents.js) ===== -->
+    <section id="vueDocuments" hidden></section>
+  </main>
+
+  <!-- Listes de suggestions (remplies à partir de js/config.js) -->
+  <datalist id="listeMolecules"></datalist>
+  <datalist id="listeCim"></datalist>
+  <datalist id="listeCmp"></datalist>
+
+  <!-- ============================================================
+       FENÊTRE « FICHE PATIENT »
+       Pour les champs ci-dessous, l'attribut id = nom de la propriété
+       enregistrée dans les données (nom, prenom, ddn, dossier, dp, ds…).
+       ============================================================ -->
+  <dialog id="fenetrePatient">
+    <form id="formPatient" method="dialog">
+      <h2 id="titreFiche">Patient</h2>
+
+      <div class="g">
+        <div><label for="nom">Nom</label><input id="nom" required></div>
+        <div><label for="prenom">Prénom</label><input id="prenom"></div>
+        <div><label for="ddn">Date de naissance</label><input id="ddn" type="date"></div>
+        <div>
+          <label for="sexe">Sexe (adapte les bilans)</label>
+          <select id="sexe">
+            <option value="">Non renseigné</option>
+            <option value="F">Femme</option>
+            <option value="M">Homme</option>
+          </select>
+        </div>
+        <div><label for="dossier">N° de dossier / identifiant</label><input id="dossier"></div>
+        <div class="chk">
+          <input type="checkbox" id="ald">
+          <label for="ald"><b>Patient en ALD</b> (affection de longue durée)</label>
+        </div>
+        <div id="sectionAld">
+          <label for="aldTexte">ALD : numéro / intitulé (facultatif)</label>
+          <input id="aldTexte" placeholder="ex. ALD 23, affections psychiatriques de longue durée">
+        </div>
+
+        <div class="full">
+          <label for="allergies">Allergies, contre-indications, intolérances médicamenteuses</label>
+          <input id="allergies" placeholder="ex. allergie à la pénicilline ; syndrome malin des neuroleptiques en 2019 ; QT long">
+        </div>
+        <div class="full">
+          <label for="dp">Diagnostic principal</label>
+          <input id="dp" list="listeCim" placeholder="ex. Trouble bipolaire de type I, épisode actuel en rémission">
+        </div>
+        <div class="full">
+          <label for="ds">Diagnostics secondaires / comorbidités</label>
+          <input id="ds" placeholder="ex. Trouble lié à l’usage du cannabis ; TDAH">
+        </div>
+        <div class="full">
+          <label for="dsAjout">Ajouter un diagnostic CIM-10 aux secondaires</label>
+          <input id="dsAjout" list="listeCim" placeholder="Taper un code ou un mot (ex. F12, TDAH) puis Entrée">
+        </div>
+
+        <div class="full">
+          <label for="synthese">Synthèse clinique</label>
+          <textarea id="synthese" placeholder="Histoire en 3-5 lignes, évolution, points d’attention, ce que le CMP doit savoir"></textarea>
+        </div>
+
+        <div class="full chk">
+          <input type="checkbox" id="vigilance">
+          <label for="vigilance">Point de vigilance (risque suicidaire, hétéroagressivité, fugue, soins sans consentement, mesure de protection…)</label>
+        </div>
+        <div class="full"><label for="vigtxt">Précision sur la vigilance</label><input id="vigtxt"></div>
+
+        <div><label for="rythme">Rythme de suivi actuel</label><select id="rythme"></select></div>
+        <div><label for="prochain">Dernière / prochaine consultation</label><input id="prochain" type="date"></div>
+        <div><label for="tel">Médecin traitant / contact</label><input id="tel"></div>
+
+        <!-- Lignes de traitement + surveillance (générées par js/interface.js) -->
+        <div class="full">
+          <label>Traitements et surveillance biologique</label>
+          <div id="zoneTraitements"></div>
+        </div>
+
+        <div class="full">
+          <label>Échelles cotées</label>
+          <div id="zoneScoresFiche" class="sec"></div>
+        </div>
+
+        <div class="full">
+          <label for="notes">Notes (remarques, éléments de passation)</label>
+          <textarea id="notes" style="min-height:60px"></textarea>
+        </div>
+
+        <!-- Relais vers un CMP : facultatif, les champs ne s'affichent que si la case est cochée -->
+        <div class="full chk">
+          <input type="checkbox" id="aRelayer">
+          <label for="aRelayer"><b>Patient à relayer vers un CMP</b> (départ, réorientation…)</label>
+        </div>
+        <div class="full" id="sectionRelais">
+          <div class="g">
+            <div><label for="priorite">Priorité de relais</label><select id="priorite"></select></div>
+            <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
+            <div><label for="cmp">CMP / référent receveur</label><input id="cmp" list="listeCmp"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act">
+        <button type="button" class="danger" id="btnSupprimer">Supprimer</button>
+        <details class="menu-plus menu-fiche">
+          <summary title="Enregistrer la fiche puis ouvrir un module sur ce patient">Ouvrir…</summary>
+          <div class="menu-plus-liste">
+            <button type="button" id="btnFicheConsultation">Consultation</button>
+            <button type="button" id="btnFicheObservation">Observation / note de suivi</button>
+            <button type="button" id="btnFicheEchelles">Échelles</button>
+            <button type="button" id="btnFicheHumeur">Courbe de l’humeur</button>
+            <button type="button" id="btnFicheMdph">Certificat MDPH</button>
+            <button type="button" id="btnOrdonnance">Ordonnance de bilans…</button>
+          </div>
+        </details>
+        <span class="sp"></span>
+        <button type="button" id="btnAnnuler">Annuler</button>
+        <button class="main" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Fenêtre « Paramètres » : modifier les listes sans toucher au code -->
+  <dialog id="fenetreParametres">
+    <form id="formParametres" method="dialog">
+      <h2>Paramètres</h2>
+      <div class="g">
+        <div class="full">
+          <label for="paramStatuts">Statuts du relais (un par ligne ; les deux derniers comptent comme « relais clos »)</label>
+          <textarea id="paramStatuts"></textarea>
+        </div>
+        <div class="full">
+          <label for="paramRythmes">Rythmes de suivi (un par ligne)</label>
+          <textarea id="paramRythmes"></textarea>
+        </div>
+      </div>
+      <div class="act">
+        <span class="sp"></span>
+        <button type="button" id="btnParamAnnuler">Annuler</button>
+        <button class="main" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Profil du prescripteur (enregistré dans ce navigateur, utilisé en en-tête des ordonnances) -->
+  <dialog id="fenetrePraticien">
+    <form id="formPraticien" method="dialog">
+      <h2>Profil du prescripteur</h2>
+      <div class="info-cps">
+        <b>Identification par CPS / e-CPS : non disponible dans cette version.</b>
+        Cette application fonctionne en local, sans serveur ni connexion Internet. Or Pro Santé Connect
+        (le service d’authentification CPS / e-CPS de l’ANS) impose un service web déclaré auprès de l’ANS,
+        avec identifiants confidentiels et adresse de redirection sécurisée. Ces informations sont donc
+        saisies à la main, et toute ordonnance imprimée doit être <b>datée et signée</b> par le prescripteur.
+      </div>
+      <div class="g">
+        <div><label for="prat_titre">Titre</label><input id="prat_titre" placeholder="Dr"></div>
+        <div><label for="prat_prenom">Prénom</label><input id="prat_prenom"></div>
+        <div><label for="prat_nom">Nom</label><input id="prat_nom"></div>
+        <div><label for="prat_specialite">Spécialité</label><input id="prat_specialite"></div>
+        <div><label for="prat_rpps">N° RPPS (11 chiffres)</label><input id="prat_rpps" inputmode="numeric"></div>
+        <div><label for="prat_ville">Ville (« Fait à … »)</label><input id="prat_ville"></div>
+        <div class="full"><label for="prat_etablissement">Établissement / service</label><input id="prat_etablissement"></div>
+        <div class="full"><label for="prat_adresse">Adresse</label><input id="prat_adresse"></div>
+        <div><label for="prat_telephone">Téléphone</label><input id="prat_telephone"></div>
+      </div>
+      <div class="act">
+        <span class="sp"></span>
+        <button type="button" id="btnPraticienAnnuler">Annuler</button>
+        <button class="main" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ordonnance de bilans -->
+  <dialog id="fenetreOrdonnance">
+    <div style="padding:18px 20px">
+      <h2 style="margin:0 0 10px;font-size:18px">Ordonnance de bilans</h2>
+      <div class="ordo-alerte" id="ordoAlertePraticien">
+        Profil du prescripteur incomplet (nom et RPPS) : l’en-tête comportera des points à compléter à la main.
+        <button type="button" id="btnOrdoPraticien">Renseigner le profil</button>
+      </div>
+
+      <div class="ordo-choix">
+        <div>
+          <label>Bilans à prescrire (pré-cochés : en retard ou à échéance proche)</label>
+          <div id="ordoBilans"></div>
+        </div>
+        <div>
+          <label>Examens correspondants (décochables un par un, adaptés au sexe et à l’âge)</label>
+          <div id="ordoExamens"></div>
+        </div>
+        <div class="full-ligne" style="grid-column:1/-1">
+          <label for="ordoLibre">Examens supplémentaires (un par ligne : clozapinémie, ECG…)</label>
+          <textarea id="ordoLibre" style="min-height:56px"></textarea>
+        </div>
+        <div>
+          <label for="ordoLieu">Lieu du prélèvement</label>
+          <select id="ordoLieu">
+            <option value="au laboratoire">Au laboratoire</option>
+            <option value="à domicile">À domicile</option>
+          </select>
+        </div>
+        <div>
+          <label for="ordoType">Type de bilan</label>
+          <select id="ordoType">
+            <option value="auto">Automatique (selon les examens)</option>
+            <option value="sanguin">Sanguin</option>
+            <option value="urinaire">Urinaire</option>
+            <option value="sanguin et urinaire">Sanguin et urinaire</option>
+          </select>
+        </div>
+        <div id="ordoAldZone" style="grid-column:1/-1">
+          <label for="ordoAld">Patient en ALD : cette prescription est</label>
+          <select id="ordoAld">
+            <option value="rapport">En rapport avec l’ALD (prise en charge à 100 %)</option>
+            <option value="sans">Sans rapport avec l’ALD</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1">
+          <label for="ordoRenseignements">Renseignements cliniques (facultatif ; limiter au nécessaire)</label>
+          <input id="ordoRenseignements">
+        </div>
+      </div>
+
+      <label style="margin-top:10px">Aperçu</label>
+      <div class="apercu" id="ordoApercu"></div>
+
+      <div class="act">
+        <span class="sp"></span>
+        <button type="button" id="btnOrdoFermer">Fermer</button>
+        <button type="button" class="main" id="btnOrdoImprimer">Imprimer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Aide et raccourcis -->
+  <dialog id="fenetreAide">
+    <div style="padding:20px 24px">
+      <h2 style="margin:0 0 12px;font-size:19px">Aide et raccourcis</h2>
+      <div class="aide-grille">
+        <div><h3 class="h3">Clavier</h3>
+          <table class="aide-touches"><tbody>
+            <tr><td><kbd>Ctrl</kbd> <kbd>K</kbd></td><td>Rechercher un patient</td></tr>
+            <tr><td><kbd>Alt</kbd> <kbd>1</kbd> … <kbd>9</kbd></td><td>Changer d’onglet</td></tr>
+            <tr><td><kbd>Ctrl</kbd> <kbd>S</kbd></td><td>Enregistrer la note ou le document en cours</td></tr>
+            <tr><td><kbd>?</kbd></td><td>Cette aide</td></tr>
+            <tr><td><kbd>Échap</kbd></td><td>Fermer une fenêtre</td></tr>
+          </tbody></table>
+          <p class="sec">Échelles : un chiffre coche la réponse et passe à l’item suivant ; ↑ ↓ pour se déplacer.</p></div>
+        <div><h3 class="h3">Déroulé type d’une consultation</h3>
+          <ol class="aide-etapes">
+            <li><b>Aujourd’hui</b> : patients du jour, bilans en retard, rappels.</li>
+            <li><b>Ctrl K</b> : ouvrir le patient ; le bandeau en haut le garde pour tous les onglets.</li>
+            <li><b>Consultation</b> : vue d’ensemble, puis « Note de suivi ».</li>
+            <li><b>Reprendre l’examen précédent</b>, cocher ce qui change, <b>Ctrl S</b>.</li>
+            <li><b>Documents</b> : ordonnance de renouvellement, courrier, certificat.</li>
+          </ol></div>
+      </div>
+      <p class="sec"><b>Mes phrases types</b> (sous le texte d’observation et sous les documents) : cliquez dans un champ, puis sur
+      une phrase pour l’insérer au curseur. Ajoutez vos propres formulations.</p>
+      <p class="sec">Les notes en cours sont enregistrées automatiquement en brouillon : rien n’est perdu si l’onglet est fermé.
+      Pensez à la sauvegarde chiffrée régulière (bouton en haut à droite).</p>
+      <div class="act"><span class="sp"></span><button type="button" class="main" onclick="this.closest('dialog').close()">Fermer</button></div>
+    </div>
+  </dialog>
+
+  <!-- Notifications -->
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <!-- Zone d'impression de l'ordonnance (invisible à l'écran) -->
+  <div id="zoneOrdonnance"></div>
+
+  <!-- Ordre de chargement important : chaque fichier utilise les précédents. -->
+  <script src="js/config.js"></script>
+  <script src="js/outils.js"></script>
+  <script src="js/stockage.js"></script>
+  <script src="js/surveillance.js"></script>
+  <script src="js/ordonnance.js"></script>
+  <script src="js/humeur.js"></script>
+  <script src="js/intitules.js"></script>
+  <script src="js/echelles.js"></script>
+  <script src="js/lib/pdf-lib.min.js"></script>
+  <script src="js/cerfa15695.js"></script>
+  <script src="js/mdph.js"></script>
+  <script src="js/observation.js"></script>
+  <script src="js/documents.js"></script>
+  <script src="js/consultation.js"></script>
+  <script src="js/accueil.js"></script>
+  <script src="js/demo.js"></script>
+  <script src="js/sauvegarde.js"></script>
+  <script src="js/interface.js"></script>
+  <script src="js/raccourcis.js"></script>
+  <script src="js/apparence.js"></script>
+  <script src="js/phrases.js"></script>
+</body>
+</html>
