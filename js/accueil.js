@@ -118,7 +118,7 @@ function afficherAccueil() {
         r.bilans.map(x => ligne(x.p, x.liste.slice(0, 2).map(a => `${echapper(a.traitement.nom.split(' (')[0])} : ${echapper(a.libelle)}`).join(' · ') + (x.liste.length > 2 ? ` · +${x.liste.length - 2}` : ''))).join(''),
         'Aucun bilan en retard.')}
       ${carte(`Relais prioritaires <span class="n">${r.relais.length}</span>`,
-        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp ? ' · ' + echapper(x.p.cmp) : ''}`)).join(''),
+        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp ? ' · ' + echapper(x.p.cmp) : ''}${x.p.relaisVers ? ' · vers ' + echapper(x.p.relaisVers.toLowerCase()) : ''}`)).join(''),
         'Aucun relais urgent ou élevé en attente.')}
       ${r.brouillons.length ? carte(`Notes en brouillon <span class="n">${r.brouillons.length}</span>`,
         r.brouillons.map(x => ligne(x.p, `modifiée le ${new Date(x.maj).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`, 'observation')).join(''), '') : ''}`;

@@ -43,7 +43,7 @@ function contexteFormulaire(traitement) {
 // Champs texte de la fiche : chaque id de champ = propriété enregistrée.
 const CHAMPS_FICHE = [
   'nom', 'prenom', 'ddn', 'sexe', 'dossier', 'aldTexte', 'allergies', 'dp', 'ds', 'synthese', 'vigtxt',
-  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp',
+  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp', 'relaisVers',
 ];
 
 
@@ -55,6 +55,8 @@ const CHAMPS_FICHE = [
 function remplirListesModifiables() {
   remplirSelect($('statut'), statuts.map(s => [s, s]));
   remplirSelect($('rythme'), rythmes.map(r => [r, r]));
+  remplirSelect($('relaisVers'), RELAIS_VERS.map(s => [s, s]), 'Non précisé');
+  if (!$('filtreRelaisVers').options.length) remplirSelect($('filtreRelaisVers'), [...RELAIS_VERS.map(s => [s, 'Relais vers ' + s.toLowerCase()]), ['-', 'Relais vers : non précisé']], 'Relais vers : tous');
 
   const filtreActuel = $('filtreStatut').value;               // on garde la sélection en cours
   remplirSelect($('filtreStatut'), statuts.map(s => [s, s]), 'Tous statuts');
@@ -197,11 +199,13 @@ function patientsFiltres() {
   const priorite = enRelais() ? $('filtrePriorite').value : '';
   const statut = enRelais() ? $('filtreStatut').value : '';
   const seulementRetard = $('filtreBilans').value;
+  const relaisVers = enRelais() ? $('filtreRelaisVers').value : '';
   const base = enRelais() ? patients.filter(estARelayer) : patients;
 
   return base.filter(p => {
     if (priorite && p.priorite != priorite) return false;
     if (statut && p.statut !== statut) return false;
+    if (relaisVers && (relaisVers === '-' ? !!p.relaisVers : p.relaisVers !== relaisVers)) return false;
     if (seulementRetard && !listerAlertes(p).some(a => a.statut === 'retard')) return false;
 
     if (recherche) {
@@ -298,9 +302,10 @@ function htmlLignePatient(p) {
       <td class="st ${clos ? 'clos' : ''}">
         ${echapper(p.statut)}
         ${p.cmp ? `<div class="sec">${echapper(p.cmp)}</div>` : ''}
+        ${etiquetteRelaisVers(p)}
       </td>`;
   } else if (estARelayer(p)) {
-    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div></td>`;
+    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
   } else {
     celluleRelais = '<td class="st"><span class="sec">Non concerné</span></td>';
   }
@@ -749,7 +754,7 @@ function brancherEvenements() {
   });
 
   // --- Recherche, filtres, choix de la vue ---
-  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreBilans', 'vue']
+  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreRelaisVers', 'filtreBilans', 'vue']
     .forEach(id => $(id).addEventListener('input', afficherTableau));
 
   // --- Import / export / impression ---

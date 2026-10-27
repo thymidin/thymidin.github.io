@@ -766,6 +766,17 @@ button.pastille-bandeau { border: 1px solid transparent; cursor: pointer; font-f
 button.marque { border: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; padding: 4px 6px; margin-left: -6px; border-radius: 8px; cursor: pointer; text-align: left; }
 button.marque:hover { background: var(--bg); }
 
+/* « Relais vers » : interne / sénior */
+.etiquette-relais { margin-top: 3px; display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--bg); color: var(--mute); border: 1px solid var(--line); white-space: nowrap; }
+.etiquette-relais.interne { background: #e7f4ec; color: #1f6b3d; border-color: #b9dcc6; }
+.etiquette-relais.senior { background: #f3ecfa; color: #5b3590; border-color: #d4c3ea; }
+:root[data-theme="dark"] .etiquette-relais.interne { background: #173325; color: #8fd3a8; border-color: #2b5a40; }
+:root[data-theme="dark"] .etiquette-relais.senior { background: #2a1f3b; color: #c9b0ee; border-color: #4a3870; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .etiquette-relais.interne { background: #173325; color: #8fd3a8; border-color: #2b5a40; }
+  :root:not([data-theme="light"]) .etiquette-relais.senior { background: #2a1f3b; color: #c9b0ee; border-color: #4a3870; }
+}
+
 </style>
 </head>
 
@@ -835,6 +846,7 @@ button.marque:hover { background: var(--bg); }
       <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
       <select id="filtrePriorite" class="relais-seul" aria-label="Filtrer par priorité"></select>
       <select id="filtreStatut" class="relais-seul" aria-label="Filtrer par statut du relais"></select>
+      <select id="filtreRelaisVers" class="relais-seul" aria-label="Filtrer par relais vers interne ou sénior"></select>
       <select id="filtreBilans" aria-label="Filtrer les bilans">
         <option value="">Bilans : tous</option>
         <option value="1">Bilans en retard</option>
@@ -1003,6 +1015,7 @@ button.marque:hover { background: var(--bg); }
             <div><label for="priorite">Priorité de relais</label><select id="priorite"></select></div>
             <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
             <div><label for="cmp">CMP / référent receveur</label><input id="cmp" list="listeCmp"></div>
+            <div><label for="relaisVers">Relais vers</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
           </div>
         </div>
       </div>
@@ -1293,6 +1306,14 @@ const STATUTS_RELAIS_PAR_DEFAUT = [
 
 // Rythmes de suivi proposés dans la fiche (valeurs par défaut, modifiables
 // aussi via « Paramètres »).
+// Relais : à qui le patient est confié (champ « Relais vers » de la partie relais de la fiche).
+// Les libellés sont enregistrés dans les fiches : en cas de modification, les anciennes fiches
+// gardent l'ancien libellé (affiché tel quel).
+const RELAIS_VERS = [
+  'Interne',
+  'Sénior',
+];
+
 const RYTHMES_SUIVI_PAR_DEFAUT = [
   'Hebdomadaire',
   'Tous les 15 jours',
@@ -2108,6 +2129,7 @@ const COLONNES_CSV = [
   ['synthese',   'Synthèse'],
   ['vigtxt',     'Vigilance'],
   ['rythme',     'Rythme'],
+  ['relaisVers', 'Relais vers'],
   ['prochain',   'Consultation'],
   ['arelayer',   'À relayer'],
   ['priorite',   'Priorité'],
@@ -2274,6 +2296,14 @@ function traitementsActifs(patient) {
 function texteTraitements(patient, separateur = ' ; ') {
   const { psy, somat } = traitementsActifs(patient);
   return [psy.join(separateur), somat.length ? 'Traitements non psychiatriques : ' + somat.join(separateur) : ''].filter(Boolean).join(separateur === '\n' ? '\n' : '. ');
+}
+
+/** Étiquette « Relais vers interne / sénior » (partie relais de la fiche). */
+function etiquetteRelaisVers(p) {
+  if (!p || !p.relaisVers) return '';
+  const v = p.relaisVers.toLowerCase();
+  const classe = v.includes('sénior') || v.includes('senior') ? 'senior' : v.includes('interne') ? 'interne' : '';
+  return `<div><span class="etiquette-relais ${classe}">Vers ${echapper(v)}</span></div>`;
 }
 
 </script>
@@ -6601,6 +6631,7 @@ function afficherChampsDocument() {
     const alertes = alertesPrescription([docValeurs.lignes, docValeurs.avecSomat ? lignesOrdonnance(patientDoc() || {}, true) : ''].join('\n'));
     $('docAvertissement').innerHTML = (alertes.length ? '<b>À vérifier :</b><br>' + alertes.map(echapper).join('<br>') + '<br>' : '')
       + 'Ordonnance pré-remplie à vérifier, dater et signer. Les médicaments sur ordonnance sécurisée doivent être prescrits sur le papier sécurisé.';
+    afficherHistoriqueDocs();          // (oubli corrigé : l'historique n'apparaissait pas sur l'ordonnance, type affiché par défaut)
     return;
   }
   $('docAvertissement').textContent = estCertificat(docType)
@@ -6794,7 +6825,7 @@ function afficherConsultation() {
     dernierScoreQids && dernierScoreQids.total >= 16 ? `<span class="drapeau orange">QIDS ${dernierScoreQids.total}/27 (${formaterDate(dernierScoreQids.date)})</span>` : '',
     retard.length ? `<span class="drapeau orange">${retard.length} bilan(s) en retard</span>` : '',
     p.ald ? '<span class="drapeau gris">ALD</span>' : '',
-    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais CMP : ${echapper(p.statut || '')}</span>` : '',
+    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais : ${echapper(p.statut || '')}${p.relaisVers ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
   ].filter(Boolean).join('');
 
   const carteTraitements = `
@@ -7077,7 +7108,7 @@ function afficherAccueil() {
         r.bilans.map(x => ligne(x.p, x.liste.slice(0, 2).map(a => `${echapper(a.traitement.nom.split(' (')[0])} : ${echapper(a.libelle)}`).join(' · ') + (x.liste.length > 2 ? ` · +${x.liste.length - 2}` : ''))).join(''),
         'Aucun bilan en retard.')}
       ${carte(`Relais prioritaires <span class="n">${r.relais.length}</span>`,
-        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp ? ' · ' + echapper(x.p.cmp) : ''}`)).join(''),
+        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp ? ' · ' + echapper(x.p.cmp) : ''}${x.p.relaisVers ? ' · vers ' + echapper(x.p.relaisVers.toLowerCase()) : ''}`)).join(''),
         'Aucun relais urgent ou élevé en attente.')}
       ${r.brouillons.length ? carte(`Notes en brouillon <span class="n">${r.brouillons.length}</span>`,
         r.brouillons.map(x => ligne(x.p, `modifiée le ${new Date(x.maj).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`, 'observation')).join(''), '') : ''}`;
@@ -7146,7 +7177,7 @@ function genererPatientsDemo() {
       synthese: 'Schizophrénie paranoïde résistante (échec de rispéridone et d’olanzapine à posologie efficace). Clozapine depuis 6 mois avec nette réduction des hallucinations. Vit seul, curatelle simple.',
       vigilance: 1, vigtxt: 'Rupture de soins en 2023 avec hospitalisation en SDRE',
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05',
+      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
         { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), tro: j(-150), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
@@ -7206,7 +7237,7 @@ function genererPatientsDemo() {
       dp: 'F10.2 – Alcool : dépendance', ds: 'F32.1 – Épisode dépressif moyen',
       synthese: 'Dépendance à l’alcool ancienne, sevrage ambulatoire réussi il y a 4 mois, abstinent depuis. Épisode dépressif secondaire en amélioration.',
       rythme: 'Toutes les 6 semaines', prochain: j(6), tel: 'CSAPA du secteur',
-      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre',
+      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Sertraline (Zoloft)', dose: '100 mg/j', intro: j(-110), bil: {} },
         { g: 'fond', nom: 'Acamprosate (Aotal)', dose: '2 cp x 3/j', intro: j(-120), bil: {} },
@@ -7232,7 +7263,7 @@ function genererPatientsDemo() {
       dp: 'F25.0 – Trouble schizo-affectif, type maniaque', ds: '',
       synthese: 'Trouble schizo-affectif évoluant depuis 30 ans, stabilisé sous aripiprazole injectable et valproate. Vit en famille d’accueil.',
       rythme: 'Mensuel', prochain: j(12), tel: 'Famille d’accueil : M. et Mme Ortiz', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03',
+      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Aripiprazole LP injectable (Abilify Maintena)', dose: '400 mg/mois', intro: j(-1500), pre: j(-1500), bil: { bio: j(-200) } },
         { g: 'fond', nom: 'Valproate (Dépakote)', dose: '1000 mg/j', intro: j(-3000), pre: j(-3000), bil: { bio: j(-150) } },
@@ -7260,7 +7291,7 @@ function genererPatientsDemo() {
       synthese: 'Premier épisode psychotique il y a 2 mois dans un contexte de consommation de cannabis. Hospitalisation de 3 semaines. Suivi intensif post-hospitalisation.',
       vigilance: 1, vigtxt: 'Premier épisode : risque de rupture de soins et de rechute',
       rythme: 'Tous les 15 jours', prochain: j(1), tel: 'Parents (accord du patient)',
-      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes',
+      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
       trt: [{ g: 'fond', nom: 'Aripiprazole (Abilify)', dose: '10 mg/j', intro: j(-60), bil: {} }],
       ech: [],
       obs: [note(-12, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nAmendement des idées délirantes. Persistance d’un émoussement affectif. Abstinence de cannabis déclarée depuis la sortie.\n\nCONDUITE À TENIR\n- Bilan métabolique de surveillance\n- Orientation vers l’équipe de premiers épisodes')],
@@ -7470,7 +7501,7 @@ function contexteFormulaire(traitement) {
 // Champs texte de la fiche : chaque id de champ = propriété enregistrée.
 const CHAMPS_FICHE = [
   'nom', 'prenom', 'ddn', 'sexe', 'dossier', 'aldTexte', 'allergies', 'dp', 'ds', 'synthese', 'vigtxt',
-  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp',
+  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp', 'relaisVers',
 ];
 
 
@@ -7482,6 +7513,8 @@ const CHAMPS_FICHE = [
 function remplirListesModifiables() {
   remplirSelect($('statut'), statuts.map(s => [s, s]));
   remplirSelect($('rythme'), rythmes.map(r => [r, r]));
+  remplirSelect($('relaisVers'), RELAIS_VERS.map(s => [s, s]), 'Non précisé');
+  if (!$('filtreRelaisVers').options.length) remplirSelect($('filtreRelaisVers'), [...RELAIS_VERS.map(s => [s, 'Relais vers ' + s.toLowerCase()]), ['-', 'Relais vers : non précisé']], 'Relais vers : tous');
 
   const filtreActuel = $('filtreStatut').value;               // on garde la sélection en cours
   remplirSelect($('filtreStatut'), statuts.map(s => [s, s]), 'Tous statuts');
@@ -7624,11 +7657,13 @@ function patientsFiltres() {
   const priorite = enRelais() ? $('filtrePriorite').value : '';
   const statut = enRelais() ? $('filtreStatut').value : '';
   const seulementRetard = $('filtreBilans').value;
+  const relaisVers = enRelais() ? $('filtreRelaisVers').value : '';
   const base = enRelais() ? patients.filter(estARelayer) : patients;
 
   return base.filter(p => {
     if (priorite && p.priorite != priorite) return false;
     if (statut && p.statut !== statut) return false;
+    if (relaisVers && (relaisVers === '-' ? !!p.relaisVers : p.relaisVers !== relaisVers)) return false;
     if (seulementRetard && !listerAlertes(p).some(a => a.statut === 'retard')) return false;
 
     if (recherche) {
@@ -7725,9 +7760,10 @@ function htmlLignePatient(p) {
       <td class="st ${clos ? 'clos' : ''}">
         ${echapper(p.statut)}
         ${p.cmp ? `<div class="sec">${echapper(p.cmp)}</div>` : ''}
+        ${etiquetteRelaisVers(p)}
       </td>`;
   } else if (estARelayer(p)) {
-    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div></td>`;
+    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
   } else {
     celluleRelais = '<td class="st"><span class="sec">Non concerné</span></td>';
   }
@@ -8176,7 +8212,7 @@ function brancherEvenements() {
   });
 
   // --- Recherche, filtres, choix de la vue ---
-  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreBilans', 'vue']
+  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreRelaisVers', 'filtreBilans', 'vue']
     .forEach(id => $(id).addEventListener('input', afficherTableau));
 
   // --- Import / export / impression ---

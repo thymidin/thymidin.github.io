@@ -141,7 +141,7 @@ function afficherConsultation() {
     dernierScoreQids && dernierScoreQids.total >= 16 ? `<span class="drapeau orange">QIDS ${dernierScoreQids.total}/27 (${formaterDate(dernierScoreQids.date)})</span>` : '',
     retard.length ? `<span class="drapeau orange">${retard.length} bilan(s) en retard</span>` : '',
     p.ald ? '<span class="drapeau gris">ALD</span>' : '',
-    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais CMP : ${echapper(p.statut || '')}</span>` : '',
+    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais : ${echapper(p.statut || '')}${p.relaisVers ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
   ].filter(Boolean).join('');
 
   const carteTraitements = `

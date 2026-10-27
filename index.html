@@ -73,6 +73,7 @@
       <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
       <select id="filtrePriorite" class="relais-seul" aria-label="Filtrer par priorité"></select>
       <select id="filtreStatut" class="relais-seul" aria-label="Filtrer par statut du relais"></select>
+      <select id="filtreRelaisVers" class="relais-seul" aria-label="Filtrer par relais vers interne ou sénior"></select>
       <select id="filtreBilans" aria-label="Filtrer les bilans">
         <option value="">Bilans : tous</option>
         <option value="1">Bilans en retard</option>
@@ -241,6 +242,7 @@
             <div><label for="priorite">Priorité de relais</label><select id="priorite"></select></div>
             <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
             <div><label for="cmp">CMP / référent receveur</label><input id="cmp" list="listeCmp"></div>
+            <div><label for="relaisVers">Relais vers</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
           </div>
         </div>
       </div>

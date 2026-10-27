@@ -435,6 +435,7 @@ function afficherChampsDocument() {
     const alertes = alertesPrescription([docValeurs.lignes, docValeurs.avecSomat ? lignesOrdonnance(patientDoc() || {}, true) : ''].join('\n'));
     $('docAvertissement').innerHTML = (alertes.length ? '<b>À vérifier :</b><br>' + alertes.map(echapper).join('<br>') + '<br>' : '')
       + 'Ordonnance pré-remplie à vérifier, dater et signer. Les médicaments sur ordonnance sécurisée doivent être prescrits sur le papier sécurisé.';
+    afficherHistoriqueDocs();          // (oubli corrigé : l'historique n'apparaissait pas sur l'ordonnance, type affiché par défaut)
     return;
   }
   $('docAvertissement').textContent = estCertificat(docType)

@@ -55,7 +55,7 @@ function genererPatientsDemo() {
       synthese: 'Schizophrénie paranoïde résistante (échec de rispéridone et d’olanzapine à posologie efficace). Clozapine depuis 6 mois avec nette réduction des hallucinations. Vit seul, curatelle simple.',
       vigilance: 1, vigtxt: 'Rupture de soins en 2023 avec hospitalisation en SDRE',
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05',
+      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
         { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), tro: j(-150), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
@@ -115,7 +115,7 @@ function genererPatientsDemo() {
       dp: 'F10.2 – Alcool : dépendance', ds: 'F32.1 – Épisode dépressif moyen',
       synthese: 'Dépendance à l’alcool ancienne, sevrage ambulatoire réussi il y a 4 mois, abstinent depuis. Épisode dépressif secondaire en amélioration.',
       rythme: 'Toutes les 6 semaines', prochain: j(6), tel: 'CSAPA du secteur',
-      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre',
+      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Sertraline (Zoloft)', dose: '100 mg/j', intro: j(-110), bil: {} },
         { g: 'fond', nom: 'Acamprosate (Aotal)', dose: '2 cp x 3/j', intro: j(-120), bil: {} },
@@ -141,7 +141,7 @@ function genererPatientsDemo() {
       dp: 'F25.0 – Trouble schizo-affectif, type maniaque', ds: '',
       synthese: 'Trouble schizo-affectif évoluant depuis 30 ans, stabilisé sous aripiprazole injectable et valproate. Vit en famille d’accueil.',
       rythme: 'Mensuel', prochain: j(12), tel: 'Famille d’accueil : M. et Mme Ortiz', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03',
+      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Aripiprazole LP injectable (Abilify Maintena)', dose: '400 mg/mois', intro: j(-1500), pre: j(-1500), bil: { bio: j(-200) } },
         { g: 'fond', nom: 'Valproate (Dépakote)', dose: '1000 mg/j', intro: j(-3000), pre: j(-3000), bil: { bio: j(-150) } },
@@ -169,7 +169,7 @@ function genererPatientsDemo() {
       synthese: 'Premier épisode psychotique il y a 2 mois dans un contexte de consommation de cannabis. Hospitalisation de 3 semaines. Suivi intensif post-hospitalisation.',
       vigilance: 1, vigtxt: 'Premier épisode : risque de rupture de soins et de rechute',
       rythme: 'Tous les 15 jours', prochain: j(1), tel: 'Parents (accord du patient)',
-      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes',
+      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
       trt: [{ g: 'fond', nom: 'Aripiprazole (Abilify)', dose: '10 mg/j', intro: j(-60), bil: {} }],
       ech: [],
       obs: [note(-12, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nAmendement des idées délirantes. Persistance d’un émoussement affectif. Abstinence de cannabis déclarée depuis la sortie.\n\nCONDUITE À TENIR\n- Bilan métabolique de surveillance\n- Orientation vers l’équipe de premiers épisodes')],

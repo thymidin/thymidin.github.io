@@ -132,3 +132,11 @@ function texteTraitements(patient, separateur = ' ; ') {
   const { psy, somat } = traitementsActifs(patient);
   return [psy.join(separateur), somat.length ? 'Traitements non psychiatriques : ' + somat.join(separateur) : ''].filter(Boolean).join(separateur === '\n' ? '\n' : '. ');
 }
+
+/** Étiquette « Relais vers interne / sénior » (partie relais de la fiche). */
+function etiquetteRelaisVers(p) {
+  if (!p || !p.relaisVers) return '';
+  const v = p.relaisVers.toLowerCase();
+  const classe = v.includes('sénior') || v.includes('senior') ? 'senior' : v.includes('interne') ? 'interne' : '';
+  return `<div><span class="etiquette-relais ${classe}">Vers ${echapper(v)}</span></div>`;
+}

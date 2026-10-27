@@ -111,6 +111,14 @@ const STATUTS_RELAIS_PAR_DEFAUT = [
 
 // Rythmes de suivi proposés dans la fiche (valeurs par défaut, modifiables
 // aussi via « Paramètres »).
+// Relais : à qui le patient est confié (champ « Relais vers » de la partie relais de la fiche).
+// Les libellés sont enregistrés dans les fiches : en cas de modification, les anciennes fiches
+// gardent l'ancien libellé (affiché tel quel).
+const RELAIS_VERS = [
+  'Interne',
+  'Sénior',
+];
+
 const RYTHMES_SUIVI_PAR_DEFAUT = [
   'Hebdomadaire',
   'Tous les 15 jours',
@@ -926,6 +934,7 @@ const COLONNES_CSV = [
   ['synthese',   'Synthèse'],
   ['vigtxt',     'Vigilance'],
   ['rythme',     'Rythme'],
+  ['relaisVers', 'Relais vers'],
   ['prochain',   'Consultation'],
   ['arelayer',   'À relayer'],
   ['priorite',   'Priorité'],
