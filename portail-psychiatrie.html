@@ -777,6 +777,75 @@ button.marque:hover { background: var(--bg); }
   :root:not([data-theme="light"]) .etiquette-relais.senior { background: #2a1f3b; color: #c9b0ee; border-color: #4a3870; }
 }
 
+/* ---------- Mentions légales ---------- */
+dialog.fenetre-mentions { width: min(820px, 96vw); padding: 0; display: none; }
+dialog.fenetre-mentions[open] { display: flex; flex-direction: column; max-height: 92vh; }
+.mentions-entete { padding: 18px 24px 8px; border-bottom: 1px solid var(--line); }
+.mentions-entete h2 { margin: 0 0 4px; font-size: 19px; }
+.mentions-texte { overflow-y: auto; padding: 4px 24px 12px; font-size: 13.5px; line-height: 1.55; }
+.mentions-texte h3 { font-size: 14.5px; margin: 16px 0 6px; }
+.mentions-texte ul { margin: 0; padding-left: 20px; }
+.mentions-texte li { margin: 3px 0; }
+.mentions-pied { padding: 12px 24px 16px; border-top: 1px solid var(--line); }
+.mentions-accord { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; margin-bottom: 10px; cursor: pointer; }
+.mentions-accord input { margin-top: 3px; width: auto; }
+.mentions-accord[hidden] { display: none; }
+#mentionsValider:disabled { opacity: .5; cursor: not-allowed; }
+.mentions-impression { font-size: 11pt; line-height: 1.45; }
+.mentions-impression h2 { font-size: 14pt; }
+.mentions-impression h3 { font-size: 11.5pt; margin: 12px 0 4px; }
+.mentions-accord { color: var(--ink); }
+
+/* =====================================================================
+   DOCUMENTS IMPRIMÉS : en-tête personnalisé, logo, pied de page, marges
+   ===================================================================== */
+.impr-entete { display: flex; align-items: center; gap: 14px; }
+.impr-entete.logo-droite { flex-direction: row-reverse; justify-content: space-between; }
+.impr-entete.logo-droite .impr-entete-texte { text-align: left; }
+.impr-entete.logo-centre { flex-direction: column; text-align: center; gap: 6px; }
+.impr-logo { max-width: 70mm; object-fit: contain; flex: none; }
+.impr-entete-texte { line-height: 1.4; }
+.impr-pied { border-top: 1px solid #999; padding-top: 4px; font-size: 9pt; line-height: 1.35; color: #333; text-align: center; font-family: inherit; }
+table.impr-page, table.impr-page td { border: 0 !important; padding: 0 !important; background: none !important; min-width: 0 !important; width: 100%; border-collapse: collapse; }
+table.impr-page { table-layout: fixed; }
+table.impr-page thead td, table.impr-page tfoot td { height: auto; }
+.police-sans .ordo, .police-sans .impr-pied, .police-sans.ordo { font-family: "Inter", "Segoe UI", Arial, sans-serif; }
+.ordo h2 { margin: 6px 0 10px; }
+@media print {
+  #zoneOrdonnance .impr-pied-fixe { font-family: Georgia, "Times New Roman", serif; }
+  #zoneOrdonnance .ordo { font-size: 11.5pt; }
+  .ordo-signature { break-inside: avoid; }
+}
+
+/* Réglages de mise en page (fenêtre Profil praticien) */
+details.mep { margin: 14px 0 4px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+details.mep > summary { cursor: pointer; font-weight: 650; }
+.mep-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+@media (max-width: 800px) { .mep-grille { grid-template-columns: 1fr; } }
+.mep-reglages > label { margin-top: 8px; }
+.mep-logo-ligne { display: flex; gap: 8px; }
+.mep-apercu { background: #e9ecef; border-radius: 6px; padding: 12px; display: flex; justify-content: center; }
+.mep-feuille { background: #fff; color: #000; width: 100%; max-width: 340px; aspect-ratio: 210 / 150; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.18); position: relative; box-sizing: border-box; }
+.mep-zoom { font-size: 6.5px; height: 100%; display: flex; flex-direction: column; }
+.mep-zoom .ordo { font-size: 6.5px; line-height: 1.4; flex: 1; }
+.mep-zoom .ordo p { margin: 3px 0; }
+.mep-zoom .impr-logo { max-width: 30mm; transform-origin: left top; }
+.mep-zoom .impr-pied { font-size: 5.5px; }
+.mep-faux-texte { height: 5px; background: #ddd; border-radius: 2px; }
+.mep-faux-texte.court { width: 60%; }
+.puces-ajout button { font-size: 12px; padding: 4px 9px; }
+
+/* ---------- Documents : choix épuré ---------- */
+.doc-choix { display: flex; align-items: center; gap: 10px 12px; flex-wrap: wrap; padding: 12px 16px; }
+.doc-choix > label { margin: 0; font-weight: 650; }
+.doc-choix #docTypeChoix { width: auto; min-width: 280px; max-width: 100%; }
+.doc-rapides { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.doc-rapides button { border-radius: 99px; padding: 5px 12px; font-size: 13px; }
+.doc-sortie-entete { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 8px; }
+button.discret { border: 0; background: transparent; color: var(--mute); font-size: 13px; padding: 4px 8px; }
+button.discret:hover { color: var(--pri); background: var(--bg); }
+@media (max-width: 960px) { .doc-rapides { margin-left: 0; } .doc-choix #docTypeChoix { min-width: 0; flex: 1; } }
+
 </style>
 </head>
 
@@ -1111,7 +1180,7 @@ button.marque:hover { background: var(--bg); }
           <div id="ordoExamens"></div>
         </div>
         <div class="full-ligne" style="grid-column:1/-1">
-          <label for="ordoLibre">Examens supplémentaires (un par ligne : clozapinémie, ECG…)</label>
+          <label for="ordoLibre"><b>Prescription libre</b> : examens supplémentaires en texte libre (un par ligne : NFS, TSH, clozapinémie, ECG…)</label>
           <textarea id="ordoLibre" style="min-height:56px"></textarea>
         </div>
         <div>
@@ -1602,8 +1671,6 @@ const REGLES_SURVEILLANCE = {
     preTherapeutique: {
       biologie: [
         'NFS avec numération des polynucléaires neutrophiles (PNN)',
-        'Troponine',
-        'CRP',
         ...BILAN_METABOLIQUE,
         BILAN_HEPATIQUE,
         'Créatinine avec estimation du DFG',
@@ -1627,14 +1694,6 @@ const REGLES_SURVEILLANCE = {
         ensuite: ANS(1),                  // puis annuel (si aucune neutropénie)
         ensuiteSansDateIntro: MOIS(1),    // ancien traitement, date inconnue : mensuel par prudence
         tolerance: JOURS(3),
-      },
-      {
-        id: 'tro',
-        libelle: 'Troponine + CRP (myocardite, 4 premières semaines ; indicatif)',
-        examens: ['Troponine', 'CRP'],
-        calendrier: serie(SEMAINES(1), SEMAINES(4), SEMAINES(1)),
-        ensuite: 0,
-        tolerance: JOURS(2),
       },
       {
         id: 'met',
@@ -1821,6 +1880,9 @@ const MEDICAMENTS_SUGGERES = [
   'Trazodone (Désyrel)',
   'Vortioxétine (Brintellix)',
   'Agomélatine (Valdoxan)',
+  'Moclobémide (Moclamine)',
+  'Iproniazide (Marsilid)',
+  'Tranylcypromine (Parnate, importation)',
   'Clomipramine (Anafranil)',
   'Amitriptyline (Laroxyl)',
   'Imipramine (Tofranil)',
@@ -1857,6 +1919,22 @@ const MEDICAMENTS_SUGGERES = [
   'Méthylphénidate (Ritaline)',
   'Méthylphénidate LP (Concerta LP)',
   'Méthylphénidate LP (Quasym LP)',
+  'Lisdexamfétamine (Xelevia)',
+  'Atomoxétine (Strattera)',
+  'Guanfacine LP (Intuniv)',
+
+  // --- Adjuvants et potentialisations (souvent hors AMM dans l'indication psychiatrique) ---
+  'Pramipexole LI (Sifrol)',
+  'Pramipexole LP (Sifrol LP)',
+  'Liothyronine (Cynomel)',
+  'Liothyronine (Thybon)',
+  'Modafinil (Modiodal)',
+  'Kétamine (voie IV ou IM)',
+  'Mémantine (Ebixa)',
+  'N-acétylcystéine',
+  'Prazosine (Alpress LP)',
+  'Clonidine (Catapressan)',
+  'Minocycline (Mynocine)',
 
   // --- Traitements non psychiatriques fréquents (interactions, surveillance) ---
   'Lévothyroxine (Levothyrox)',
@@ -2244,8 +2322,9 @@ function remplirSelectPatients(select, valeur, texteVide) {
 
 /** Imprime un document HTML seul (le reste de la page est masqué à l'impression).
  *  Réutilise la zone d'impression de l'ordonnance. */
-function imprimerDocument(html) {
-  $('zoneOrdonnance').innerHTML = html;
+function imprimerDocument(html, nature = '') {
+  // Marges, pied de page et police définis dans « Profil praticien » → « Mise en page » (miseenpage.js).
+  $('zoneOrdonnance').innerHTML = typeof envelopperImpression === 'function' ? envelopperImpression(html, nature) : html;
   document.body.classList.add('impression-ordonnance');
   const nettoyer = () => {
     document.body.classList.remove('impression-ordonnance');
@@ -3018,14 +3097,7 @@ function htmlOrdonnance() {
 
   return `
     <div class="ordo">
-      <div class="ordo-entete">
-        <div><b>${echapper(nomPraticien)}</b></div>
-        ${p.specialite ? `<div>${echapper(p.specialite)}</div>` : ''}
-        ${p.etablissement ? `<div>${echapper(p.etablissement)}</div>` : ''}
-        ${p.adresse ? `<div>${echapper(p.adresse)}</div>` : ''}
-        ${p.telephone ? `<div>Tél. ${echapper(p.telephone)}</div>` : ''}
-        <div>N° RPPS : ${echapper(p.rpps || point)}</div>
-      </div>
+      ${typeof enteteImpression === 'function' ? enteteImpression({ avecRpps: true }) : ''}
 
       <h2>${echapper(TEXTE_ORDONNANCE.titre)}</h2>
       <p class="ordo-date">Fait à ${echapper(p.ville || point)}, le ${echapper(date)}</p>
@@ -3056,16 +3128,7 @@ function imprimerOrdonnance() {
     alert('Aucun examen sélectionné.');
     return;
   }
-  $('zoneOrdonnance').innerHTML = htmlOrdonnance();
-  document.body.classList.add('impression-ordonnance');
-
-  const nettoyer = () => {
-    document.body.classList.remove('impression-ordonnance');
-    $('zoneOrdonnance').innerHTML = '';
-    window.removeEventListener('afterprint', nettoyer);
-  };
-  window.addEventListener('afterprint', nettoyer);
-  print();
+  imprimerDocument(htmlOrdonnance());
 }
 
 
@@ -3101,6 +3164,242 @@ function brancherOrdonnance() {
   ['ordoLibre', 'ordoRenseignements', 'ordoLieu', 'ordoType', 'ordoAld']
     .forEach(id => $(id).addEventListener('input', rendreApercu));
 }
+
+</script>
+  <script>
+/* =====================================================================
+   MISEENPAGE.JS — en-tête, pied de page, logo et marges des documents
+   imprimés (courriers, certificats, ordonnances, observations, courbe)
+   ---------------------------------------------------------------------
+   Réglages dans « Profil praticien » → « Mise en page des documents ».
+   Les marges sont produites par le document lui-même (et non par le
+   navigateur) : elles sont donc respectées même si l'option « Marges :
+   aucune » est choisie dans la fenêtre d'impression. Le pied de page est
+   répété en bas de chaque page.
+   ===================================================================== */
+
+const CLE_MISE_EN_PAGE = CLE_STOCKAGE + '_miseEnPage';
+const MARGES = {                    // haut, côtés, bas (mm)
+  etroites: [12, 14, 12],
+  normales: [18, 20, 16],
+  larges: [25, 25, 22],
+};
+const MISE_EN_PAGE_DEFAUT = {
+  logo: '', logoPosition: 'gauche', logoHauteur: 22,
+  enteteMode: 'auto', enteteTexte: '',
+  piedTexte: '', piedMentions: true,
+  marges: 'normales', police: 'serif',
+};
+
+function lireMiseEnPage() {
+  try { return { ...MISE_EN_PAGE_DEFAUT, ...(JSON.parse(localStorage.getItem(CLE_MISE_EN_PAGE) || '{}') || {}) }; }
+  catch (erreur) { return { ...MISE_EN_PAGE_DEFAUT }; }
+}
+function ecrireMiseEnPage(mep) {
+  try { localStorage.setItem(CLE_MISE_EN_PAGE, JSON.stringify(mep)); return true; }
+  catch (erreur) { alert('Enregistrement impossible : le logo est peut-être trop volumineux. Essayez une image plus petite.'); return false; }
+}
+
+const lignesEnHtml = texte => String(texte || '').split('\n').map(l => l.trim()).filter(Boolean).map(echapper);
+
+/** Lignes d'en-tête construites depuis le profil praticien. */
+function lignesEnteteAuto(avecRpps, p = praticien || {}) {
+  const nom = [p.titre || 'Dr', p.prenom, (p.nom || '').toUpperCase()].filter(Boolean).join(' ');
+  return [
+    p.nom ? `<b>${echapper(nom)}</b>` : '',
+    p.specialite ? echapper(p.specialite) : '',
+    p.etablissement ? echapper(p.etablissement) : '',
+    p.adresse ? echapper(p.adresse) : '',
+    p.telephone ? 'Tél. ' + echapper(p.telephone) : '',
+    avecRpps ? 'N° RPPS : ' + echapper(p.rpps || '………………………') : '',
+  ].filter(Boolean);
+}
+
+/**
+ * En-tête du document (première page).
+ * avecRpps : ordonnances (mention du RPPS obligatoire, ajoutée si absente du texte personnalisé).
+ */
+function enteteImpression({ avecRpps = false, mep = lireMiseEnPage(), p = praticien || {} } = {}) {
+  let lignes;
+  if (mep.enteteMode === 'perso' && mep.enteteTexte.trim()) {
+    lignes = lignesEnHtml(mep.enteteTexte);
+    if (lignes.length) lignes[0] = `<b>${lignes[0]}</b>`;
+    if (avecRpps && !/rpps/i.test(mep.enteteTexte)) lignes.push('N° RPPS : ' + echapper(p.rpps || '………………………'));
+  } else {
+    lignes = lignesEnteteAuto(avecRpps, p);
+  }
+  if (!lignes.length && !mep.logo) return '';
+  const logo = mep.logo ? `<img class="impr-logo" src="${mep.logo}" alt="" style="height:${Number(mep.logoHauteur) || 22}mm">` : '';
+  return `<div class="ordo-entete impr-entete logo-${mep.logoPosition}">${logo}<div class="impr-entete-texte">${lignes.join('<br>')}</div></div>`;
+}
+
+/* Mention ajoutée en bas de page selon la nature du document (désactivable dans la mise en page).
+   Les certificats remis au patient portent leur propre formule dans le corps du texte. */
+const MENTIONS_PIED = {
+  observation: 'Document de travail à usage médical, destiné aux professionnels participant à la prise en charge. Il n’a pas valeur de certificat médical.',
+  courrier: 'Correspondance médicale destinée aux professionnels participant à la prise en charge. Elle n’a pas valeur de certificat médical.',
+};
+
+/** Pied de page (répété sur chaque page). nature : 'observation', 'courrier' ou rien. */
+function piedImpression(mep = lireMiseEnPage(), nature = '') {
+  const lignes = lignesEnHtml(mep.piedTexte);
+  if (mep.piedMentions !== false && MENTIONS_PIED[nature]) lignes.push(`<i>${echapper(MENTIONS_PIED[nature])}</i>`);
+  return lignes.length ? `<div class="impr-pied">${lignes.join('<br>')}</div>` : '';
+}
+
+/** Enveloppe un document pour l'impression : marges, pied de page répété, police. */
+function envelopperImpression(html, nature = '', mep = lireMiseEnPage()) {
+  const [haut, cotes, bas] = MARGES[mep.marges] || MARGES.normales;
+  const pied = piedImpression(mep, nature);
+  const hauteurPied = pied ? 6 + 4.2 * (pied.match(/<br>/g) || []).length + 4 : 0;   // mm réservés au pied
+  return `
+    <style>
+      @page { size: A4; margin: 0; }
+      html, body { margin: 0 !important; padding: 0 !important; min-height: 0 !important; height: auto !important; }
+      #zoneOrdonnance { padding: 0 ${cotes}mm; }
+      #zoneOrdonnance .impr-pied-fixe { position: fixed; left: ${cotes}mm; right: ${cotes}mm; bottom: ${bas - 6 > 4 ? bas - 6 : 4}mm; }
+    </style>
+    ${pied ? `<div class="impr-pied-fixe">${pied}</div>` : ''}
+    <table class="impr-page police-${mep.police}">
+      <thead><tr><td><div style="height:${haut}mm"></div></td></tr></thead>
+      <tfoot><tr><td><div style="height:${bas + hauteurPied}mm"></div></td></tr></tfoot>
+      <tbody><tr><td>${html}</td></tr></tbody>
+    </table>`;
+}
+
+/* ---------- Réglages : section ajoutée à la fenêtre « Profil praticien » ---------- */
+function htmlReglagesMiseEnPage() {
+  return `
+  <details class="mep" id="mepZone">
+    <summary>Mise en page des documents imprimés (en-tête, logo, pied de page, marges)</summary>
+    <div class="mep-grille">
+      <div class="mep-reglages">
+        <label>Logo (PNG, JPEG ou SVG)</label>
+        <div class="mep-logo-ligne">
+          <input type="file" id="mepLogoFichier" accept="image/png,image/jpeg,image/svg+xml" hidden>
+          <button type="button" id="mepLogoChoisir">Choisir une image…</button>
+          <button type="button" id="mepLogoRetirer" class="danger">Retirer</button>
+        </div>
+        <div class="g">
+          <div><label for="mepLogoPosition">Position du logo</label>
+            <select id="mepLogoPosition"><option value="gauche">À gauche du texte</option><option value="droite">À droite du texte</option><option value="centre">Centré au-dessus</option></select></div>
+          <div><label for="mepLogoHauteur">Hauteur du logo</label>
+            <select id="mepLogoHauteur"><option value="14">Petite (14 mm)</option><option value="22">Moyenne (22 mm)</option><option value="30">Grande (30 mm)</option></select></div>
+        </div>
+        <label for="mepEnteteMode">En-tête</label>
+        <select id="mepEnteteMode"><option value="auto">Automatique (nom, spécialité, établissement, adresse, téléphone)</option><option value="perso">Personnalisé</option></select>
+        <div id="mepEntetePersoZone">
+          <label for="mepEnteteTexte">Texte de l’en-tête (une ligne par ligne imprimée ; la première est en gras)</label>
+          <textarea id="mepEnteteTexte" rows="5" placeholder="Dr Prénom NOM&#10;Psychiatre – Ancien interne des hôpitaux&#10;Service de psychiatrie adulte&#10;Adresse&#10;Secrétariat : 04 …"></textarea>
+          <div class="sec">Sur les ordonnances, le n° RPPS du profil est ajouté s’il ne figure pas dans ce texte.</div>
+        </div>
+        <label for="mepPiedTexte">Pied de page (répété en bas de chaque page)</label>
+        <textarea id="mepPiedTexte" rows="3" placeholder="ex. Secrétariat : 04 … · secretariat@… · En cas d’urgence : 15 ou 3114"></textarea>
+        <label class="ligne-case"><input type="checkbox" id="mepPiedMentions"> Mention adaptée au document : observations et courriers « n’ont pas valeur de certificat médical »</label>
+        <div class="g">
+          <div><label for="mepMarges">Marges</label>
+            <select id="mepMarges"><option value="etroites">Étroites</option><option value="normales">Normales</option><option value="larges">Larges</option></select></div>
+          <div><label for="mepPolice">Police</label>
+            <select id="mepPolice"><option value="serif">Classique (Georgia)</option><option value="sans">Moderne (sans empattement)</option></select></div>
+        </div>
+      </div>
+      <div><label>Aperçu (haut et bas de la première page)</label><div class="mep-apercu" id="mepApercu"></div></div>
+    </div>
+  </details>`;
+}
+
+let mepEdition = null;              // réglages en cours de modification (appliqués à l'enregistrement du profil)
+
+function lireFormulaireMiseEnPage() {
+  Object.assign(mepEdition, {
+    logoPosition: $('mepLogoPosition').value, logoHauteur: Number($('mepLogoHauteur').value),
+    enteteMode: $('mepEnteteMode').value, enteteTexte: $('mepEnteteTexte').value,
+    piedTexte: $('mepPiedTexte').value, piedMentions: $('mepPiedMentions').checked,
+    marges: $('mepMarges').value, police: $('mepPolice').value,
+  });
+}
+function afficherApercuMiseEnPage() {
+  lireFormulaireMiseEnPage();
+  $('mepEntetePersoZone').hidden = mepEdition.enteteMode !== 'perso';
+  $('mepLogoRetirer').hidden = !mepEdition.logo;
+  // Le profil en cours de saisie sert à l'aperçu de l'en-tête automatique.
+  const p = {};
+  CHAMPS_PRATICIEN.forEach(c => { p[c] = $('prat_' + c).value.trim(); });
+  const [haut, cotes, bas] = MARGES[mepEdition.marges];
+  const echelle = 0.42;              // aperçu réduit d'une page A4 (210 mm)
+  $('mepApercu').innerHTML = `
+    <div class="mep-feuille police-${mepEdition.police}" style="padding:${haut * echelle * 3.78}px ${cotes * echelle * 3.78}px ${bas * echelle * 3.78}px">
+      <div class="mep-zoom">
+        <div class="ordo">${enteteImpression({ avecRpps: true, mep: mepEdition, p })}
+          <p>Marseille, le ${new Date().toLocaleDateString('fr-FR')}</p><p>Cher confrère,</p>
+          <p class="mep-faux-texte"></p><p class="mep-faux-texte"></p><p class="mep-faux-texte court"></p>
+        </div>
+        <div class="mep-pied-apercu">${piedImpression(mepEdition, 'courrier')}</div>
+      </div>
+    </div>`;
+}
+
+/** Réduit le logo (largeur maximale 900 px) pour limiter la place occupée dans le navigateur. */
+function chargerLogo(fichier) {
+  if (!fichier) return;
+  if (fichier.size > 5 * 1024 * 1024) return alert('Image trop volumineuse (5 Mo maximum).');
+  const lecteur = new FileReader();
+  lecteur.onload = () => {
+    if (fichier.type === 'image/svg+xml') { mepEdition.logo = lecteur.result; afficherApercuMiseEnPage(); return; }
+    const img = new Image();
+    img.onload = () => {
+      const ratio = Math.min(1, 900 / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * ratio); c.height = Math.round(img.height * ratio);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      let url = c.toDataURL('image/png');
+      if (url.length > 400000) {                 // photo lourde : JPEG sur fond blanc
+        const ctx = c.getContext('2d');
+        ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+        url = c.toDataURL('image/jpeg', 0.85);
+      }
+      mepEdition.logo = url;
+      afficherApercuMiseEnPage();
+    };
+    img.onerror = () => alert('Image illisible.');
+    img.src = lecteur.result;
+  };
+  lecteur.readAsDataURL(fichier);
+}
+
+function remplirReglagesMiseEnPage() {
+  mepEdition = lireMiseEnPage();
+  $('mepLogoPosition').value = mepEdition.logoPosition;
+  $('mepLogoHauteur').value = String(mepEdition.logoHauteur);
+  $('mepEnteteMode').value = mepEdition.enteteMode;
+  $('mepEnteteTexte').value = mepEdition.enteteTexte;
+  $('mepPiedTexte').value = mepEdition.piedTexte;
+  $('mepPiedMentions').checked = mepEdition.piedMentions !== false;
+  $('mepMarges').value = mepEdition.marges;
+  $('mepPolice').value = mepEdition.police;
+  afficherApercuMiseEnPage();
+}
+
+(function brancherMiseEnPage() {
+  const actions = document.querySelector('#formPraticien > .act');
+  actions.insertAdjacentHTML('beforebegin', htmlReglagesMiseEnPage());
+  $('mepLogoChoisir').onclick = () => $('mepLogoFichier').click();
+  $('mepLogoFichier').onchange = () => { chargerLogo($('mepLogoFichier').files[0]); $('mepLogoFichier').value = ''; };
+  $('mepLogoRetirer').onclick = () => { mepEdition.logo = ''; afficherApercuMiseEnPage(); };
+  $('mepZone').addEventListener('input', afficherApercuMiseEnPage);
+  $('mepZone').addEventListener('change', afficherApercuMiseEnPage);
+  document.querySelector('#formPraticien .g').addEventListener('input', () => { if ($('mepZone').open) afficherApercuMiseEnPage(); });
+  // Remplir à chaque ouverture du profil (quel que soit le bouton qui l'ouvre) ; enregistrer avec le profil.
+  const ouvrirProfilSeul = ouvrirProfilPraticien;
+  ouvrirProfilPraticien = function () { ouvrirProfilSeul(); remplirReglagesMiseEnPage(); };
+  $('btnPraticien').onclick = ouvrirProfilPraticien;
+  $('btnOrdoPraticien').onclick = ouvrirProfilPraticien;
+  $('formPraticien').addEventListener('submit', () => {
+    if (!mepEdition) return;
+    lireFormulaireMiseEnPage();
+    if (ecrireMiseEnPage(mepEdition) && $('fenetreOrdonnance').open) rendreOrdonnance();
+  });
+})();
 
 </script>
   <script>
@@ -6186,10 +6485,9 @@ function imprimerObservation() {
   const pr = praticien || {};
   const nomMedecin = [pr.titre || 'Dr', pr.prenom, (pr.nom || '').toUpperCase()].filter(Boolean).join(' ');
   imprimerDocument(`<div class="ordo doc">
-    ${pr.nom ? `<div class="ordo-entete"><b>${echapper(nomMedecin)}</b>${pr.specialite ? ' · ' + echapper(pr.specialite) : ''}${pr.etablissement ? '<br>' + echapper(pr.etablissement) : ''}</div>` : ''}
+    ${enteteImpression()}
     <div style="white-space:pre-wrap">${echapper($('obsTexte').value)}</div>
-    ${p ? '' : ''}
-  </div>`);
+  </div>`, 'observation');
 }
 
 </script>
@@ -6213,12 +6511,16 @@ function imprimerObservation() {
 const TYPES_DOCUMENTS = [
   { groupe: 'Ordonnances', types: [
     ['ordoTtt', 'Ordonnance de traitement (renouvellement)'],
-    ['ordoBio', 'Ordonnance de bilans biologiques'],
+    ['ordoBio', 'Ordonnance de bilans biologiques (surveillance)'],
+    ['ordoBioLibre', 'Bilan biologique en texte libre'],
   ] },
   { groupe: 'Courriers', types: [
     ['cr', 'Compte rendu au médecin traitant'],
     ['relais', 'Courrier de relais (CMP, confrère)'],
     ['confrere', 'Réponse à un confrère'],
+  ] },
+  { groupe: 'Certificats', types: [
+    ['certificat', 'Certificat médical remis au patient'],
   ] },
   { groupe: 'Prévention du suicide', types: [
     ['plan', 'Plan de sécurité (à remettre au patient)'],
@@ -6247,6 +6549,23 @@ const CHAMPS_DOCUMENTS = {
     { id: 'renouvellement', type: 'choix', label: 'Renouvellement', options: ['Non renouvelable', 'À renouveler 1 fois', 'À renouveler 2 fois'], defaut: () => 'Non renouvelable' },
     { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
     { id: 'mentions', type: 'zone', lignes: 2, label: 'Mentions complémentaires (facultatif)', aide: 'ex. délivrance fractionnée par 7 jours ; non substituable (motif) ; prise du soir…' },
+  ],
+  certificat: [
+    { id: 'objet', type: 'choix', label: 'Objet', options: ['Présence en consultation', 'Suivi en cours', 'Constatations (texte libre)'], defaut: () => 'Présence en consultation' },
+    { id: 'dateConsult', type: 'texte', label: 'Date de la consultation', defaut: () => formaterDate(aujourdhuiIso()), si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
+    { id: 'horaire', type: 'texte', label: 'Horaire (facultatif)', aide: 'ex. de 14 h 00 à 14 h 45', si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
+    { id: 'depuis', type: 'texte', label: 'Suivi depuis (facultatif)', aide: 'ex. mars 2025', si: (p, v) => (v || docValeurs).objet === 'Suivi en cours' },
+    { id: 'contenu', type: 'zone', lignes: 4, label: 'Constatations ou précisions (facultatif)', aide: 'Uniquement ce qui est nécessaire à la demande ; pas de diagnostic sans l’accord exprès du patient.' },
+    { id: 'remise', type: 'choix', label: 'Remis', options: ['En main propre à l’intéressé(e)', 'Au représentant légal'], defaut: () => 'En main propre à l’intéressé(e)' },
+    { id: 'representant', type: 'texte', label: 'Identité du représentant légal', si: (p, v) => (v || docValeurs).remise === 'Au représentant légal' },
+  ],
+  ordoBioLibre: [
+    { id: 'examens', type: 'zone', lignes: 7, label: 'Examens prescrits (un par ligne)', aide: 'ex. NFS, plaquettes\nIonogramme sanguin, créatinine avec DFG\nTSH' },
+    { id: 'raccourcis', type: 'ajout', cible: 'examens', label: 'Ajouter un examen courant', options: ['NFS, plaquettes', 'Ionogramme sanguin', 'Créatinine avec estimation du DFG', 'Bilan hépatique (ASAT, ALAT, γGT, PAL, bilirubine)', 'Glycémie à jeun', 'HbA1c', 'Bilan lipidique (EAL)', 'TSH', 'CRP', 'Vitamine B12, folates', 'Vitamine D (25-OH)', 'Ferritine', 'Calcémie', 'Prolactinémie', 'β-HCG plasmatiques', 'CPK', 'Sérologies VIH, VHB, VHC', 'Lithémie (12 h après la dernière prise)', 'Dosage plasmatique de :'] },
+    { id: 'aJeun', type: 'case', label: 'Prélèvement à jeun' },
+    { id: 'lieu', type: 'choix', label: 'Lieu du prélèvement', options: ['Au laboratoire', 'À domicile'], defaut: () => 'Au laboratoire' },
+    { id: 'renseignements', type: 'texte', label: 'Renseignements cliniques (facultatif ; limiter au nécessaire)' },
+    { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
   ],
   cr: [
     { id: 'destinataire', type: 'texte', label: 'Destinataire', defaut: p => p.tel || '' },
@@ -6333,6 +6652,9 @@ const REGLES_PRESCRIPTION = [
   [/zolpidem|stilnox/, 'Zolpidem : ordonnance sécurisée, 28 jours maximum.'],
   [/zopiclone|imovane|lormetazepam|loprazolam|temazepam|estazolam|nitrazepam/, 'Hypnotique : durée de prescription limitée à 4 semaines (sevrage compris).'],
   [/alprazolam|xanax|lorazepam|temesta|bromazepam|lexomil|diazepam|valium|clorazepate|tranxene|prazepam|lysanxia|oxazepam|seresta/, 'Benzodiazépine anxiolytique : durée de prescription limitée à 12 semaines (sevrage compris).'],
+  [/ketamin/, 'Kétamine : stupéfiant réservé à l’usage hospitalier ; en psychiatrie, usage hors AMM (seule l’eskétamine a une AMM dans la dépression).'],
+  [/pramipexol|sifrol|liothyronin|cynomel|thybon|modafinil|modiodal|ketamin|memantin|ebixa|acetylcystein|mucomyst|prazosin|alpress|minipress|clonidin|catapressan|minocyclin|mynocine|guanfacin|intuniv|atomoxetin|strattera|lisdexamfetamin|xelevia|tranylcypromin|parnate/,
+    'Si l’indication est hors AMM : informer le patient (absence d’alternative autorisée, risques, bénéfices attendus, conditions de remboursement), porter sur l’ordonnance la mention « Prescription hors autorisation de mise sur le marché » et motiver la prescription dans le dossier (art. L. 5121-12-1 du code de la santé publique).'],
   [/clozap|leponex/, 'Clozapine : délivrance conditionnée au contrôle des polynucléaires neutrophiles (carnet de suivi ANSM).'],
   [/valpro|depakot|depakin|depamide/, 'Valproate : chez la femme en âge de procréer, prescription initiale et annuelle par un spécialiste et accord de soins signé ; chez l’homme, précautions ANSM.'],
   [/lithi|teralithe/, 'Lithium : rappeler la surveillance de la lithémie et les interactions (AINS, diurétiques, IEC/ARA2).'],
@@ -6404,6 +6726,35 @@ function redigerDocument(type, p, v) {
       ...lignes.map(l => '- ' + l), '',
       `Traitement pour ${v.duree || '1 mois'}. ${v.renouvellement || 'Non renouvelable'}.`,
       (v.mentions || '').trim()].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
+  if (type === 'certificat') {
+    const fe = p.sexe === 'F' ? 'e' : p.sexe === 'M' ? '' : '(e)';
+    const corps = v.objet === 'Suivi en cours'
+      ? `certifie que ${ident}${p.ddn ? ',' : ''} bénéficie d’un suivi médical régulier${v.depuis ? ' depuis ' + v.depuis.trim() : ''}.`
+      : v.objet === 'Constatations (texte libre)'
+        ? `certifie avoir examiné ${ident} le ${date} et avoir constaté :`
+        : `certifie que ${ident}${p.ddn ? ',' : ''} s’est présenté${fe} à ma consultation le ${(v.dateConsult || date).trim()}${v.horaire ? ', ' + v.horaire.trim() : ''}.`;
+    const remise = v.remise === 'Au représentant légal'
+      ? `Certificat établi à la demande ${v.representant ? 'de ' + v.representant.trim() + ', représentant légal de l’intéressé' + fe : 'du représentant légal de l’intéressé' + fe} et remis en main propre.`
+      : `Certificat établi à la demande de l’intéressé${fe} et remis en main propre.`;
+    return [
+      `Je soussigné(e), ${nom}, ${corps}`, '',
+      (v.contenu || '').trim(), '',
+      remise, '',
+      `Fait à ${ville}, le ${date}.`].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
+  if (type === 'ordoBioLibre') {
+    const examens = String(v.examens || '').split('\n').map(l => l.trim()).filter(Boolean);
+    const ald = p.ald && v.ald;
+    return [`${ville}, le ${date}`, '',
+      `${ident}${p.ddn ? ', ' + calculerAge(p.ddn) + ' ans' : ''}${p.sexe ? ' · ' + libelleSexe(p.sexe) : ''}`, '',
+      ald ? (v.ald === 'En rapport avec l’ALD'
+        ? 'PRESCRIPTIONS RELATIVES AU TRAITEMENT DE L’AFFECTION DE LONGUE DURÉE RECONNUE (AFFECTION EXONÉRANTE)'
+        : 'PRESCRIPTIONS SANS RAPPORT AVEC L’AFFECTION DE LONGUE DURÉE (MALADIES INTERCURRENTES)') + '\n' : '',
+      `Faire pratiquer ${(v.lieu || 'Au laboratoire').toLowerCase()} le bilan suivant${v.aJeun ? ', à jeun' : ''} :`,
+      ...(examens.length ? examens.map(l => '- ' + l) : ['- ……………………………']), '',
+      v.renseignements ? `Renseignements cliniques : ${v.renseignements.trim()}` : '',
+      'Merci de transmettre les résultats au prescripteur.'].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
   }
   if (type === 'cr') {
     return [`${ville}, le ${date}`, '', v.destinataire ? `À l’attention de ${v.destinataire}` : '', '',
@@ -6510,30 +6861,31 @@ let docValeurs = {};
 let docTexteModifie = false;
 const patientDoc = () => patients.find(p => p.id === docPatientId);
 
+// Raccourcis affichés en permanence ; tous les autres documents sont dans la liste déroulante.
+const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
+
 function htmlVueDocuments() {
   return `
-  <div class="carte">
-    <div class="bar" style="margin-top:0">
-      <label for="docPatient" style="margin:0">Patient</label>
-      <select id="docPatient" style="max-width:320px"></select>
-      <span class="sp" style="flex:1"></span>
-      <span class="sec" id="docSource"></span>
-    </div>
-    <div class="doc-types" id="docTypes">${TYPES_DOCUMENTS.map(g => `
-      <div><div class="sec">${g.groupe}</div><div class="choix-multiples">${g.types.map(([t, l]) => `<button type="button" data-type="${t}">${l}</button>`).join('')}</div></div>`).join('')}
-    </div>
+  <div class="carte doc-choix">
+    <select id="docPatient" class="selecteur-masque" aria-hidden="true" tabindex="-1"></select>
+    <label for="docTypeChoix">Document</label>
+    <select id="docTypeChoix">${TYPES_DOCUMENTS.map(g => `<optgroup label="${echapper(g.groupe)}">${g.types.map(([t, l]) => `<option value="${t}">${echapper(l)}</option>`).join('')}</optgroup>`).join('')}</select>
+    <div class="doc-rapides" id="docTypes">${DOCUMENTS_RAPIDES.map(([t, l]) => `<button type="button" data-type="${t}">${l}</button>`).join('')}</div>
   </div>
   <div class="obs-grille">
     <div class="carte"><div class="g" id="docChamps"></div><p class="sec" id="docAvertissement"></p></div>
     <div class="carte obs-sortie">
-      <div class="bar" style="margin-top:0"><h3 class="h3" style="margin:0" id="docTitre"></h3><span class="sp" style="flex:1"></span><span class="sec" id="docMsg"></span></div>
-      <textarea id="docTexte" spellcheck="true"></textarea>
-      <div class="act" style="flex-wrap:wrap;margin-top:8px">
-        <button type="button" id="docRegenerer">Régénérer</button>
-        <button type="button" id="docCopier">Copier</button>
-        <button type="button" id="docImprimer">Imprimer</button>
+      <div class="doc-sortie-entete">
+        <div><h3 class="h3" style="margin:0" id="docTitre"></h3><div class="sec" id="docSource"></div></div>
         <span class="sp"></span>
-        <button type="button" class="main" id="docEnregistrer">Enregistrer dans la fiche</button>
+        <button type="button" class="discret" id="docCopier" title="Copier le texte">Copier</button>
+        <button type="button" class="discret" id="docRegenerer" title="Annuler les retouches manuelles et reprendre le formulaire">Régénérer</button>
+      </div>
+      <textarea id="docTexte" spellcheck="true"></textarea>
+      <div class="act" style="margin-top:8px">
+        <span class="sec" id="docMsg"></span><span class="sp"></span>
+        <button type="button" id="docImprimer">Imprimer</button>
+        <button type="button" class="main" id="docEnregistrer">Enregistrer</button>
       </div>
       <div id="docHistorique" style="margin-top:12px"></div>
     </div>
@@ -6544,6 +6896,7 @@ function htmlChampDoc(c) {
   const v = docValeurs[c.id];
   if (c.type === 'zone') return `<div class="full"><label>${c.label}</label><textarea data-doc="${c.id}" rows="${c.lignes || 3}" style="min-height:0"${c.aide ? ` placeholder="${echapper(c.aide)}"` : ''}>${echapper(v || '')}</textarea></div>`;
   if (c.type === 'choix') return `<div class="full"><label>${c.label}</label><div class="choix-multiples">${c.options.map(o => `<button type="button" data-doc-choix="${c.id}" data-opt="${echapper(o)}" class="${v === o ? 'on' : ''}">${echapper(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'ajout') return `<div class="full"><select data-doc-ajout="${c.cible}" aria-label="${echapper(c.label)}"><option value="">+ ${echapper(c.label)}…</option>${c.options.map(o => `<option value="${echapper(o)}">${echapper(o)}</option>`).join('')}</select></div>`;
   if (c.type === 'case') return `<div class="full chk"><input type="checkbox" id="doc_${c.id}" data-doc="${c.id}" ${v ? 'checked' : ''}><label for="doc_${c.id}">${c.label}</label></div>`;
   return `<div class="full"><label>${c.label}</label><input data-doc="${c.id}" value="${echapper(v || '')}"${c.aide ? ` placeholder="${echapper(c.aide)}"` : ''}></div>`;
 }
@@ -6551,17 +6904,30 @@ function htmlChampDoc(c) {
 function initialiserDocuments() {
   $('vueDocuments').innerHTML = htmlVueDocuments();
   $('docPatient').onchange = () => { docPatientId = $('docPatient').value; nouveauDocument(); };
-  $('docTypes').onclick = e => {
-    const b = e.target.closest('button[data-type]');
-    if (!b) return;
-    if (b.dataset.type === 'ordoBio') {
+  const choisirType = type => {
+    if (type === 'ordoBio') {                      // ordonnance de surveillance : fenêtre dédiée de la fiche
+      $('docTypeChoix').value = docType;
       if (!docPatientId) return signaler(null, 'Choisissez d’abord un patient.');
       ouvrirFiche(docPatientId); setTimeout(() => $('btnOrdonnance').click(), 0);
       return;
     }
-    docType = b.dataset.type;
+    docType = type;
     nouveauDocument();
   };
+  $('docTypes').onclick = e => { const b = e.target.closest('button[data-type]'); if (b) choisirType(b.dataset.type); };
+  $('docTypeChoix').onchange = () => choisirType($('docTypeChoix').value);
+  $('docChamps').addEventListener('change', e => {
+    const s = e.target.closest('select[data-doc-ajout]');
+    if (!s || !s.value) return;
+    const id = s.dataset.docAjout, ajout = s.value;
+    const lignes = String(docValeurs[id] || '').split('\n').map(l => l.trim()).filter(Boolean);
+    if (!lignes.includes(ajout)) lignes.push(ajout);
+    docValeurs[id] = lignes.join('\n');
+    const zone = $('docChamps').querySelector(`[data-doc="${id}"]`);
+    if (zone) { zone.value = docValeurs[id]; if (/:$/.test(ajout)) { zone.focus(); zone.selectionStart = zone.selectionEnd = zone.value.length; } }
+    s.value = '';
+    majDocument();
+  });
   $('docChamps').addEventListener('input', e => {
     const id = e.target.dataset.doc;
     if (!id) return;
@@ -6570,11 +6936,24 @@ function initialiserDocuments() {
     if (docType === 'ordoTtt') afficherAvertissementOrdo();
   });
   $('docChamps').addEventListener('click', e => {
+    const ajout = e.target.closest('button[data-doc-ajout]');
+    if (ajout) {                                   // ajoute une ligne d'examen (texte libre)
+      const id = ajout.dataset.docAjout;
+      const lignes = String(docValeurs[id] || '').split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lignes.includes(ajout.dataset.opt)) lignes.push(ajout.dataset.opt);
+      docValeurs[id] = lignes.join('\n');
+      const zone = $('docChamps').querySelector(`[data-doc="${id}"]`);
+      if (zone) { zone.value = docValeurs[id]; if (/:$/.test(ajout.dataset.opt)) { zone.focus(); zone.selectionStart = zone.selectionEnd = zone.value.length; } }
+      majDocument();
+      return;
+    }
     const b = e.target.closest('button[data-doc-choix]');
     if (!b) return;
     const id = b.dataset.docChoix;
     docValeurs[id] = docValeurs[id] === b.dataset.opt ? '' : b.dataset.opt;
     $('docChamps').querySelectorAll(`[data-doc-choix="${id}"]`).forEach(x => x.classList.toggle('on', x.dataset.opt === docValeurs[id]));
+    // Champs conditionnels (certificat : date de consultation, représentant légal…) : réafficher.
+    if (CHAMPS_DOCUMENTS[docType] && CHAMPS_DOCUMENTS[docType].some(c => c.si && c.si.length >= 2)) afficherChampsDocument();
     majDocument();
   });
   $('docTexte').addEventListener('input', () => { docTexteModifie = true; });
@@ -6625,6 +7004,7 @@ function nouveauDocument() {
 
 function afficherChampsDocument() {
   document.querySelectorAll('#docTypes button').forEach(b => b.classList.toggle('on', b.dataset.type === docType));
+  if ($('docTypeChoix')) $('docTypeChoix').value = docType;
   $('docTitre').textContent = libelleDocument(docType);
   $('docChamps').innerHTML = champsDocument(docType).map(htmlChampDoc).join('');
   if (docType === 'ordoTtt') {
@@ -6673,11 +7053,12 @@ function afficherHistoriqueDocs() {
 }
 
 function imprimerDocumentCourant() {
-  const pr = praticien || {};
-  const entete = pr.nom && docType !== 'plan' ? `<div class="ordo-entete"><b>${echapper(nomMedecinComplet())}</b>${pr.specialite ? ' · ' + echapper(pr.specialite) : ''}
-    ${pr.etablissement ? '<br>' + echapper(pr.etablissement) : ''}${pr.adresse ? '<br>' + echapper(pr.adresse) : ''}${pr.telephone ? '<br>Tél. ' + echapper(pr.telephone) : ''}${pr.rpps ? '<br>RPPS ' + echapper(pr.rpps) : ''}</div>` : '';
-  imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
-    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt'].includes(docType) ? '<div class="ordo-signature">Signature</div>' : ''}</div>`);
+  const ordonnance = ['ordoTtt', 'ordoBioLibre'].includes(docType);
+  const entete = docType !== 'plan' ? enteteImpression({ avecRpps: ordonnance || estCertificat(docType) || docType === 'certificat' }) : '';
+  const titre = docType === 'ordoBioLibre' ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
+  imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}${titre}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
+    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
+    ['cr', 'relais', 'confrere'].includes(docType) ? 'courrier' : '');
 }
 
 </script>
@@ -7179,7 +7560,7 @@ function genererPatientsDemo() {
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
       aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
-        { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), tro: j(-150), met: j(-100) } },
+        { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
         { g: 'somat', nom: 'Metformine', dose: '850 mg x 2/j', intro: j(-60), bil: {} },
       ],
@@ -7374,7 +7755,7 @@ async function sauvegardeChiffree() {
   if (prompt('Confirmez le mot de passe :') !== mdp) return alert('Les deux mots de passe ne correspondent pas. Sauvegarde annulée.');
 
   const contenu = { version: VERSION_FORMAT, date: new Date().toISOString(), donnees: {} };
-  clesPortail().filter(k => k !== CLE_DERNIERE_SAUVEGARDE).forEach(k => { contenu.donnees[k] = localStorage.getItem(k); });
+  clesPortail().filter(k => k !== CLE_DERNIERE_SAUVEGARDE && k !== CLE_STOCKAGE + '_cgu').forEach(k => { contenu.donnees[k] = localStorage.getItem(k); });
 
   const sel = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -7407,8 +7788,8 @@ function restaurerSauvegarde(fichier) {
       const fiches = JSON.parse(contenu.donnees[CLE_STOCKAGE] || '[]');
       if (contenu.version > VERSION_FORMAT && !confirm('Cette sauvegarde vient d’une version plus récente du portail. Restaurer quand même ?')) return;
       if (!confirm(`Restaurer ${fiches.length} fiche(s) et tous les réglages de cette sauvegarde ?\nLes données actuelles de ce navigateur seront REMPLACÉES.`)) return;
-      clesPortail().forEach(k => localStorage.removeItem(k));
-      Object.entries(contenu.donnees).forEach(([k, val]) => localStorage.setItem(k, val));
+      clesPortail().filter(k => k !== CLE_STOCKAGE + '_cgu').forEach(k => localStorage.removeItem(k));   // l'acceptation des conditions reste celle de ce navigateur
+      Object.entries(contenu.donnees).filter(([k]) => k !== CLE_STOCKAGE + '_cgu').forEach(([k, val]) => localStorage.setItem(k, val));
       noterSauvegarde();
       location.reload();
     } catch (erreur) {
@@ -8594,6 +8975,178 @@ function brancherPhrases() {
   });
 }
 brancherPhrases();
+
+</script>
+  <script>
+/* =====================================================================
+   MENTIONS.JS — mentions légales, conditions d'utilisation et
+   acceptation obligatoire à la première ouverture
+   ---------------------------------------------------------------------
+   Le texte est versionné (VERSION_CGU) : toute modification importante
+   doit incrémenter ce numéro pour redemander l'acceptation.
+   L'acceptation est propre à chaque navigateur ; elle n'est pas incluse
+   dans la sauvegarde chiffrée et n'est pas effacée par une restauration.
+   ===================================================================== */
+
+const VERSION_CGU = 1;
+const DATE_CGU = '27 octobre 2026';
+const CLE_CGU = CLE_STOCKAGE + '_cgu';
+
+const MENTIONS_HTML = `
+<h3>1. Objet et statut de l’outil</h3>
+<p>Le « Portail de suivi psychiatrique » est un outil personnel d’aide à l’organisation du suivi et à la rédaction,
+développé par un praticien et mis à disposition <b>à titre gracieux, personnel et non officiel</b>.</p>
+<ul>
+  <li>Il n’est <b>ni fourni, ni validé, ni maintenu</b> par un établissement de santé, sa direction des systèmes
+  d’information, son délégué à la protection des données ou un éditeur de logiciel.</li>
+  <li>Ce n’est <b>pas un dossier patient</b> ni un logiciel métier homologué ; il n’est pas compatible avec le DMP et ne
+  permet ni l’identification du professionnel par carte CPS / e-CPS, ni la vérification de l’identité des patients (INS).</li>
+  <li>Il n’a fait l’objet d’<b>aucun marquage CE</b> ni d’aucune évaluation au titre de la réglementation des dispositifs
+  médicaux. Il ne pose aucun diagnostic et ne prend aucune décision : il <b>ne remplace en aucun cas le jugement
+  clinique</b> du praticien.</li>
+</ul>
+
+<h3>2. Absence de garantie et responsabilité</h3>
+<ul>
+  <li>L’outil est fourni <b>« en l’état »</b>, sans garantie d’aucune sorte (exactitude, exhaustivité, mise à jour,
+  disponibilité, absence d’erreur ou de perte de données).</li>
+  <li>Dans toute la mesure permise par la loi, l’auteur <b>ne peut être tenu responsable</b> des conséquences directes ou
+  indirectes de son utilisation, notamment des décisions cliniques, prescriptions, certificats, courriers ou documents
+  produits, ni d’une perte, d’une altération ou d’une divulgation de données.</li>
+  <li>Chaque utilisateur <b>reste seul responsable</b> de sa pratique, de la vérification de tout contenu généré avant
+  usage, et des documents qu’il date et signe.</li>
+</ul>
+
+<h3>3. Contenus médicaux, réglementaires et administratifs</h3>
+<ul>
+  <li><b>Échelles</b> : les cotations et seuils sont fournis à titre indicatif ; un score est une aide au repérage, jamais
+  un diagnostic. Vérifier la version de référence de chaque échelle et ses conditions d’utilisation (section 6).</li>
+  <li><b>Surveillance biologique et règles de prescription</b> : rappels indicatifs, susceptibles d’être incomplets ou
+  dépassés. Les résumés des caractéristiques du produit, les recommandations de la HAS, les décisions de l’ANSM et la
+  réglementation en vigueur font foi.</li>
+  <li><b>Certificats de soins sans consentement</b> : modèles construits d’après le code de la santé publique, à vérifier
+  avec les modèles et procédures de l’établissement ; le certificat décrit les constatations personnelles du signataire.</li>
+  <li><b>Certificat MDPH</b> : le formulaire officiel (Cerfa 15695*01) est rempli sans modification de sa présentation ;
+  le contenu relève du seul médecin signataire. Vérifier qu’il s’agit de la version en vigueur.</li>
+  <li><b>Textes rédigés automatiquement</b> (observations, notes, courriers) : propositions à relire, corriger et
+  compléter ; elles ne doivent pas être reportées sans vérification.</li>
+</ul>
+
+<h3>4. Données personnelles et données de santé</h3>
+<ul>
+  <li><b>Aucune donnée n’est transmise par l’outil</b> : tout est enregistré dans le navigateur de l’appareil utilisé.
+  L’outil n’est pas hébergé : il n’existe ni serveur, ni hébergement certifié de données de santé (HDS).</li>
+  <li>Les données saisies sont des données de santé couvertes par le <b>secret médical</b> (code de la santé publique)
+  et par le <b>RGPD</b>. L’utilisateur qui y saisit des données identifiantes en assume la responsabilité.</li>
+  <li><b>En établissement de santé</b> : l’outil n’ayant pas été validé par l’établissement, son usage doit respecter la
+  politique de sécurité des systèmes d’information et les consignes du délégué à la protection des données. En cas de
+  doute, <b>demander leur avis avant toute saisie de données identifiantes</b>, et privilégier un identifiant pseudonymisé
+  (initiales et numéro de dossier).</li>
+  <li><b>En exercice libéral</b> : le praticien est responsable du traitement des données de ses patients (information
+  des patients, registre des traitements, sécurité, durée de conservation).</li>
+  <li><b>Le dossier officiel reste le dossier patient</b> de l’établissement ou du cabinet : toute information utile à
+  la prise en charge doit y être reportée. Le portail n’en est ni une copie ni un substitut.</li>
+</ul>
+
+<h3>5. Sécurité : règles d’usage</h3>
+<ul>
+  <li>Utiliser un <b>poste professionnel</b>, protégé par une session personnelle et un mot de passe ; jamais un ordinateur
+  public ou partagé, ni la navigation privée (les données y sont effacées à la fermeture).</li>
+  <li>Les données enregistrées dans le navigateur <b>ne sont pas chiffrées</b> sur le disque : quiconque accède à la
+  session peut les lire. Verrouiller le poste en s’absentant.</li>
+  <li>Faire des <b>sauvegardes chiffrées</b> régulières ; le mot de passe d’une sauvegarde ne peut pas être récupéré.</li>
+  <li>Ne pas conserver de sauvegarde, d’export CSV ou JSON (non chiffrés) sur un stockage en ligne non certifié HDS
+  (messagerie personnelle, Drive, Dropbox…), ni sur un support amovible non chiffré.</li>
+  <li>Ne pas transmettre de données de patients à un service d’intelligence artificielle ou à tout tiers non autorisé.</li>
+  <li>Ne pas modifier le code sans en mesurer les conséquences : une modification peut fausser les cotations ou les
+  échéances de surveillance (les tests fournis permettent de vérifier les cotations).</li>
+</ul>
+
+<h3>6. Propriété intellectuelle</h3>
+<ul>
+  <li>Le portail (code, textes, mise en page) : <b>tous droits réservés</b>. Son utilisation gratuite est autorisée aux
+  personnes à qui il a été remis, pour leur usage professionnel. Toute modification, rediffusion, publication ou
+  exploitation commerciale est soumise à l’accord préalable de l’auteur.</li>
+  <li><b>Échelles</b> : les questionnaires restent la propriété de leurs auteurs et éditeurs respectifs (QIDS-SR16 : Rush
+  et coll. ; AQ et EQ : Baron-Cohen et coll., Autism Research Centre, Université de Cambridge ; RAADS-R : Ritvo et coll. ;
+  PHQ-9 et GAD-7 : Spitzer, Kroenke, Williams et coll.). Les intitulés intégrés proviennent des versions françaises
+  fournies par l’utilisateur ; leur usage doit respecter les conditions fixées par leurs auteurs.</li>
+  <li><b>Formulaire Cerfa 15695*01</b> : document administratif officiel, reproduit sans modification.</li>
+  <li><b>Composants tiers</b> : pdf-lib (licence MIT, © Andrew Dillon) et ses dépendances, sous leurs licences respectives.</li>
+</ul>
+
+<h3>7. Évolution des conditions</h3>
+<p>Ces conditions peuvent évoluer avec les versions du portail ; une nouvelle acceptation est alors demandée.
+Version ${VERSION_CGU} du ${DATE_CGU}.</p>
+`;
+
+function lireAcceptation() {
+  try { return JSON.parse(localStorage.getItem(CLE_CGU) || 'null'); } catch (erreur) { return null; }
+}
+
+function creerFenetreMentions() {
+  const d = document.createElement('dialog');
+  d.id = 'fenetreMentions';
+  d.className = 'fenetre-mentions';
+  d.innerHTML = `
+    <div class="mentions-entete"><h2>Mentions légales et conditions d’utilisation</h2>
+      <p class="sec" id="mentionsEtat"></p></div>
+    <div class="mentions-texte">${MENTIONS_HTML}</div>
+    <div class="mentions-pied">
+      <label class="mentions-accord" id="mentionsAccordZone"><input type="checkbox" id="mentionsAccord">
+        J’ai lu ces conditions et je les accepte. Je reste seul(e) responsable de l’usage que je fais de cet outil et des
+        données que j’y saisis.</label>
+      <div class="act"><button type="button" id="mentionsImprimer">Imprimer</button><span class="sp"></span>
+        <button type="button" class="main" id="mentionsValider">Fermer</button></div>
+    </div>`;
+  document.body.appendChild(d);
+  // Tant que les conditions ne sont pas acceptées, la fenêtre ne peut pas être fermée par Échap.
+  d.addEventListener('cancel', e => { if (!lireAcceptation() || lireAcceptation().version < VERSION_CGU) e.preventDefault(); });
+  $('mentionsAccord').onchange = () => { $('mentionsValider').disabled = !$('mentionsAccord').checked; };
+  $('mentionsImprimer').onclick = () => {
+    const aAccepter = !$('mentionsAccordZone').hidden;
+    d.close();
+    imprimerDocument(`<div class="mentions-impression"><h2>Portail de suivi psychiatrique — mentions légales et conditions d’utilisation</h2>${MENTIONS_HTML}</div>`);
+    ouvrirMentions(aAccepter);
+  };
+  $('mentionsValider').onclick = () => {
+    const acc = lireAcceptation();
+    if (!acc || acc.version < VERSION_CGU) {
+      if (!$('mentionsAccord').checked) return;
+      try { localStorage.setItem(CLE_CGU, JSON.stringify({ version: VERSION_CGU, date: new Date().toISOString() })); } catch (erreur) { /* ignoré */ }
+      toast('Conditions d’utilisation acceptées.');
+    }
+    d.close();
+  };
+}
+
+/** Ouvre les mentions ; `obligatoire` = première ouverture ou nouvelle version à accepter. */
+function ouvrirMentions(obligatoire) {
+  if (!$('fenetreMentions')) creerFenetreMentions();
+  const acc = lireAcceptation();
+  const aAccepter = obligatoire || !acc || acc.version < VERSION_CGU;
+  $('mentionsAccordZone').hidden = !aAccepter;
+  $('mentionsAccord').checked = false;
+  $('mentionsValider').disabled = aAccepter;
+  $('mentionsValider').textContent = aAccepter ? 'Accepter et continuer' : 'Fermer';
+  $('mentionsEtat').textContent = aAccepter
+    ? 'À lire et accepter avant la première utilisation.'
+    : `Acceptées dans ce navigateur le ${new Date(acc.date).toLocaleDateString('fr-FR')} (version ${acc.version}).`;
+  $('fenetreMentions').showModal();
+  $('fenetreMentions').querySelector('.mentions-texte').scrollTop = 0;
+}
+
+// Lien permanent dans le menu latéral et dans l'aide.
+(function brancherMentions() {
+  const ref = $('btnParametres');
+  if (ref) ref.insertAdjacentHTML('afterend', `<button type="button" class="tabs-reglage" id="btnMentions">
+    <span data-icone="note"></span><span class="libelle-onglet">Mentions légales</span></button>`);
+  $('btnMentions').onclick = () => ouvrirMentions(false);
+  const aide = document.querySelector('#fenetreAide .act');
+  if (aide) aide.insertAdjacentHTML('afterbegin', '<button type="button" onclick="this.closest(\'dialog\').close(); ouvrirMentions(false)">Mentions légales</button>');
+  const acc = lireAcceptation();
+  if (!acc || acc.version < VERSION_CGU) ouvrirMentions(true);
+})();
 
 </script>
 </body>

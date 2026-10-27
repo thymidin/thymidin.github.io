@@ -922,8 +922,7 @@ function imprimerObservation() {
   const pr = praticien || {};
   const nomMedecin = [pr.titre || 'Dr', pr.prenom, (pr.nom || '').toUpperCase()].filter(Boolean).join(' ');
   imprimerDocument(`<div class="ordo doc">
-    ${pr.nom ? `<div class="ordo-entete"><b>${echapper(nomMedecin)}</b>${pr.specialite ? ' · ' + echapper(pr.specialite) : ''}${pr.etablissement ? '<br>' + echapper(pr.etablissement) : ''}</div>` : ''}
+    ${enteteImpression()}
     <div style="white-space:pre-wrap">${echapper($('obsTexte').value)}</div>
-    ${p ? '' : ''}
-  </div>`);
+  </div>`, 'observation');
 }

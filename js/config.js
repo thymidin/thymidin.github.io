@@ -407,8 +407,6 @@ const REGLES_SURVEILLANCE = {
     preTherapeutique: {
       biologie: [
         'NFS avec numération des polynucléaires neutrophiles (PNN)',
-        'Troponine',
-        'CRP',
         ...BILAN_METABOLIQUE,
         BILAN_HEPATIQUE,
         'Créatinine avec estimation du DFG',
@@ -432,14 +430,6 @@ const REGLES_SURVEILLANCE = {
         ensuite: ANS(1),                  // puis annuel (si aucune neutropénie)
         ensuiteSansDateIntro: MOIS(1),    // ancien traitement, date inconnue : mensuel par prudence
         tolerance: JOURS(3),
-      },
-      {
-        id: 'tro',
-        libelle: 'Troponine + CRP (myocardite, 4 premières semaines ; indicatif)',
-        examens: ['Troponine', 'CRP'],
-        calendrier: serie(SEMAINES(1), SEMAINES(4), SEMAINES(1)),
-        ensuite: 0,
-        tolerance: JOURS(2),
       },
       {
         id: 'met',
@@ -626,6 +616,9 @@ const MEDICAMENTS_SUGGERES = [
   'Trazodone (Désyrel)',
   'Vortioxétine (Brintellix)',
   'Agomélatine (Valdoxan)',
+  'Moclobémide (Moclamine)',
+  'Iproniazide (Marsilid)',
+  'Tranylcypromine (Parnate, importation)',
   'Clomipramine (Anafranil)',
   'Amitriptyline (Laroxyl)',
   'Imipramine (Tofranil)',
@@ -662,6 +655,22 @@ const MEDICAMENTS_SUGGERES = [
   'Méthylphénidate (Ritaline)',
   'Méthylphénidate LP (Concerta LP)',
   'Méthylphénidate LP (Quasym LP)',
+  'Lisdexamfétamine (Xelevia)',
+  'Atomoxétine (Strattera)',
+  'Guanfacine LP (Intuniv)',
+
+  // --- Adjuvants et potentialisations (souvent hors AMM dans l'indication psychiatrique) ---
+  'Pramipexole LI (Sifrol)',
+  'Pramipexole LP (Sifrol LP)',
+  'Liothyronine (Cynomel)',
+  'Liothyronine (Thybon)',
+  'Modafinil (Modiodal)',
+  'Kétamine (voie IV ou IM)',
+  'Mémantine (Ebixa)',
+  'N-acétylcystéine',
+  'Prazosine (Alpress LP)',
+  'Clonidine (Catapressan)',
+  'Minocycline (Mynocine)',
 
   // --- Traitements non psychiatriques fréquents (interactions, surveillance) ---
   'Lévothyroxine (Levothyrox)',

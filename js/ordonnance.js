@@ -262,14 +262,7 @@ function htmlOrdonnance() {
 
   return `
     <div class="ordo">
-      <div class="ordo-entete">
-        <div><b>${echapper(nomPraticien)}</b></div>
-        ${p.specialite ? `<div>${echapper(p.specialite)}</div>` : ''}
-        ${p.etablissement ? `<div>${echapper(p.etablissement)}</div>` : ''}
-        ${p.adresse ? `<div>${echapper(p.adresse)}</div>` : ''}
-        ${p.telephone ? `<div>Tél. ${echapper(p.telephone)}</div>` : ''}
-        <div>N° RPPS : ${echapper(p.rpps || point)}</div>
-      </div>
+      ${typeof enteteImpression === 'function' ? enteteImpression({ avecRpps: true }) : ''}
 
       <h2>${echapper(TEXTE_ORDONNANCE.titre)}</h2>
       <p class="ordo-date">Fait à ${echapper(p.ville || point)}, le ${echapper(date)}</p>
@@ -300,16 +293,7 @@ function imprimerOrdonnance() {
     alert('Aucun examen sélectionné.');
     return;
   }
-  $('zoneOrdonnance').innerHTML = htmlOrdonnance();
-  document.body.classList.add('impression-ordonnance');
-
-  const nettoyer = () => {
-    document.body.classList.remove('impression-ordonnance');
-    $('zoneOrdonnance').innerHTML = '';
-    window.removeEventListener('afterprint', nettoyer);
-  };
-  window.addEventListener('afterprint', nettoyer);
-  print();
+  imprimerDocument(htmlOrdonnance());
 }
 
 

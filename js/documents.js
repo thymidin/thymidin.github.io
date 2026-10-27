@@ -17,12 +17,16 @@
 const TYPES_DOCUMENTS = [
   { groupe: 'Ordonnances', types: [
     ['ordoTtt', 'Ordonnance de traitement (renouvellement)'],
-    ['ordoBio', 'Ordonnance de bilans biologiques'],
+    ['ordoBio', 'Ordonnance de bilans biologiques (surveillance)'],
+    ['ordoBioLibre', 'Bilan biologique en texte libre'],
   ] },
   { groupe: 'Courriers', types: [
     ['cr', 'Compte rendu au médecin traitant'],
     ['relais', 'Courrier de relais (CMP, confrère)'],
     ['confrere', 'Réponse à un confrère'],
+  ] },
+  { groupe: 'Certificats', types: [
+    ['certificat', 'Certificat médical remis au patient'],
   ] },
   { groupe: 'Prévention du suicide', types: [
     ['plan', 'Plan de sécurité (à remettre au patient)'],
@@ -51,6 +55,23 @@ const CHAMPS_DOCUMENTS = {
     { id: 'renouvellement', type: 'choix', label: 'Renouvellement', options: ['Non renouvelable', 'À renouveler 1 fois', 'À renouveler 2 fois'], defaut: () => 'Non renouvelable' },
     { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
     { id: 'mentions', type: 'zone', lignes: 2, label: 'Mentions complémentaires (facultatif)', aide: 'ex. délivrance fractionnée par 7 jours ; non substituable (motif) ; prise du soir…' },
+  ],
+  certificat: [
+    { id: 'objet', type: 'choix', label: 'Objet', options: ['Présence en consultation', 'Suivi en cours', 'Constatations (texte libre)'], defaut: () => 'Présence en consultation' },
+    { id: 'dateConsult', type: 'texte', label: 'Date de la consultation', defaut: () => formaterDate(aujourdhuiIso()), si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
+    { id: 'horaire', type: 'texte', label: 'Horaire (facultatif)', aide: 'ex. de 14 h 00 à 14 h 45', si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
+    { id: 'depuis', type: 'texte', label: 'Suivi depuis (facultatif)', aide: 'ex. mars 2025', si: (p, v) => (v || docValeurs).objet === 'Suivi en cours' },
+    { id: 'contenu', type: 'zone', lignes: 4, label: 'Constatations ou précisions (facultatif)', aide: 'Uniquement ce qui est nécessaire à la demande ; pas de diagnostic sans l’accord exprès du patient.' },
+    { id: 'remise', type: 'choix', label: 'Remis', options: ['En main propre à l’intéressé(e)', 'Au représentant légal'], defaut: () => 'En main propre à l’intéressé(e)' },
+    { id: 'representant', type: 'texte', label: 'Identité du représentant légal', si: (p, v) => (v || docValeurs).remise === 'Au représentant légal' },
+  ],
+  ordoBioLibre: [
+    { id: 'examens', type: 'zone', lignes: 7, label: 'Examens prescrits (un par ligne)', aide: 'ex. NFS, plaquettes\nIonogramme sanguin, créatinine avec DFG\nTSH' },
+    { id: 'raccourcis', type: 'ajout', cible: 'examens', label: 'Ajouter un examen courant', options: ['NFS, plaquettes', 'Ionogramme sanguin', 'Créatinine avec estimation du DFG', 'Bilan hépatique (ASAT, ALAT, γGT, PAL, bilirubine)', 'Glycémie à jeun', 'HbA1c', 'Bilan lipidique (EAL)', 'TSH', 'CRP', 'Vitamine B12, folates', 'Vitamine D (25-OH)', 'Ferritine', 'Calcémie', 'Prolactinémie', 'β-HCG plasmatiques', 'CPK', 'Sérologies VIH, VHB, VHC', 'Lithémie (12 h après la dernière prise)', 'Dosage plasmatique de :'] },
+    { id: 'aJeun', type: 'case', label: 'Prélèvement à jeun' },
+    { id: 'lieu', type: 'choix', label: 'Lieu du prélèvement', options: ['Au laboratoire', 'À domicile'], defaut: () => 'Au laboratoire' },
+    { id: 'renseignements', type: 'texte', label: 'Renseignements cliniques (facultatif ; limiter au nécessaire)' },
+    { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
   ],
   cr: [
     { id: 'destinataire', type: 'texte', label: 'Destinataire', defaut: p => p.tel || '' },
@@ -137,6 +158,9 @@ const REGLES_PRESCRIPTION = [
   [/zolpidem|stilnox/, 'Zolpidem : ordonnance sécurisée, 28 jours maximum.'],
   [/zopiclone|imovane|lormetazepam|loprazolam|temazepam|estazolam|nitrazepam/, 'Hypnotique : durée de prescription limitée à 4 semaines (sevrage compris).'],
   [/alprazolam|xanax|lorazepam|temesta|bromazepam|lexomil|diazepam|valium|clorazepate|tranxene|prazepam|lysanxia|oxazepam|seresta/, 'Benzodiazépine anxiolytique : durée de prescription limitée à 12 semaines (sevrage compris).'],
+  [/ketamin/, 'Kétamine : stupéfiant réservé à l’usage hospitalier ; en psychiatrie, usage hors AMM (seule l’eskétamine a une AMM dans la dépression).'],
+  [/pramipexol|sifrol|liothyronin|cynomel|thybon|modafinil|modiodal|ketamin|memantin|ebixa|acetylcystein|mucomyst|prazosin|alpress|minipress|clonidin|catapressan|minocyclin|mynocine|guanfacin|intuniv|atomoxetin|strattera|lisdexamfetamin|xelevia|tranylcypromin|parnate/,
+    'Si l’indication est hors AMM : informer le patient (absence d’alternative autorisée, risques, bénéfices attendus, conditions de remboursement), porter sur l’ordonnance la mention « Prescription hors autorisation de mise sur le marché » et motiver la prescription dans le dossier (art. L. 5121-12-1 du code de la santé publique).'],
   [/clozap|leponex/, 'Clozapine : délivrance conditionnée au contrôle des polynucléaires neutrophiles (carnet de suivi ANSM).'],
   [/valpro|depakot|depakin|depamide/, 'Valproate : chez la femme en âge de procréer, prescription initiale et annuelle par un spécialiste et accord de soins signé ; chez l’homme, précautions ANSM.'],
   [/lithi|teralithe/, 'Lithium : rappeler la surveillance de la lithémie et les interactions (AINS, diurétiques, IEC/ARA2).'],
@@ -208,6 +232,35 @@ function redigerDocument(type, p, v) {
       ...lignes.map(l => '- ' + l), '',
       `Traitement pour ${v.duree || '1 mois'}. ${v.renouvellement || 'Non renouvelable'}.`,
       (v.mentions || '').trim()].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
+  if (type === 'certificat') {
+    const fe = p.sexe === 'F' ? 'e' : p.sexe === 'M' ? '' : '(e)';
+    const corps = v.objet === 'Suivi en cours'
+      ? `certifie que ${ident}${p.ddn ? ',' : ''} bénéficie d’un suivi médical régulier${v.depuis ? ' depuis ' + v.depuis.trim() : ''}.`
+      : v.objet === 'Constatations (texte libre)'
+        ? `certifie avoir examiné ${ident} le ${date} et avoir constaté :`
+        : `certifie que ${ident}${p.ddn ? ',' : ''} s’est présenté${fe} à ma consultation le ${(v.dateConsult || date).trim()}${v.horaire ? ', ' + v.horaire.trim() : ''}.`;
+    const remise = v.remise === 'Au représentant légal'
+      ? `Certificat établi à la demande ${v.representant ? 'de ' + v.representant.trim() + ', représentant légal de l’intéressé' + fe : 'du représentant légal de l’intéressé' + fe} et remis en main propre.`
+      : `Certificat établi à la demande de l’intéressé${fe} et remis en main propre.`;
+    return [
+      `Je soussigné(e), ${nom}, ${corps}`, '',
+      (v.contenu || '').trim(), '',
+      remise, '',
+      `Fait à ${ville}, le ${date}.`].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
+  if (type === 'ordoBioLibre') {
+    const examens = String(v.examens || '').split('\n').map(l => l.trim()).filter(Boolean);
+    const ald = p.ald && v.ald;
+    return [`${ville}, le ${date}`, '',
+      `${ident}${p.ddn ? ', ' + calculerAge(p.ddn) + ' ans' : ''}${p.sexe ? ' · ' + libelleSexe(p.sexe) : ''}`, '',
+      ald ? (v.ald === 'En rapport avec l’ALD'
+        ? 'PRESCRIPTIONS RELATIVES AU TRAITEMENT DE L’AFFECTION DE LONGUE DURÉE RECONNUE (AFFECTION EXONÉRANTE)'
+        : 'PRESCRIPTIONS SANS RAPPORT AVEC L’AFFECTION DE LONGUE DURÉE (MALADIES INTERCURRENTES)') + '\n' : '',
+      `Faire pratiquer ${(v.lieu || 'Au laboratoire').toLowerCase()} le bilan suivant${v.aJeun ? ', à jeun' : ''} :`,
+      ...(examens.length ? examens.map(l => '- ' + l) : ['- ……………………………']), '',
+      v.renseignements ? `Renseignements cliniques : ${v.renseignements.trim()}` : '',
+      'Merci de transmettre les résultats au prescripteur.'].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
   }
   if (type === 'cr') {
     return [`${ville}, le ${date}`, '', v.destinataire ? `À l’attention de ${v.destinataire}` : '', '',
@@ -314,30 +367,31 @@ let docValeurs = {};
 let docTexteModifie = false;
 const patientDoc = () => patients.find(p => p.id === docPatientId);
 
+// Raccourcis affichés en permanence ; tous les autres documents sont dans la liste déroulante.
+const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
+
 function htmlVueDocuments() {
   return `
-  <div class="carte">
-    <div class="bar" style="margin-top:0">
-      <label for="docPatient" style="margin:0">Patient</label>
-      <select id="docPatient" style="max-width:320px"></select>
-      <span class="sp" style="flex:1"></span>
-      <span class="sec" id="docSource"></span>
-    </div>
-    <div class="doc-types" id="docTypes">${TYPES_DOCUMENTS.map(g => `
-      <div><div class="sec">${g.groupe}</div><div class="choix-multiples">${g.types.map(([t, l]) => `<button type="button" data-type="${t}">${l}</button>`).join('')}</div></div>`).join('')}
-    </div>
+  <div class="carte doc-choix">
+    <select id="docPatient" class="selecteur-masque" aria-hidden="true" tabindex="-1"></select>
+    <label for="docTypeChoix">Document</label>
+    <select id="docTypeChoix">${TYPES_DOCUMENTS.map(g => `<optgroup label="${echapper(g.groupe)}">${g.types.map(([t, l]) => `<option value="${t}">${echapper(l)}</option>`).join('')}</optgroup>`).join('')}</select>
+    <div class="doc-rapides" id="docTypes">${DOCUMENTS_RAPIDES.map(([t, l]) => `<button type="button" data-type="${t}">${l}</button>`).join('')}</div>
   </div>
   <div class="obs-grille">
     <div class="carte"><div class="g" id="docChamps"></div><p class="sec" id="docAvertissement"></p></div>
     <div class="carte obs-sortie">
-      <div class="bar" style="margin-top:0"><h3 class="h3" style="margin:0" id="docTitre"></h3><span class="sp" style="flex:1"></span><span class="sec" id="docMsg"></span></div>
-      <textarea id="docTexte" spellcheck="true"></textarea>
-      <div class="act" style="flex-wrap:wrap;margin-top:8px">
-        <button type="button" id="docRegenerer">Régénérer</button>
-        <button type="button" id="docCopier">Copier</button>
-        <button type="button" id="docImprimer">Imprimer</button>
+      <div class="doc-sortie-entete">
+        <div><h3 class="h3" style="margin:0" id="docTitre"></h3><div class="sec" id="docSource"></div></div>
         <span class="sp"></span>
-        <button type="button" class="main" id="docEnregistrer">Enregistrer dans la fiche</button>
+        <button type="button" class="discret" id="docCopier" title="Copier le texte">Copier</button>
+        <button type="button" class="discret" id="docRegenerer" title="Annuler les retouches manuelles et reprendre le formulaire">Régénérer</button>
+      </div>
+      <textarea id="docTexte" spellcheck="true"></textarea>
+      <div class="act" style="margin-top:8px">
+        <span class="sec" id="docMsg"></span><span class="sp"></span>
+        <button type="button" id="docImprimer">Imprimer</button>
+        <button type="button" class="main" id="docEnregistrer">Enregistrer</button>
       </div>
       <div id="docHistorique" style="margin-top:12px"></div>
     </div>
@@ -348,6 +402,7 @@ function htmlChampDoc(c) {
   const v = docValeurs[c.id];
   if (c.type === 'zone') return `<div class="full"><label>${c.label}</label><textarea data-doc="${c.id}" rows="${c.lignes || 3}" style="min-height:0"${c.aide ? ` placeholder="${echapper(c.aide)}"` : ''}>${echapper(v || '')}</textarea></div>`;
   if (c.type === 'choix') return `<div class="full"><label>${c.label}</label><div class="choix-multiples">${c.options.map(o => `<button type="button" data-doc-choix="${c.id}" data-opt="${echapper(o)}" class="${v === o ? 'on' : ''}">${echapper(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'ajout') return `<div class="full"><select data-doc-ajout="${c.cible}" aria-label="${echapper(c.label)}"><option value="">+ ${echapper(c.label)}…</option>${c.options.map(o => `<option value="${echapper(o)}">${echapper(o)}</option>`).join('')}</select></div>`;
   if (c.type === 'case') return `<div class="full chk"><input type="checkbox" id="doc_${c.id}" data-doc="${c.id}" ${v ? 'checked' : ''}><label for="doc_${c.id}">${c.label}</label></div>`;
   return `<div class="full"><label>${c.label}</label><input data-doc="${c.id}" value="${echapper(v || '')}"${c.aide ? ` placeholder="${echapper(c.aide)}"` : ''}></div>`;
 }
@@ -355,17 +410,30 @@ function htmlChampDoc(c) {
 function initialiserDocuments() {
   $('vueDocuments').innerHTML = htmlVueDocuments();
   $('docPatient').onchange = () => { docPatientId = $('docPatient').value; nouveauDocument(); };
-  $('docTypes').onclick = e => {
-    const b = e.target.closest('button[data-type]');
-    if (!b) return;
-    if (b.dataset.type === 'ordoBio') {
+  const choisirType = type => {
+    if (type === 'ordoBio') {                      // ordonnance de surveillance : fenêtre dédiée de la fiche
+      $('docTypeChoix').value = docType;
       if (!docPatientId) return signaler(null, 'Choisissez d’abord un patient.');
       ouvrirFiche(docPatientId); setTimeout(() => $('btnOrdonnance').click(), 0);
       return;
     }
-    docType = b.dataset.type;
+    docType = type;
     nouveauDocument();
   };
+  $('docTypes').onclick = e => { const b = e.target.closest('button[data-type]'); if (b) choisirType(b.dataset.type); };
+  $('docTypeChoix').onchange = () => choisirType($('docTypeChoix').value);
+  $('docChamps').addEventListener('change', e => {
+    const s = e.target.closest('select[data-doc-ajout]');
+    if (!s || !s.value) return;
+    const id = s.dataset.docAjout, ajout = s.value;
+    const lignes = String(docValeurs[id] || '').split('\n').map(l => l.trim()).filter(Boolean);
+    if (!lignes.includes(ajout)) lignes.push(ajout);
+    docValeurs[id] = lignes.join('\n');
+    const zone = $('docChamps').querySelector(`[data-doc="${id}"]`);
+    if (zone) { zone.value = docValeurs[id]; if (/:$/.test(ajout)) { zone.focus(); zone.selectionStart = zone.selectionEnd = zone.value.length; } }
+    s.value = '';
+    majDocument();
+  });
   $('docChamps').addEventListener('input', e => {
     const id = e.target.dataset.doc;
     if (!id) return;
@@ -374,11 +442,24 @@ function initialiserDocuments() {
     if (docType === 'ordoTtt') afficherAvertissementOrdo();
   });
   $('docChamps').addEventListener('click', e => {
+    const ajout = e.target.closest('button[data-doc-ajout]');
+    if (ajout) {                                   // ajoute une ligne d'examen (texte libre)
+      const id = ajout.dataset.docAjout;
+      const lignes = String(docValeurs[id] || '').split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lignes.includes(ajout.dataset.opt)) lignes.push(ajout.dataset.opt);
+      docValeurs[id] = lignes.join('\n');
+      const zone = $('docChamps').querySelector(`[data-doc="${id}"]`);
+      if (zone) { zone.value = docValeurs[id]; if (/:$/.test(ajout.dataset.opt)) { zone.focus(); zone.selectionStart = zone.selectionEnd = zone.value.length; } }
+      majDocument();
+      return;
+    }
     const b = e.target.closest('button[data-doc-choix]');
     if (!b) return;
     const id = b.dataset.docChoix;
     docValeurs[id] = docValeurs[id] === b.dataset.opt ? '' : b.dataset.opt;
     $('docChamps').querySelectorAll(`[data-doc-choix="${id}"]`).forEach(x => x.classList.toggle('on', x.dataset.opt === docValeurs[id]));
+    // Champs conditionnels (certificat : date de consultation, représentant légal…) : réafficher.
+    if (CHAMPS_DOCUMENTS[docType] && CHAMPS_DOCUMENTS[docType].some(c => c.si && c.si.length >= 2)) afficherChampsDocument();
     majDocument();
   });
   $('docTexte').addEventListener('input', () => { docTexteModifie = true; });
@@ -429,6 +510,7 @@ function nouveauDocument() {
 
 function afficherChampsDocument() {
   document.querySelectorAll('#docTypes button').forEach(b => b.classList.toggle('on', b.dataset.type === docType));
+  if ($('docTypeChoix')) $('docTypeChoix').value = docType;
   $('docTitre').textContent = libelleDocument(docType);
   $('docChamps').innerHTML = champsDocument(docType).map(htmlChampDoc).join('');
   if (docType === 'ordoTtt') {
@@ -477,9 +559,10 @@ function afficherHistoriqueDocs() {
 }
 
 function imprimerDocumentCourant() {
-  const pr = praticien || {};
-  const entete = pr.nom && docType !== 'plan' ? `<div class="ordo-entete"><b>${echapper(nomMedecinComplet())}</b>${pr.specialite ? ' · ' + echapper(pr.specialite) : ''}
-    ${pr.etablissement ? '<br>' + echapper(pr.etablissement) : ''}${pr.adresse ? '<br>' + echapper(pr.adresse) : ''}${pr.telephone ? '<br>Tél. ' + echapper(pr.telephone) : ''}${pr.rpps ? '<br>RPPS ' + echapper(pr.rpps) : ''}</div>` : '';
-  imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
-    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt'].includes(docType) ? '<div class="ordo-signature">Signature</div>' : ''}</div>`);
+  const ordonnance = ['ordoTtt', 'ordoBioLibre'].includes(docType);
+  const entete = docType !== 'plan' ? enteteImpression({ avecRpps: ordonnance || estCertificat(docType) || docType === 'certificat' }) : '';
+  const titre = docType === 'ordoBioLibre' ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
+  imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}${titre}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
+    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
+    ['cr', 'relais', 'confrere'].includes(docType) ? 'courrier' : '');
 }

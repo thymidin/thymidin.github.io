@@ -79,8 +79,9 @@ function remplirSelectPatients(select, valeur, texteVide) {
 
 /** Imprime un document HTML seul (le reste de la page est masqué à l'impression).
  *  Réutilise la zone d'impression de l'ordonnance. */
-function imprimerDocument(html) {
-  $('zoneOrdonnance').innerHTML = html;
+function imprimerDocument(html, nature = '') {
+  // Marges, pied de page et police définis dans « Profil praticien » → « Mise en page » (miseenpage.js).
+  $('zoneOrdonnance').innerHTML = typeof envelopperImpression === 'function' ? envelopperImpression(html, nature) : html;
   document.body.classList.add('impression-ordonnance');
   const nettoyer = () => {
     document.body.classList.remove('impression-ordonnance');

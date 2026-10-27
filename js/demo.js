@@ -57,7 +57,7 @@ function genererPatientsDemo() {
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
       aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
-        { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), tro: j(-150), met: j(-100) } },
+        { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
         { g: 'somat', nom: 'Metformine', dose: '850 mg x 2/j', intro: j(-60), bil: {} },
       ],

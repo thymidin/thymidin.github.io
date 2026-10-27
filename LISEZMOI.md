@@ -8,7 +8,42 @@ Les données sont enregistrées dans le navigateur, sur cet appareil. Faites des
 régulières (bouton « Sauvegarder » en haut : fichier chiffré par mot de passe) et gardez-les en lieu sûr.
 
 
+## Mentions légales et conditions d'utilisation
+
+À la **première ouverture**, le portail affiche ses mentions légales et conditions d'utilisation : elles doivent être
+lues et acceptées (case à cocher) avant toute utilisation. Elles restent consultables et imprimables à tout moment
+(menu latéral « Mentions légales », ou aide « ? »). Points essentiels : outil personnel, gratuit et **non officiel**,
+ni fourni ni validé par un établissement ; pas un dossier patient ni un dispositif médical marqué CE ; fourni « en
+l'état », sans garantie ; chaque utilisateur reste responsable de sa pratique et des données qu'il saisit ; en
+établissement, respecter la politique de sécurité et les consignes du DPO ; tous droits réservés.
+
+L'acceptation est propre à chaque navigateur : elle n'est pas transmise par une sauvegarde. Pour modifier le texte,
+éditer `js/mentions.js` et **incrémenter `VERSION_CGU`** afin que l'acceptation soit redemandée.
+
+## Documents imprimés : en-tête, logo, pied de page, marges
+
+« Profil praticien » → **Mise en page des documents imprimés** : logo (PNG, JPEG ou SVG ; position et taille), en-tête
+automatique (tiré du profil) ou personnalisé (texte libre, première ligne en gras), pied de page répété en bas de chaque
+page (secrétariat, urgences…), mention adaptée au document (observations et courriers : « n’a pas valeur de certificat médical »), marges (étroites,
+normales, larges) et police, avec aperçu. S'applique aux courriers, certificats, ordonnances, observations et à la courbe
+de l'humeur. Les marges sont désormais produites par le document lui-même : elles sont respectées quel que soit le
+réglage « Marges » de la fenêtre d'impression du navigateur. Sur les ordonnances et certificats, le n° RPPS est ajouté
+s'il ne figure pas dans un en-tête personnalisé.
+
+**Certificat médical remis au patient** (Documents → Certificats) : présence en consultation (date, horaire), suivi en
+cours ou constatations libres ; formule finale « Certificat établi à la demande de l’intéressé(e) et remis en main
+propre », ou au représentant légal nommé. N’y mentionner que ce qui est nécessaire à la demande, sans diagnostic sauf
+accord exprès du patient.
+
+**Bilan biologique en texte libre** : Documents → « Bilan biologique » (examens saisis
+librement ou ajoutés depuis la liste « Ajouter un examen courant » : NFS, ionogramme, TSH, bilan hépatique…, à jeun, lieu de prélèvement, mention ALD).
+La fenêtre « Ordonnance de bilans » de surveillance garde aussi sa zone « Prescription libre ».
+
 ## Nouveautés de la version 3 (ergonomie)
+
+**Onglet Documents épuré** : une liste déroulante « Document » (tous les modèles, classés par catégorie) et cinq
+raccourcis (Ordonnance, Bilan biologique, Compte rendu, Relais, Certificat) ; « Copier » et « Régénérer » discrets au
+-dessus du texte ; « Imprimer » et « Enregistrer » en bas.
 
 **Démonstration** : « Plus » → « Charger les patients fictifs » (ou le bouton de l'écran d'accueil quand le portail est
 vide) ajoute 10 patients inventés (dossiers « DEMO-01 » à « DEMO-10 ») : bipolaire sous lithium et lamotrigine avec
@@ -129,6 +164,8 @@ hébergé imposerait un hébergement certifié HDS et les formalités RGPD.
 | `js/accueil.js` | Onglet « Aujourd'hui » | Non (seuils d'alerte en tête de `elementsAccueil`) |
 | `js/apparence.js` | Icônes, thème, notifications, aide, Ctrl+S | Non |
 | `js/demo.js` | Patients fictifs de démonstration | Non |
+| `js/miseenpage.js` | En-tête, logo, pied de page et marges des documents imprimés | Non (réglages dans le profil praticien) |
+| `js/mentions.js` | Mentions légales, conditions d'utilisation, acceptation | Pour changer le texte (incrémenter `VERSION_CGU`) |
 | `js/phrases.js` | Mes phrases types (exemples de départ en tête du fichier) | Pour changer les exemples |
 | `js/interface.js` | Affichage du tableau, fiche patient, onglets, boutons | Non |
 | `tests.html` | Tests des cotations et de la surveillance | Non |

@@ -49,7 +49,7 @@ async function sauvegardeChiffree() {
   if (prompt('Confirmez le mot de passe :') !== mdp) return alert('Les deux mots de passe ne correspondent pas. Sauvegarde annulée.');
 
   const contenu = { version: VERSION_FORMAT, date: new Date().toISOString(), donnees: {} };
-  clesPortail().filter(k => k !== CLE_DERNIERE_SAUVEGARDE).forEach(k => { contenu.donnees[k] = localStorage.getItem(k); });
+  clesPortail().filter(k => k !== CLE_DERNIERE_SAUVEGARDE && k !== CLE_STOCKAGE + '_cgu').forEach(k => { contenu.donnees[k] = localStorage.getItem(k); });
 
   const sel = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -82,8 +82,8 @@ function restaurerSauvegarde(fichier) {
       const fiches = JSON.parse(contenu.donnees[CLE_STOCKAGE] || '[]');
       if (contenu.version > VERSION_FORMAT && !confirm('Cette sauvegarde vient d’une version plus récente du portail. Restaurer quand même ?')) return;
       if (!confirm(`Restaurer ${fiches.length} fiche(s) et tous les réglages de cette sauvegarde ?\nLes données actuelles de ce navigateur seront REMPLACÉES.`)) return;
-      clesPortail().forEach(k => localStorage.removeItem(k));
-      Object.entries(contenu.donnees).forEach(([k, val]) => localStorage.setItem(k, val));
+      clesPortail().filter(k => k !== CLE_STOCKAGE + '_cgu').forEach(k => localStorage.removeItem(k));   // l'acceptation des conditions reste celle de ce navigateur
+      Object.entries(contenu.donnees).filter(([k]) => k !== CLE_STOCKAGE + '_cgu').forEach(([k, val]) => localStorage.setItem(k, val));
       noterSauvegarde();
       location.reload();
     } catch (erreur) {
