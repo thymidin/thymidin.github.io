@@ -63,7 +63,7 @@ const SEUIL_BIENTOT_JOURS = 14;
 const LONGUEUR_SYNTHESE_TABLEAU = 260;
 
 // Intitulé de la ligne regroupant les patients sans CMP dans la « Vue par CMP ».
-const LIBELLE_SANS_CMP = 'Sans CMP attribué';
+const LIBELLE_SANS_CMP = 'Sans destinataire attribué';
 
 // Adaptation des bilans au sexe : « femme en âge de procréer » = sexe féminin et âge
 // compris entre ces deux bornes (si l'âge est inconnu, la femme est considérée concernée).
@@ -104,7 +104,7 @@ const PRIORITES = {
 const STATUTS_RELAIS_PAR_DEFAUT = [
   'À faire',
   'Courrier / synthèse envoyée',
-  'RDV CMP fixé',
+  'RDV fixé avec le receveur',
   'Relais effectué',                         // ← avant-dernier : relais clos (affiché en vert)
   'Pas de relais (sortie de file active)',   // ← dernier : relais clos
 ];
@@ -114,6 +114,16 @@ const STATUTS_RELAIS_PAR_DEFAUT = [
 // Relais : à qui le patient est confié (champ « Relais vers » de la partie relais de la fiche).
 // Les libellés sont enregistrés dans les fiches : en cas de modification, les anciennes fiches
 // gardent l'ancien libellé (affiché tel quel).
+// Type de relais (champ « Relais vers » de la fiche) : CMP, exercice libéral ou autre structure.
+const TYPES_RELAIS = [
+  'CMP',
+  'Psychiatre libéral',
+  'Médecin traitant',
+  'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)',
+];
+// Types pour lesquels la précision « interne / sénior » n'a pas de sens.
+const RELAIS_SANS_NIVEAU = ['Psychiatre libéral', 'Médecin traitant'];
+
 const RELAIS_VERS = [
   'Interne',
   'Sénior',
@@ -690,6 +700,46 @@ const MEDICAMENTS_SUGGERES = [
   'Contraception progestative',
   'Salbutamol (Ventoline)',
 
+  // --- Traitements symptomatiques : digestifs ---
+  'Macrogol (Forlax)',
+  'Macrogol (Movicol)',
+  'Macrogol (Transipeg)',
+  'Lactulose (Duphalac)',
+  'Lactitol (Importal)',
+  'Bisacodyl (Dulcolax)',
+  'Huile de paraffine (Lansoÿl)',
+  'Sterculia (Normacol)',
+  'Lavement (Microlax)',
+  'Suppositoire à la glycérine',
+  'Diosmectite (Smecta)',
+  'Lopéramide (Imodium)',
+  'Phloroglucinol (Spasfon)',
+  'Trimébutine (Débridat)',
+  'Métoclopramide (Primpéran)',
+  'Dompéridone (Motilium)',
+  'Ondansétron (Zophren)',
+  'Ésoméprazole (Inexium)',
+  'Pantoprazole (Inipomp)',
+  'Alginate (Gaviscon)',
+  'Siméticone',
+
+  // --- Traitements symptomatiques : autres ---
+  'Scopolamine patch (Scopoderm) – hypersialorrhée',
+  'Atropine collyre 1 % en sublingual – hypersialorrhée (hors AMM)',
+  'Desmopressine (Minirin) – énurésie',
+  'Heptaminol (Hept-a-myl) – hypotension orthostatique',
+  'Midodrine (Gutron) – hypotension orthostatique',
+  'Néfopam (Acupan)',
+  'Alimémazine (Théralène)',
+  'Prométhazine (Phénergan)',
+  'Doxylamine (Donormyl)',
+  'Thiamine (Bévitine)',
+  'Pyridoxine (vitamine B6)',
+  'Acide folique (Spéciafoldine)',
+  'Cholécalciférol (Uvédose, Zymad)',
+  'Nicotine transdermique (Nicopatch)',
+  'Nicotine orale (Nicorette)',
+
   // --- Correcteurs et autres ---
   'Propranolol (Avlocardyl)',
   'Trihexyphénidyle (Artane)',
@@ -948,7 +998,8 @@ const COLONNES_CSV = [
   ['arelayer',   'À relayer'],
   ['priorite',   'Priorité'],
   ['statut',     'Statut relais'],
-  ['cmp',        'CMP'],
+  ['typeRelais', 'Type de relais'],
+  ['cmp',        'Destinataire du relais'],
   ['tel',        'Contact'],
   ['trt',        'Traitements'],
   ['retard',     'Bilans en retard'],

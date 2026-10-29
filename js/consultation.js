@@ -78,6 +78,8 @@ function actionConsultation(action, d) {
     case 'humeur': changerOnglet('humeur', id); break;
     case 'document': changerOnglet('documents', id); afficherVueDocuments(id, d.type); break;
     case 'mdph': changerOnglet('mdph', id); break;
+    case 'rdv': ouvrirRdv(null, { patientId: id, date: aujourdhuiIso() }); break;
+    case 'rdvOuvrir': ouvrirRdv(lireRdv().find(r => r.id === d.id)); break;
     case 'ordonnance': ouvrirFiche(id); setTimeout(() => $('btnOrdonnance').click(), 0); break;
     case 'note': {
       const p = patientCons();
@@ -141,7 +143,8 @@ function afficherConsultation() {
     dernierScoreQids && dernierScoreQids.total >= 16 ? `<span class="drapeau orange">QIDS ${dernierScoreQids.total}/27 (${formaterDate(dernierScoreQids.date)})</span>` : '',
     retard.length ? `<span class="drapeau orange">${retard.length} bilan(s) en retard</span>` : '',
     p.ald ? '<span class="drapeau gris">ALD</span>' : '',
-    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais : ${echapper(p.statut || '')}${p.relaisVers ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
+    equipeDuPatient(p) ? `<span class="drapeau ide" title="${echapper(resumeEquipeIde(equipeDuPatient(p)))}">IDE : ${echapper(equipeDuPatient(p).nom)}</span>` : '',
+    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais${p.typeRelais && p.typeRelais !== 'CMP' ? ' ' + echapper(p.typeRelais.replace(/ \(.*\)$/, '').toLowerCase()) : ''} : ${echapper(p.statut || '')}${p.relaisVers && !RELAIS_SANS_NIVEAU.includes(p.typeRelais) ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
   ].filter(Boolean).join('');
 
   const carteTraitements = `
@@ -206,6 +209,8 @@ function afficherConsultation() {
       <div>
         <div class="cons-nom">${echapper(nomPatient(p))}</div>
         <div class="sec">${[libelleSexe(p.sexe), age !== '' ? age + ' ans' : '', p.dossier ? 'Dossier ' + echapper(p.dossier) : '', p.rythme ? 'Suivi ' + echapper(p.rythme.toLowerCase()) : '', p.prochain ? 'Consultation : ' + formaterDate(p.prochain) : ''].filter(Boolean).join(' · ')}</div>
+        ${equipeDuPatient(p) ? `<div class="sec cons-ide">Soins infirmiers : <b>${echapper(equipeDuPatient(p).nom)}</b>${equipeDuPatient(p).telephone ? ' · ☎ ' + echapper(equipeDuPatient(p).telephone) : ''}${equipeDuPatient(p).email ? ' · ✉ ' + echapper(equipeDuPatient(p).email) : ''}</div>` : ''}
+        ${ligneRdvConsultation(p)}
         <div class="cons-diag">${echapper(p.dp || 'Diagnostic principal non renseigné')}${p.ds ? `<span class="sec"> · ${echapper(p.ds)}</span>` : ''}</div>
         ${drapeaux ? `<div class="drapeaux">${drapeaux}</div>` : ''}
       </div>
@@ -234,7 +239,7 @@ function definirPatientCourant(id, rafraichir) {
 
 /** Après l'affichage d'un module qui impose un patient : le patient choisi par défaut devient le patient courant. */
 function synchroniserPatientCourant() {
-  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil') { majBandeauPatient(); return; }
+  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil' || onglet === 'agenda') { majBandeauPatient(); return; }
   const select = { consultation: 'consPatient', humeur: 'humPatient', documents: 'docPatient', mdph: 'mdphPatient' }[onglet];
   if (select && $(select) && $(select).value) consPatientId = $(select).value;
   majBandeauPatient();
@@ -255,6 +260,7 @@ function majBandeauPatient() {
         <b>${echapper(nomPatient(p))}</b><span class="sec">${[libelleSexe(p.sexe), age !== '' ? age + ' ans' : '', p.dossier].filter(Boolean).map(echapper).join(' · ')}</span>
       </button>
       ${p.allergies ? `<button type="button" class="pastille-bandeau allergie" data-bandeau="allergies" title="Allergies / contre-indications : ${echapper(p.allergies)} (cliquer pour modifier)">⚠ ${echapper(p.allergies)}</button>` : ''}
+      ${equipeDuPatient(p) ? `<button type="button" class="pastille-bandeau ide" data-bandeau="ide" title="Soins infirmiers : ${echapper(resumeEquipeIde(equipeDuPatient(p)))} (cliquer pour l’annuaire)">IDE</button>` : ''}
       ${p.vigilance ? `<span class="pastille-bandeau vigilance" title="${echapper(p.vigtxt || '')}">Vigilance</span>` : ''}
       ${risque ? '<span class="pastille-bandeau vigilance">Idées suicidaires</span>' : ''}
       <button type="button" class="outil" data-bandeau="fiche" title="Modifier la fiche"><span data-icone="crayon"></span></button>
@@ -276,6 +282,7 @@ document.addEventListener('click', e => {
     setTimeout(() => { const c = $('allergies'); if (c) { c.focus(); c.select(); } }, 50);
   }
   if (action === 'fermer') definirPatientCourant('', true);
+  if (action === 'ide' && typeof ouvrirEquipesIde === 'function') ouvrirEquipesIde(false);
 });
 
 
@@ -297,7 +304,20 @@ function carteRappels(p) {
         <div class="choix-multiples">${[['7', '+1 sem.'], ['30', '+1 mois'], ['91', '+3 mois'], ['182', '+6 mois'], ['365', '+1 an']].map(([j, l]) => `<button type="button" data-action="rappel-delai" data-jours="${j}">${l}</button>`).join('')}</div>
         <button type="button" class="main" data-action="rappel-ajouter">Ajouter le rappel</button>
       </div>
-      <datalist id="listeRappels">${['Renouveler l’ALD', 'Renouveler le dossier MDPH', 'Certificat mensuel de soins sans consentement', 'Réévaluer le traitement', 'Contrôler la lithémie', 'Bilan métabolique', 'ECG de contrôle', 'Coter une QIDS', 'Prévoir le relais CMP', 'Réévaluer le programme de soins']
+      <datalist id="listeRappels">${['Renouveler l’ALD', 'Renouveler le dossier MDPH', 'Certificat mensuel de soins sans consentement', 'Réévaluer le traitement', 'Contrôler la lithémie', 'Bilan métabolique', 'ECG de contrôle', 'Coter une QIDS', 'Prévoir le relais', 'Réévaluer le programme de soins']
         .map(t => `<option value="${t}">`).join('')}</datalist>
     </div>`;
+}
+
+/** Ligne « prochain rendez-vous » de l'écran Consultation (agenda). */
+function ligneRdvConsultation(p) {
+  if (typeof prochainRdv !== 'function') return '';
+  const r = prochainRdv(p.id);
+  const il6mois = versIso(ajouterJours(aujourdhui(), -183));
+  const absences = rdvDuPatient(p.id).filter(x => x.statut === 'Non venu' && x.date >= il6mois).length;
+  const quand = r ? dateLocale(r.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  return `<div class="sec cons-rdv">${r
+    ? `Prochain rendez-vous : <button type="button" class="lien" data-action="rdvOuvrir" data-id="${r.id}">${quand} à ${r.debut}</button> · ${echapper(r.type)}`
+    : 'Aucun rendez-vous à venir'}${absences ? ` · <b class="texte-retard">${absences} non venu(s) sur 6 mois</b>` : ''}
+    · <button type="button" class="lien" data-action="rdv">+ Planifier</button></div>`;
 }

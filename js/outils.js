@@ -136,8 +136,14 @@ function texteTraitements(patient, separateur = ' ; ') {
 
 /** Étiquette « Relais vers interne / sénior » (partie relais de la fiche). */
 function etiquetteRelaisVers(p) {
-  if (!p || !p.relaisVers) return '';
+  if (!p || !p.relaisVers || RELAIS_SANS_NIVEAU.includes(p.typeRelais)) return '';
   const v = p.relaisVers.toLowerCase();
   const classe = v.includes('sénior') || v.includes('senior') ? 'senior' : v.includes('interne') ? 'interne' : '';
   return `<div><span class="etiquette-relais ${classe}">Vers ${echapper(v)}</span></div>`;
+}
+
+/** « Libéral · Dr X » : type de relais (s'il n'est pas « CMP ») suivi du destinataire. */
+function libelleDestinataire(p) {
+  const type = p.typeRelais && p.typeRelais !== 'CMP' ? p.typeRelais.replace(/ \(.*\)$/, '') : '';
+  return [type, p.cmp].filter(Boolean).join(' · ');
 }

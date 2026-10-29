@@ -838,3 +838,89 @@ details.mep > summary { cursor: pointer; font-weight: 650; }
 button.discret { border: 0; background: transparent; color: var(--mute); font-size: 13px; padding: 4px 8px; }
 button.discret:hover { color: var(--pri); background: var(--bg); }
 @media (max-width: 960px) { .doc-rapides { margin-left: 0; } .doc-choix #docTypeChoix { min-width: 0; flex: 1; } }
+
+/* ---------- Équipes infirmières ---------- */
+.ide-choix { display: flex; gap: 6px; }
+.ide-choix select { flex: 1; min-width: 0; }
+#fenetreEquipesIde { width: min(760px, 96vw); }
+.ide-carte { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 13.5px; }
+.ide-carte-texte > div { margin-top: 2px; }
+.ide-carte-actions { display: flex; gap: 6px; flex: none; }
+.ide-form { margin: 10px 0; }
+.cons-ide { margin-top: 2px; }
+
+/* Pastille IDE (équipe infirmière rattachée) */
+.tag.tag-ide, .pastille-bandeau.ide, .drapeau.ide { background: #e3f2f7; color: #1d5f78; border: 1px solid #b7dbe7; }
+.pastille-bandeau.ide { cursor: pointer; font-family: inherit; }
+:root[data-theme="dark"] .tag.tag-ide, :root[data-theme="dark"] .pastille-bandeau.ide, :root[data-theme="dark"] .drapeau.ide { background: #16323d; color: #9fd3e6; border-color: #2a5566; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag.tag-ide, :root:not([data-theme="light"]) .pastille-bandeau.ide, :root:not([data-theme="light"]) .drapeau.ide { background: #16323d; color: #9fd3e6; border-color: #2a5566; }
+}
+
+/* =====================================================================
+   FICHE PATIENT EN ONGLETS
+   ===================================================================== */
+.fiche-onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 4px 0 14px; overflow-x: auto; }
+.fiche-onglets button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; padding: 8px 14px; font-weight: 600; color: var(--mute); white-space: nowrap; }
+.fiche-onglets button.on { color: var(--pri); border-bottom-color: var(--pri); background: transparent; }
+.fiche-onglets button:hover { color: var(--ink); }
+.fiche-pastille { color: var(--p2); font-size: 11px; vertical-align: super; }
+.fiche-suivant { display: flex; justify-content: flex-end; margin-top: 8px; }
+.fiche-panneau[hidden], .fiche-suivant [hidden] { display: none !important; }
+
+/* =====================================================================
+   AGENDA
+   ===================================================================== */
+.agenda { padding: 14px 16px; }
+.agenda-barre { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.agenda-nav { display: flex; gap: 6px; align-items: center; }
+.agenda-nav > button { min-width: 38px; }
+.agenda-titre { font-size: 18px; margin: 0 0 0 8px; }
+.agenda-outils { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.agenda-stats { margin: 8px 0 6px; }
+.agenda-corps { max-height: calc(100vh - 260px); min-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.agenda-aide { margin: 8px 0 0; font-size: 12px; }
+.ag-grille { display: grid; grid-template-columns: 54px repeat(var(--nbjours), minmax(110px, 1fr)); min-width: calc(54px + var(--nbjours) * 110px); }
+.ag-col-tete { position: sticky; top: 0; z-index: 3; background: var(--surf); border-bottom: 1px solid var(--line); height: 38px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 13px; cursor: pointer; }
+.ag-col-tete.auj { color: var(--pri); }
+.ag-col-tete.auj b { background: var(--pri); color: var(--priink); border-radius: 99px; padding: 1px 7px; }
+.ag-heures { border-right: 1px solid var(--line); background: var(--surf); position: sticky; left: 0; z-index: 4; }
+.ag-heures .ag-col-tete { cursor: default; }
+.ag-heures-corps { position: relative; }
+.ag-heure { position: absolute; right: 6px; transform: translateY(-50%); font-size: 11px; color: var(--mute); }
+.ag-heure:first-child { transform: none; }
+.ag-col { border-right: 1px solid var(--line); min-width: 0; }
+.ag-col-corps { position: relative; cursor: copy;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--heure) - 1px), var(--line) calc(var(--heure) - 1px), var(--line) var(--heure)),
+                    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--pas) - 1px), color-mix(in srgb, var(--line) 45%, transparent) calc(var(--pas) - 1px), color-mix(in srgb, var(--line) 45%, transparent) var(--pas)); }
+.ag-col.auj .ag-col-corps { background-color: color-mix(in srgb, var(--pri) 5%, transparent); }
+.ag-col-corps.ferme { background-color: color-mix(in srgb, var(--mute) 8%, transparent); }
+.ag-maintenant { position: absolute; left: 0; right: 0; border-top: 2px solid #d4380d; z-index: 2; pointer-events: none; }
+.ag-maintenant::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: #d4380d; }
+.ag-rdv { position: absolute; z-index: 1; overflow: hidden; text-align: left; font-size: 11.5px; line-height: 1.25; padding: 2px 5px; border-radius: 5px;
+  border: 1px solid rgba(0,0,0,.08); border-left: 4px solid var(--c, var(--pri)); background: var(--cf, #e6f2f3); color: #18282b; cursor: pointer; }
+.ag-rdv span { display: block; color: #4b5b5e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ag-rdv:hover { filter: brightness(.97); z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.t-suivi { --c: #0f6e7a; --cf: #e2f1f2; }
+.t-premiere { --c: #7a3fb0; --cf: #efe6f8; }
+.t-posthospit { --c: #b45309; --cf: #fbeedd; }
+.t-teleconsult { --c: #2563a8; --cf: #e3edf9; }
+.t-soin { --c: #1d7a43; --cf: #e2f3e8; }
+.t-famille { --c: #a1376e; --cf: #f8e5ef; }
+.t-domicile { --c: #8a6d0f; --cf: #f6f0d9; }
+.t-reunion { --c: #5b6470; --cf: #eceef1; }
+.t-indispo { --c: #9aa1a9; --cf: repeating-linear-gradient(45deg, #f1f2f4, #f1f2f4 6px, #e6e8eb 6px, #e6e8eb 12px); }
+.ag-rdv.st-Honore, .ag-mini.st-Honore { opacity: .7; }
+.ag-rdv.st-Nonvenu, .ag-mini.st-Nonvenu { border-color: #c0392b; box-shadow: inset 0 0 0 1px #c0392b; }
+.ag-rdv.st-Annulepatient, .ag-rdv.st-Annulepraticien, .ag-mini.st-Annulepatient, .ag-mini.st-Annulepraticien { opacity: .45; text-decoration: line-through; }
+.ag-mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ag-mois-tete { padding: 6px; font-size: 12px; color: var(--mute); text-align: center; border-bottom: 1px solid var(--line); background: var(--surf); position: sticky; top: 0; }
+.ag-mois-case { min-height: 104px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ag-mois-case.hors { background: color-mix(in srgb, var(--mute) 7%, transparent); color: var(--mute); }
+.ag-mois-case.auj .ag-mois-num { background: var(--pri); color: var(--priink); border-radius: 99px; padding: 0 7px; align-self: flex-start; }
+.ag-mois-num { font-size: 12px; font-weight: 650; }
+.ag-mini { border: 0; border-left: 3px solid var(--c); background: var(--cf); color: #18282b; font-size: 11px; text-align: left; padding: 1px 4px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button.lien { border: 0; background: none; padding: 0; color: var(--pri); font: inherit; text-decoration: underline; cursor: pointer; }
+.cons-rdv { margin-top: 2px; }
+#fenetreRdv { width: min(640px, 96vw); }
+@media (max-width: 700px) { .agenda-titre { font-size: 15px; width: 100%; margin: 4px 0 0; } .agenda-nav { flex-wrap: wrap; } }

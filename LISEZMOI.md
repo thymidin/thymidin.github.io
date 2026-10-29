@@ -39,7 +39,45 @@ accord exprès du patient.
 librement ou ajoutés depuis la liste « Ajouter un examen courant » : NFS, ionogramme, TSH, bilan hépatique…, à jeun, lieu de prélèvement, mention ALD).
 La fenêtre « Ordonnance de bilans » de surveillance garde aussi sa zone « Prescription libre ».
 
+## Version 4 : vers un dossier patient
+
+**Agenda** (onglet « Agenda », Alt+2) : vues jour, semaine et mois ; un clic sur un créneau crée un rendez-vous, un
+glisser-déposer le déplace, un clic l'ouvre. Rendez-vous : patient (recherche par nom ou dossier) ou intitulé libre
+(réunion, indisponibilité), type (suivi, première consultation, post-hospitalisation, téléconsultation, injection,
+entretien familial, visite à domicile, réunion), lieu, durée, statut (prévu, confirmé, honoré, non venu, annulé),
+notes, répétition (chaque semaine, toutes les 2, 3 ou 4 semaines, chaque mois). Chevauchements signalés. Bouton « Note
+de suivi » : marque le rendez-vous honoré et ouvre la note. Impression de la liste du jour ; export .ics de la période
+affichée (initiales seulement) ; horaires, durée par défaut et jours affichés réglables. La date « prochaine
+consultation » des fiches est tenue à jour par l'agenda. « Aujourd'hui » affiche les rendez-vous du jour avec leur
+heure et une carte « Non venus, à recontacter » ; l'écran Consultation affiche le prochain rendez-vous, le nombre de
+non-venues sur 6 mois et un bouton « + Planifier ».
+
+**Fiche patient en trois onglets** : 1 · Identité (identité, coordonnées, ALD, allergies, médecin traitant, équipe
+infirmière, personne de confiance, mesure de protection et mandataire), 2 · Synthèse et traitements (diagnostics,
+synthèse, vigilance, suivi, traitements, échelles, notes), 3 · Relais. Un nouveau patient s'ouvre sur l'identité
+(bouton « Suivant »), un patient existant sur la synthèse ; un point signale un relais en cours.
+
 ## Nouveautés de la version 3 (ergonomie)
+
+**Équipes infirmières** (menu latéral « Équipes infirmières », ou bouton « Gérer… » dans la fiche) : annuaire des
+cabinets infirmiers libéraux, IDE du CMP, HAD, SSIAD… (téléphones, messagerie sécurisée, adresse, référent(e)s,
+notes). Chaque patient peut être rattaché à une équipe : elle s'affiche sur l'écran Consultation et dans le courrier de
+relais. Une pastille **IDE** signale les patients rattachés à une équipe : bandeau du patient (un clic ouvre l'annuaire),
+drapeaux de l'écran Consultation, file active et onglet Relais (le survol affiche l'équipe et ses coordonnées).
+
+**Ordonnance de soins infirmiers** (Documents → « Soins infirmiers ») : administration et surveillance de la prise du
+traitement oral (avec la mention d'impossibilité de s'auto-administrer le traitement), pilulier, injection d'antipsychotique
+d'action prolongée (reprise de la fiche), surveillance clinique, constantes, prélèvement à domicile, BSI pour un patient
+dépendant ; lieu, durée, dimanches et jours fériés, renouvellement, mention ALD. Rappels NGAP indicatifs affichés.
+
+**Relais hors CMP** : dans la fiche, « Type de relais » (CMP, psychiatre libéral, médecin traitant, autre structure :
+CSAPA, CMPP, hôpital de jour, centre expert…) et « Destinataire du relais ». La précision « Interne ou sénior » n'est
+proposée que pour un relais vers une équipe. L'onglet s'appelle désormais « Relais » ; filtre par type de relais, vue
+par destinataire, colonne dans l'export CSV. Le statut par défaut « RDV CMP fixé » devient « RDV fixé avec le
+receveur » (fiches existantes reprises automatiquement si vous n'aviez pas personnalisé les statuts).
+
+**Traitements symptomatiques** : suggestions ajoutées (laxatifs et traitements digestifs, hypersialorrhée, énurésie,
+hypotension orthostatique, vitamines, substituts nicotiniques…).
 
 **Onglet Documents épuré** : une liste déroulante « Document » (tous les modèles, classés par catégorie) et cinq
 raccourcis (Ordonnance, Bilan biologique, Compte rendu, Relais, Certificat) ; « Copier » et « Régénérer » discrets au
@@ -134,7 +172,7 @@ psychiatriques »), à côté des traitements de fond et symptomatiques. Ils son
 Consultation, notes, courriers, MDPH) et ne figurent pas sur la courbe de l’humeur. Les règles de surveillance s’y
 appliquent aussi (ex. dompéridone et QT).
 
-**Raccourcis** : Ctrl+K (ou Cmd+K) rechercher un patient ; Alt+1 à Alt+9 changer d’onglet (Aujourd’hui, Consultation, Observation, Échelles, Humeur, Documents, MDPH, File active, Relais).
+**Raccourcis** : Ctrl+K (ou Cmd+K) rechercher un patient ; Alt+1 à Alt+9 changer d’onglet (Aujourd’hui, Agenda, Consultation, Observation, Échelles, Humeur, Documents, MDPH, File active ; Relais par le menu).
 
 **Tests** : ouvrir `tests.html` vérifie les clés de cotation, les intitulés et les échéances de surveillance
 (27 tests). À ouvrir après toute modification des échelles ou des règles.
@@ -166,6 +204,9 @@ hébergé imposerait un hébergement certifié HDS et les formalités RGPD.
 | `js/demo.js` | Patients fictifs de démonstration | Non |
 | `js/miseenpage.js` | En-tête, logo, pied de page et marges des documents imprimés | Non (réglages dans le profil praticien) |
 | `js/mentions.js` | Mentions légales, conditions d'utilisation, acceptation | Pour changer le texte (incrémenter `VERSION_CGU`) |
+| `js/agenda.js` | Agenda des consultations | Non (types de rendez-vous en tête du fichier) |
+| `js/fiche.js` | Fiche patient en onglets | Non |
+| `js/ide.js` | Annuaire des équipes infirmières | Non |
 | `js/phrases.js` | Mes phrases types (exemples de départ en tête du fichier) | Pour changer les exemples |
 | `js/interface.js` | Affichage du tableau, fiche patient, onglets, boutons | Non |
 | `tests.html` | Tests des cotations et de la surveillance | Non |

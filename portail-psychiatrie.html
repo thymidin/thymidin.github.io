@@ -846,6 +846,92 @@ button.discret { border: 0; background: transparent; color: var(--mute); font-si
 button.discret:hover { color: var(--pri); background: var(--bg); }
 @media (max-width: 960px) { .doc-rapides { margin-left: 0; } .doc-choix #docTypeChoix { min-width: 0; flex: 1; } }
 
+/* ---------- Équipes infirmières ---------- */
+.ide-choix { display: flex; gap: 6px; }
+.ide-choix select { flex: 1; min-width: 0; }
+#fenetreEquipesIde { width: min(760px, 96vw); }
+.ide-carte { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 13.5px; }
+.ide-carte-texte > div { margin-top: 2px; }
+.ide-carte-actions { display: flex; gap: 6px; flex: none; }
+.ide-form { margin: 10px 0; }
+.cons-ide { margin-top: 2px; }
+
+/* Pastille IDE (équipe infirmière rattachée) */
+.tag.tag-ide, .pastille-bandeau.ide, .drapeau.ide { background: #e3f2f7; color: #1d5f78; border: 1px solid #b7dbe7; }
+.pastille-bandeau.ide { cursor: pointer; font-family: inherit; }
+:root[data-theme="dark"] .tag.tag-ide, :root[data-theme="dark"] .pastille-bandeau.ide, :root[data-theme="dark"] .drapeau.ide { background: #16323d; color: #9fd3e6; border-color: #2a5566; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag.tag-ide, :root:not([data-theme="light"]) .pastille-bandeau.ide, :root:not([data-theme="light"]) .drapeau.ide { background: #16323d; color: #9fd3e6; border-color: #2a5566; }
+}
+
+/* =====================================================================
+   FICHE PATIENT EN ONGLETS
+   ===================================================================== */
+.fiche-onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 4px 0 14px; overflow-x: auto; }
+.fiche-onglets button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; padding: 8px 14px; font-weight: 600; color: var(--mute); white-space: nowrap; }
+.fiche-onglets button.on { color: var(--pri); border-bottom-color: var(--pri); background: transparent; }
+.fiche-onglets button:hover { color: var(--ink); }
+.fiche-pastille { color: var(--p2); font-size: 11px; vertical-align: super; }
+.fiche-suivant { display: flex; justify-content: flex-end; margin-top: 8px; }
+.fiche-panneau[hidden], .fiche-suivant [hidden] { display: none !important; }
+
+/* =====================================================================
+   AGENDA
+   ===================================================================== */
+.agenda { padding: 14px 16px; }
+.agenda-barre { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.agenda-nav { display: flex; gap: 6px; align-items: center; }
+.agenda-nav > button { min-width: 38px; }
+.agenda-titre { font-size: 18px; margin: 0 0 0 8px; }
+.agenda-outils { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.agenda-stats { margin: 8px 0 6px; }
+.agenda-corps { max-height: calc(100vh - 260px); min-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.agenda-aide { margin: 8px 0 0; font-size: 12px; }
+.ag-grille { display: grid; grid-template-columns: 54px repeat(var(--nbjours), minmax(110px, 1fr)); min-width: calc(54px + var(--nbjours) * 110px); }
+.ag-col-tete { position: sticky; top: 0; z-index: 3; background: var(--surf); border-bottom: 1px solid var(--line); height: 38px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 13px; cursor: pointer; }
+.ag-col-tete.auj { color: var(--pri); }
+.ag-col-tete.auj b { background: var(--pri); color: var(--priink); border-radius: 99px; padding: 1px 7px; }
+.ag-heures { border-right: 1px solid var(--line); background: var(--surf); position: sticky; left: 0; z-index: 4; }
+.ag-heures .ag-col-tete { cursor: default; }
+.ag-heures-corps { position: relative; }
+.ag-heure { position: absolute; right: 6px; transform: translateY(-50%); font-size: 11px; color: var(--mute); }
+.ag-heure:first-child { transform: none; }
+.ag-col { border-right: 1px solid var(--line); min-width: 0; }
+.ag-col-corps { position: relative; cursor: copy;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--heure) - 1px), var(--line) calc(var(--heure) - 1px), var(--line) var(--heure)),
+                    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--pas) - 1px), color-mix(in srgb, var(--line) 45%, transparent) calc(var(--pas) - 1px), color-mix(in srgb, var(--line) 45%, transparent) var(--pas)); }
+.ag-col.auj .ag-col-corps { background-color: color-mix(in srgb, var(--pri) 5%, transparent); }
+.ag-col-corps.ferme { background-color: color-mix(in srgb, var(--mute) 8%, transparent); }
+.ag-maintenant { position: absolute; left: 0; right: 0; border-top: 2px solid #d4380d; z-index: 2; pointer-events: none; }
+.ag-maintenant::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: #d4380d; }
+.ag-rdv { position: absolute; z-index: 1; overflow: hidden; text-align: left; font-size: 11.5px; line-height: 1.25; padding: 2px 5px; border-radius: 5px;
+  border: 1px solid rgba(0,0,0,.08); border-left: 4px solid var(--c, var(--pri)); background: var(--cf, #e6f2f3); color: #18282b; cursor: pointer; }
+.ag-rdv span { display: block; color: #4b5b5e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ag-rdv:hover { filter: brightness(.97); z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.t-suivi { --c: #0f6e7a; --cf: #e2f1f2; }
+.t-premiere { --c: #7a3fb0; --cf: #efe6f8; }
+.t-posthospit { --c: #b45309; --cf: #fbeedd; }
+.t-teleconsult { --c: #2563a8; --cf: #e3edf9; }
+.t-soin { --c: #1d7a43; --cf: #e2f3e8; }
+.t-famille { --c: #a1376e; --cf: #f8e5ef; }
+.t-domicile { --c: #8a6d0f; --cf: #f6f0d9; }
+.t-reunion { --c: #5b6470; --cf: #eceef1; }
+.t-indispo { --c: #9aa1a9; --cf: repeating-linear-gradient(45deg, #f1f2f4, #f1f2f4 6px, #e6e8eb 6px, #e6e8eb 12px); }
+.ag-rdv.st-Honore, .ag-mini.st-Honore { opacity: .7; }
+.ag-rdv.st-Nonvenu, .ag-mini.st-Nonvenu { border-color: #c0392b; box-shadow: inset 0 0 0 1px #c0392b; }
+.ag-rdv.st-Annulepatient, .ag-rdv.st-Annulepraticien, .ag-mini.st-Annulepatient, .ag-mini.st-Annulepraticien { opacity: .45; text-decoration: line-through; }
+.ag-mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ag-mois-tete { padding: 6px; font-size: 12px; color: var(--mute); text-align: center; border-bottom: 1px solid var(--line); background: var(--surf); position: sticky; top: 0; }
+.ag-mois-case { min-height: 104px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ag-mois-case.hors { background: color-mix(in srgb, var(--mute) 7%, transparent); color: var(--mute); }
+.ag-mois-case.auj .ag-mois-num { background: var(--pri); color: var(--priink); border-radius: 99px; padding: 0 7px; align-self: flex-start; }
+.ag-mois-num { font-size: 12px; font-weight: 650; }
+.ag-mini { border: 0; border-left: 3px solid var(--c); background: var(--cf); color: #18282b; font-size: 11px; text-align: left; padding: 1px 4px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button.lien { border: 0; background: none; padding: 0; color: var(--pri); font: inherit; text-decoration: underline; cursor: pointer; }
+.cons-rdv { margin-top: 2px; }
+#fenetreRdv { width: min(640px, 96vw); }
+@media (max-width: 700px) { .agenda-titre { font-size: 15px; width: 100%; margin: 4px 0 0; } .agenda-nav { flex-wrap: wrap; } }
+
 </style>
 </head>
 
@@ -890,6 +976,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
     <nav class="tabs" role="tablist" aria-label="Navigation">
       <button type="button" class="main nouveau-patient" id="btnNouveauGlobal"><span data-icone="plus"></span><span class="libelle-onglet">Nouveau patient</span></button>
       <button role="tab" id="ongletAccueil" aria-selected="false"><span data-icone="accueil"></span><span class="libelle-onglet">Aujourd’hui</span><span class="n" id="nbAccueil"></span></button>
+      <button role="tab" id="ongletAgenda" aria-selected="false"><span data-icone="calendrier"></span><span class="libelle-onglet">Agenda</span></button>
       <button role="tab" id="ongletConsultation" aria-selected="false"><span data-icone="consultation"></span><span class="libelle-onglet">Consultation</span></button>
       <button role="tab" id="ongletObservation" aria-selected="false"><span data-icone="note"></span><span class="libelle-onglet">Observation</span></button>
       <button role="tab" id="ongletEchelles" aria-selected="false"><span data-icone="echelle"></span><span class="libelle-onglet">Échelles</span></button>
@@ -898,7 +985,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
       <button role="tab" id="ongletMdph" aria-selected="false"><span data-icone="mdph"></span><span class="libelle-onglet">MDPH</span></button>
       <span class="tabs-separateur" aria-hidden="true"></span>
       <button role="tab" id="ongletActive" aria-selected="true"><span data-icone="liste"></span><span class="libelle-onglet">File active</span><span class="n" id="nbActive"></span></button>
-      <button role="tab" id="ongletRelais" aria-selected="false"><span data-icone="relais"></span><span class="libelle-onglet">Relais CMP</span><span class="n" id="nbRelais"></span></button>
+      <button role="tab" id="ongletRelais" aria-selected="false"><span data-icone="relais"></span><span class="libelle-onglet">Relais</span><span class="n" id="nbRelais"></span></button>
       <span class="tabs-separateur" aria-hidden="true"></span>
       <button type="button" class="tabs-reglage" id="btnPraticien"><span data-icone="praticien"></span><span class="libelle-onglet">Profil praticien</span></button>
       <button type="button" class="tabs-reglage" id="btnParametres"><span data-icone="reglages"></span><span class="libelle-onglet">Paramètres</span></button>
@@ -915,6 +1002,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
       <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
       <select id="filtrePriorite" class="relais-seul" aria-label="Filtrer par priorité"></select>
       <select id="filtreStatut" class="relais-seul" aria-label="Filtrer par statut du relais"></select>
+      <select id="filtreTypeRelais" class="relais-seul" aria-label="Filtrer par type de relais"></select>
       <select id="filtreRelaisVers" class="relais-seul" aria-label="Filtrer par relais vers interne ou sénior"></select>
       <select id="filtreBilans" aria-label="Filtrer les bilans">
         <option value="">Bilans : tous</option>
@@ -982,6 +1070,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
 
     <!-- ===== Aujourd'hui : tableau de bord (js/accueil.js) ===== -->
     <section id="vueAccueil" hidden></section>
+    <section id="vueAgenda" hidden></section>
 
     <!-- ===== Consultation (js/consultation.js) ===== -->
     <section id="vueConsultation" hidden></section>
@@ -1003,8 +1092,14 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
   <dialog id="fenetrePatient">
     <form id="formPatient" method="dialog">
       <h2 id="titreFiche">Patient</h2>
+      <div class="fiche-onglets" role="tablist">
+        <button type="button" role="tab" data-fiche-onglet="identite" class="on">1 · Identité</button>
+        <button type="button" role="tab" data-fiche-onglet="synthese">2 · Synthèse et traitements</button>
+        <button type="button" role="tab" data-fiche-onglet="relais">3 · Relais <span class="fiche-pastille" id="fichePastilleRelais" hidden>●</span></button>
+      </div>
 
-      <div class="g">
+      <!-- Onglet 1 : identité, coordonnées, entourage, intervenants -->
+      <div class="g fiche-panneau" data-fiche-panneau="identite">
         <div><label for="nom">Nom</label><input id="nom" required></div>
         <div><label for="prenom">Prénom</label><input id="prenom"></div>
         <div><label for="ddn">Date de naissance</label><input id="ddn" type="date"></div>
@@ -1017,6 +1112,8 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
           </select>
         </div>
         <div><label for="dossier">N° de dossier / identifiant</label><input id="dossier"></div>
+        <div><label for="telPatient">Téléphone du patient</label><input id="telPatient" inputmode="tel"></div>
+        <div class="full"><label for="adresse">Adresse</label><input id="adresse"></div>
         <div class="chk">
           <input type="checkbox" id="ald">
           <label for="ald"><b>Patient en ALD</b> (affection de longue durée)</label>
@@ -1030,6 +1127,18 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
           <label for="allergies">Allergies, contre-indications, intolérances médicamenteuses</label>
           <input id="allergies" placeholder="ex. allergie à la pénicilline ; syndrome malin des neuroleptiques en 2019 ; QT long">
         </div>
+        <div><label for="tel">Médecin traitant / contact</label><input id="tel"></div>
+        <div><label for="ideEquipe">Équipe infirmière</label>
+          <div class="ide-choix"><select id="ideEquipe"></select><button type="button" id="ideGerer" title="Ajouter ou modifier les équipes infirmières">Gérer…</button></div></div>
+
+        <div><label for="personneConfiance">Personne de confiance / à prévenir</label><input id="personneConfiance" placeholder="ex. Mme X (sœur) · 06 …"></div>
+        <div><label for="protection">Mesure de protection</label>
+          <select id="protection"><option value="">Aucune connue</option><option>Sauvegarde de justice</option><option>Curatelle simple</option><option>Curatelle renforcée</option><option>Tutelle</option><option>Habilitation familiale</option><option>Mandat de protection future</option><option>Demande en cours</option></select></div>
+        <div class="full" id="zoneProtecteur"><label for="protecteur">Mandataire, tuteur ou curateur (coordonnées)</label><input id="protecteur"></div>
+      </div>
+
+      <!-- Onglet 2 : synthèse clinique, suivi, traitements -->
+      <div class="g fiche-panneau" data-fiche-panneau="synthese" hidden>
         <div class="full">
           <label for="dp">Diagnostic principal</label>
           <input id="dp" list="listeCim" placeholder="ex. Trouble bipolaire de type I, épisode actuel en rémission">
@@ -1045,7 +1154,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
 
         <div class="full">
           <label for="synthese">Synthèse clinique</label>
-          <textarea id="synthese" placeholder="Histoire en 3-5 lignes, évolution, points d’attention, ce que le CMP doit savoir"></textarea>
+          <textarea id="synthese" placeholder="Histoire en 3-5 lignes, évolution, points d’attention, ce que le receveur du relais doit savoir"></textarea>
         </div>
 
         <div class="full chk">
@@ -1055,9 +1164,7 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
         <div class="full"><label for="vigtxt">Précision sur la vigilance</label><input id="vigtxt"></div>
 
         <div><label for="rythme">Rythme de suivi actuel</label><select id="rythme"></select></div>
-        <div><label for="prochain">Dernière / prochaine consultation</label><input id="prochain" type="date"></div>
-        <div><label for="tel">Médecin traitant / contact</label><input id="tel"></div>
-
+        <div><label for="prochain">Prochaine consultation (tenue à jour par l’agenda)</label><input id="prochain" type="date"></div>
         <!-- Lignes de traitement + surveillance (générées par js/interface.js) -->
         <div class="full">
           <label>Traitements et surveillance biologique</label>
@@ -1074,21 +1181,27 @@ button.discret:hover { color: var(--pri); background: var(--bg); }
           <textarea id="notes" style="min-height:60px"></textarea>
         </div>
 
+      </div>
+
+      <!-- Onglet 3 : relais (CMP, libéral, autre structure) -->
+      <div class="g fiche-panneau" data-fiche-panneau="relais" hidden>
         <!-- Relais vers un CMP : facultatif, les champs ne s'affichent que si la case est cochée -->
         <div class="full chk">
           <input type="checkbox" id="aRelayer">
-          <label for="aRelayer"><b>Patient à relayer vers un CMP</b> (départ, réorientation…)</label>
+          <label for="aRelayer"><b>Patient à relayer</b> (CMP, psychiatre libéral, autre structure : départ, réorientation…)</label>
         </div>
         <div class="full" id="sectionRelais">
           <div class="g">
             <div><label for="priorite">Priorité de relais</label><select id="priorite"></select></div>
             <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
-            <div><label for="cmp">CMP / référent receveur</label><input id="cmp" list="listeCmp"></div>
-            <div><label for="relaisVers">Relais vers</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
+            <div><label for="typeRelais">Type de relais</label><select id="typeRelais"></select></div>
+            <div><label for="cmp" id="libelleCmp">Destinataire du relais</label><input id="cmp" list="listeCmp"></div>
+            <div id="zoneRelaisVers"><label for="relaisVers">Interne ou sénior</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
           </div>
         </div>
       </div>
 
+      <div class="fiche-suivant"><button type="button" id="ficheSuivant">Suivant ›</button></div>
       <div class="act">
         <button type="button" class="danger" id="btnSupprimer">Supprimer</button>
         <details class="menu-plus menu-fiche">
@@ -1327,7 +1440,7 @@ const SEUIL_BIENTOT_JOURS = 14;
 const LONGUEUR_SYNTHESE_TABLEAU = 260;
 
 // Intitulé de la ligne regroupant les patients sans CMP dans la « Vue par CMP ».
-const LIBELLE_SANS_CMP = 'Sans CMP attribué';
+const LIBELLE_SANS_CMP = 'Sans destinataire attribué';
 
 // Adaptation des bilans au sexe : « femme en âge de procréer » = sexe féminin et âge
 // compris entre ces deux bornes (si l'âge est inconnu, la femme est considérée concernée).
@@ -1368,7 +1481,7 @@ const PRIORITES = {
 const STATUTS_RELAIS_PAR_DEFAUT = [
   'À faire',
   'Courrier / synthèse envoyée',
-  'RDV CMP fixé',
+  'RDV fixé avec le receveur',
   'Relais effectué',                         // ← avant-dernier : relais clos (affiché en vert)
   'Pas de relais (sortie de file active)',   // ← dernier : relais clos
 ];
@@ -1378,6 +1491,16 @@ const STATUTS_RELAIS_PAR_DEFAUT = [
 // Relais : à qui le patient est confié (champ « Relais vers » de la partie relais de la fiche).
 // Les libellés sont enregistrés dans les fiches : en cas de modification, les anciennes fiches
 // gardent l'ancien libellé (affiché tel quel).
+// Type de relais (champ « Relais vers » de la fiche) : CMP, exercice libéral ou autre structure.
+const TYPES_RELAIS = [
+  'CMP',
+  'Psychiatre libéral',
+  'Médecin traitant',
+  'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)',
+];
+// Types pour lesquels la précision « interne / sénior » n'a pas de sens.
+const RELAIS_SANS_NIVEAU = ['Psychiatre libéral', 'Médecin traitant'];
+
 const RELAIS_VERS = [
   'Interne',
   'Sénior',
@@ -1954,6 +2077,46 @@ const MEDICAMENTS_SUGGERES = [
   'Contraception progestative',
   'Salbutamol (Ventoline)',
 
+  // --- Traitements symptomatiques : digestifs ---
+  'Macrogol (Forlax)',
+  'Macrogol (Movicol)',
+  'Macrogol (Transipeg)',
+  'Lactulose (Duphalac)',
+  'Lactitol (Importal)',
+  'Bisacodyl (Dulcolax)',
+  'Huile de paraffine (Lansoÿl)',
+  'Sterculia (Normacol)',
+  'Lavement (Microlax)',
+  'Suppositoire à la glycérine',
+  'Diosmectite (Smecta)',
+  'Lopéramide (Imodium)',
+  'Phloroglucinol (Spasfon)',
+  'Trimébutine (Débridat)',
+  'Métoclopramide (Primpéran)',
+  'Dompéridone (Motilium)',
+  'Ondansétron (Zophren)',
+  'Ésoméprazole (Inexium)',
+  'Pantoprazole (Inipomp)',
+  'Alginate (Gaviscon)',
+  'Siméticone',
+
+  // --- Traitements symptomatiques : autres ---
+  'Scopolamine patch (Scopoderm) – hypersialorrhée',
+  'Atropine collyre 1 % en sublingual – hypersialorrhée (hors AMM)',
+  'Desmopressine (Minirin) – énurésie',
+  'Heptaminol (Hept-a-myl) – hypotension orthostatique',
+  'Midodrine (Gutron) – hypotension orthostatique',
+  'Néfopam (Acupan)',
+  'Alimémazine (Théralène)',
+  'Prométhazine (Phénergan)',
+  'Doxylamine (Donormyl)',
+  'Thiamine (Bévitine)',
+  'Pyridoxine (vitamine B6)',
+  'Acide folique (Spéciafoldine)',
+  'Cholécalciférol (Uvédose, Zymad)',
+  'Nicotine transdermique (Nicopatch)',
+  'Nicotine orale (Nicorette)',
+
   // --- Correcteurs et autres ---
   'Propranolol (Avlocardyl)',
   'Trihexyphénidyle (Artane)',
@@ -2212,7 +2375,8 @@ const COLONNES_CSV = [
   ['arelayer',   'À relayer'],
   ['priorite',   'Priorité'],
   ['statut',     'Statut relais'],
-  ['cmp',        'CMP'],
+  ['typeRelais', 'Type de relais'],
+  ['cmp',        'Destinataire du relais'],
   ['tel',        'Contact'],
   ['trt',        'Traitements'],
   ['retard',     'Bilans en retard'],
@@ -2379,10 +2543,16 @@ function texteTraitements(patient, separateur = ' ; ') {
 
 /** Étiquette « Relais vers interne / sénior » (partie relais de la fiche). */
 function etiquetteRelaisVers(p) {
-  if (!p || !p.relaisVers) return '';
+  if (!p || !p.relaisVers || RELAIS_SANS_NIVEAU.includes(p.typeRelais)) return '';
   const v = p.relaisVers.toLowerCase();
   const classe = v.includes('sénior') || v.includes('senior') ? 'senior' : v.includes('interne') ? 'interne' : '';
   return `<div><span class="etiquette-relais ${classe}">Vers ${echapper(v)}</span></div>`;
+}
+
+/** « Libéral · Dr X » : type de relais (s'il n'est pas « CMP ») suivi du destinataire. */
+function libelleDestinataire(p) {
+  const type = p.typeRelais && p.typeRelais !== 'CMP' ? p.typeRelais.replace(/ \(.*\)$/, '') : '';
+  return [type, p.cmp].filter(Boolean).join(' · ');
 }
 
 </script>
@@ -2424,6 +2594,10 @@ function chargerDonnees() {
       if (reglages.r && reglages.r.length) rythmes = reglages.r;
     }
   } catch (erreur) { /* réglages absents ou illisibles : valeurs par défaut */ }
+  // Statut renommé (« RDV CMP fixé » → « RDV fixé avec le receveur ») : reprise des fiches existantes.
+  if (statuts.includes('RDV fixé avec le receveur') && !statuts.includes('RDV CMP fixé')) {
+    patients.forEach(p => { if (p.statut === 'RDV CMP fixé') p.statut = 'RDV fixé avec le receveur'; });
+  }
 }
 
 /** Reprise des fiches créées avec une version antérieure : le champ libre « traitement »
@@ -2519,7 +2693,7 @@ function valeurCsv(patient, propriete) {
   if (propriete === 'sexe') return libelleSexe(patient.sexe);
   if (propriete === 'arelayer') return estARelayer(patient) ? 'Oui' : 'Non';
   // Priorité, statut et CMP n'ont de sens que pour les patients à relayer.
-  if (['priorite', 'statut', 'cmp'].includes(propriete) && !estARelayer(patient)) return '';
+  if (['priorite', 'statut', 'cmp', 'typeRelais', 'relaisVers'].includes(propriete) && !estARelayer(patient)) return '';
   if (propriete === 'priorite') return libellePriorite(patient);
 
   if (propriete === 'trt') {
@@ -6513,10 +6687,11 @@ const TYPES_DOCUMENTS = [
     ['ordoTtt', 'Ordonnance de traitement (renouvellement)'],
     ['ordoBio', 'Ordonnance de bilans biologiques (surveillance)'],
     ['ordoBioLibre', 'Bilan biologique en texte libre'],
+    ['ordoIde', 'Ordonnance de soins infirmiers (IDE, BSI)'],
   ] },
   { groupe: 'Courriers', types: [
     ['cr', 'Compte rendu au médecin traitant'],
-    ['relais', 'Courrier de relais (CMP, confrère)'],
+    ['relais', 'Courrier de relais (CMP, confrère, structure)'],
     ['confrere', 'Réponse à un confrère'],
   ] },
   { groupe: 'Certificats', types: [
@@ -6550,6 +6725,25 @@ const CHAMPS_DOCUMENTS = {
     { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
     { id: 'mentions', type: 'zone', lignes: 2, label: 'Mentions complémentaires (facultatif)', aide: 'ex. délivrance fractionnée par 7 jours ; non substituable (motif) ; prise du soir…' },
   ],
+  ordoIde: [
+    { id: 'equipe', type: 'texte', label: 'Équipe à mentionner (facultatif : le patient garde le libre choix de son infirmier(e))', aide: 'ex. Cabinet infirmier des Oliviers' },
+    { id: 'lieu', type: 'choix', label: 'Lieu', options: ['À domicile', 'Au cabinet infirmier'], defaut: () => 'À domicile' },
+    { id: 'administration', type: 'case', label: 'Administration et surveillance de la prise du traitement oral, avec fiche de surveillance', defaut: () => true },
+    { id: 'passages', type: 'choix', label: 'Passages par jour', options: ['1', '2', '3'], defaut: () => '1', si: (p, v) => !!(v || docValeurs).administration },
+    { id: 'pilulier', type: 'case', label: 'Préparation hebdomadaire du pilulier' },
+    { id: 'injection', type: 'case', label: 'Injection intramusculaire d’antipsychotique d’action prolongée', defaut: p => !!lignesInjectables(p) },
+    { id: 'injDetail', type: 'texte', label: 'Spécialité, dose et rythme de l’injection', defaut: p => lignesInjectables(p), aide: 'ex. Palipéridone (Xeplion) 100 mg, toutes les 4 semaines', si: (p, v) => !!(v || docValeurs).injection },
+    { id: 'surveillance', type: 'case', label: 'Surveillance clinique (observance, tolérance, signes de rechute, risque suicidaire) avec transmissions au prescripteur', defaut: () => true },
+    { id: 'constantes', type: 'case', label: 'Surveillance des constantes (pression artérielle, pouls, poids)' },
+    { id: 'prelevement', type: 'case', label: 'Prélèvement sanguin à domicile' },
+    { id: 'prelevementDetail', type: 'texte', label: 'Examens à prélever', aide: 'ex. NFS (carnet clozapine), lithémie 12 h après la prise', si: (p, v) => !!(v || docValeurs).prelevement },
+    { id: 'bsi', type: 'case', label: 'Réalisation d’un bilan de soins infirmiers (BSI) et soins infirmiers en découlant (patient dépendant)' },
+    { id: 'autres', type: 'zone', lignes: 2, label: 'Autres soins (facultatif)', aide: 'ex. accompagnement à la reprise d’autonomie dans la prise du traitement' },
+    { id: 'duree', type: 'choix', label: 'Durée', options: ['15 jours', '1 mois', '3 mois'], defaut: () => '1 mois' },
+    { id: 'joursFeries', type: 'case', label: 'Dimanches et jours fériés inclus', defaut: () => true },
+    { id: 'renouvellement', type: 'choix', label: 'Renouvellement', options: ['Non renouvelable', 'À renouveler 1 fois', 'À renouveler 2 fois'], defaut: () => 'Non renouvelable' },
+    { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
+  ],
   certificat: [
     { id: 'objet', type: 'choix', label: 'Objet', options: ['Présence en consultation', 'Suivi en cours', 'Constatations (texte libre)'], defaut: () => 'Présence en consultation' },
     { id: 'dateConsult', type: 'texte', label: 'Date de la consultation', defaut: () => formaterDate(aujourdhuiIso()), si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
@@ -6576,13 +6770,14 @@ const CHAMPS_DOCUMENTS = {
     { id: 'conduite', type: 'zone', lignes: 3, label: 'Conduite à tenir', defaut: (p, n) => conduiteNote(n) },
   ],
   relais: [
-    { id: 'destinataire', type: 'texte', label: 'Destinataire (CMP, confrère)', defaut: p => p.cmp || '' },
+    { id: 'destinataire', type: 'texte', label: 'Destinataire (CMP, confrère, structure)', defaut: p => p.cmp || '' },
     { id: 'motifRelais', type: 'texte', label: 'Motif du relais', aide: 'ex. fin de mon exercice dans le service ; déménagement ; réorientation…' },
     { id: 'histoire', type: 'zone', lignes: 5, label: 'Synthèse clinique', defaut: p => p.synthese || '' },
     { id: 'diagnostic', type: 'texte', label: 'Diagnostics', defaut: p => [p.dp, p.ds].filter(Boolean).join(' ; ') },
     { id: 'traitement', type: 'zone', lignes: 3, label: 'Traitement actuel', defaut: p => traitementsEnCours(p) },
     { id: 'surveillance', type: 'zone', lignes: 2, label: 'Surveillance biologique à prévoir', defaut: p => bilansAPrevoir(p) },
     { id: 'vigilance', type: 'zone', lignes: 2, label: 'Points de vigilance', defaut: p => (p.vigilance ? (p.vigtxt || 'Point de vigilance signalé') : '') },
+    { id: 'ide', type: 'texte', label: 'Soins infirmiers en cours', defaut: p => resumeEquipeIde(equipeDuPatient(p)) },
     { id: 'suivi', type: 'texte', label: 'Rythme de suivi actuel', defaut: p => p.rythme || '' },
   ],
   confrere: [
@@ -6683,6 +6878,12 @@ function conduiteNote(n) {
 function facteursProtectionNote(n) {
   return n && n.etat && Array.isArray(n.etat.facteursProtection) ? n.etat.facteursProtection.join(', ') : '';
 }
+/** Antipsychotiques d'action prolongée de la fiche (pour l'ordonnance de soins infirmiers). */
+function lignesInjectables(p) {
+  const motif = /lai|injectable|d[ée]canoa|palmitate|consta|xeplion|trevicta|byannli|maintena|zypadhera|mod[ée]cate|piportil|action prolong/i;
+  return (p.trt || []).filter(t => !t.fin && t.g !== 'somat' && motif.test(t.nom || ''))
+    .map(t => [t.nom, t.dose].filter(Boolean).join(' ')).join(' ; ');
+}
 function traitementsEnCours(p) {
   return texteTraitements(p, '\n');
 }
@@ -6727,6 +6928,30 @@ function redigerDocument(type, p, v) {
       `Traitement pour ${v.duree || '1 mois'}. ${v.renouvellement || 'Non renouvelable'}.`,
       (v.mentions || '').trim()].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
   }
+  if (type === 'ordoIde') {
+    const ald = p.ald && v.ald;
+    const qui = 'un(e) infirmier(e) diplômé(e) d’État' + (v.equipe && v.equipe.trim() ? `, équipe : ${v.equipe.trim()}` : '');
+    const soins = [
+      v.administration ? `Administration et surveillance de la prise du traitement par voie orale, ${v.passages || '1'} passage${(v.passages || '1') === '1' ? '' : 's'} par jour, avec établissement d’une fiche de surveillance. Du fait de ses troubles psychiatriques, ${p.sexe === 'F' ? 'la patiente' : p.sexe === 'M' ? 'le patient' : 'le/la patient(e)'} n’est pas en mesure de s’auto-administrer son traitement.` : '',
+      v.pilulier ? 'Préparation hebdomadaire du pilulier.' : '',
+      v.injection ? `Injection intramusculaire${v.injDetail ? ' : ' + v.injDetail.trim() : ' d’antipsychotique d’action prolongée (spécialité, dose, rythme : ……………………)'}.` : '',
+      v.surveillance ? 'Surveillance de l’état clinique : observance, tolérance du traitement, signes de rechute, risque suicidaire ; transmission au médecin prescripteur de tout élément inquiétant.' : '',
+      v.constantes ? 'Surveillance des constantes : pression artérielle, pouls, poids.' : '',
+      v.prelevement ? `Prélèvement sanguin à domicile${v.prelevementDetail ? ' : ' + v.prelevementDetail.trim() : ''}.` : '',
+      v.bsi ? 'Réalisation d’un bilan de soins infirmiers (BSI) et soins infirmiers en découlant, pour un patient dépendant.' : '',
+      ...String(v.autres || '').split('\n').map(l => l.trim()).filter(Boolean),
+    ].filter(Boolean);
+    const traitement = texteTraitements(p, ' ; ');
+    return [`${ville}, le ${date}`, '',
+      `${ident}${p.ddn ? ', ' + calculerAge(p.ddn) + ' ans' : ''}`, '',
+      ald ? (v.ald === 'En rapport avec l’ALD'
+        ? 'PRESCRIPTIONS RELATIVES AU TRAITEMENT DE L’AFFECTION DE LONGUE DURÉE RECONNUE (AFFECTION EXONÉRANTE)'
+        : 'PRESCRIPTIONS SANS RAPPORT AVEC L’AFFECTION DE LONGUE DURÉE (MALADIES INTERCURRENTES)') + '\n' : '',
+      `Faire pratiquer par ${qui}, ${(v.lieu || 'À domicile').toLowerCase()}, pendant ${v.duree || '1 mois'}${v.joursFeries ? ', dimanches et jours fériés inclus' : ''} :`,
+      ...(soins.length ? soins.map(l => '- ' + l) : ['- ……………………………']), '',
+      traitement ? `Traitement en cours : ${traitement}.` : '',
+      `${v.renouvellement || 'Non renouvelable'}.`].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
   if (type === 'certificat') {
     const fe = p.sexe === 'F' ? 'e' : p.sexe === 'M' ? '' : '(e)';
     const corps = v.objet === 'Suivi en cours'
@@ -6769,7 +6994,7 @@ function redigerDocument(type, p, v) {
       'Cher confrère, chère consœur,', '',
       `Je vous adresse ${ident}, que je suis${v.suivi ? ` (suivi ${v.suivi.toLowerCase()})` : ''}, pour la poursuite de sa prise en charge${v.motifRelais ? ', ' + v.motifRelais.replace(/\.$/, '') : ''}.`, '',
       ligneSi('Diagnostics', v.diagnostic), ligneSi('Synthèse clinique', v.histoire), ligneSi('Traitement actuel', v.traitement),
-      ligneSi('Surveillance biologique à prévoir', v.surveillance), ligneSi('Points de vigilance', v.vigilance),
+      ligneSi('Surveillance biologique à prévoir', v.surveillance), ligneSi('Points de vigilance', v.vigilance), ligneSi('Soins infirmiers en cours', v.ide),
       'Je vous remercie de bien vouloir assurer la suite de la prise en charge et reste à votre disposition.', '', 'Bien confraternellement,', '', nom]
       .join('\n').replace(/\n{3,}/g, '\n\n');
   }
@@ -6862,7 +7087,7 @@ let docTexteModifie = false;
 const patientDoc = () => patients.find(p => p.id === docPatientId);
 
 // Raccourcis affichés en permanence ; tous les autres documents sont dans la liste déroulante.
-const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
+const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['ordoIde', 'Soins infirmiers'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
 
 function htmlVueDocuments() {
   return `
@@ -6932,6 +7157,8 @@ function initialiserDocuments() {
     const id = e.target.dataset.doc;
     if (!id) return;
     docValeurs[id] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    // Case qui fait apparaître des précisions (ordonnance de soins infirmiers) : réafficher les champs.
+    if (e.target.type === 'checkbox' && (CHAMPS_DOCUMENTS[docType] || []).some(c => c.si && c.si.length >= 2)) afficherChampsDocument();
     majDocument();
     if (docType === 'ordoTtt') afficherAvertissementOrdo();
   });
@@ -6992,7 +7219,8 @@ function nouveauDocument() {
   docTexteModifie = false;
   if (p) {
     const n = derniereNote(p);
-    champsDocument(docType).forEach(c => { if (c.defaut) docValeurs[c.id] = c.defaut(p, n); });
+    // Deux passages : les valeurs par défaut font apparaître des champs conditionnels qui ont eux-mêmes une valeur par défaut.
+    for (let i = 0; i < 2; i++) champsDocument(docType).forEach(c => { if (c.defaut && docValeurs[c.id] === undefined) docValeurs[c.id] = c.defaut(p, n); });
     // Plan de sécurité déjà établi : on le reprend.
     if (docType === 'plan' && p.planSecurite) Object.assign(docValeurs, p.planSecurite);
     const source = derniereNote(p);
@@ -7016,6 +7244,7 @@ function afficherChampsDocument() {
   }
   $('docAvertissement').textContent = estCertificat(docType)
     ? 'Modèle construit d’après le code de la santé publique : vérifiez-le avec les modèles de votre établissement. Le certificat doit décrire vos constatations personnelles (pas de diagnostic), être daté, signé et lisible.'
+    : docType === 'ordoIde' ? 'Rappels indicatifs (la NGAP en vigueur fait foi) : l’administration et la surveillance de la prise orale supposent que l’ordonnance mentionne l’impossibilité pour le patient de s’auto-administrer son traitement (mention ajoutée) ; un accord préalable de l’Assurance maladie peut être requis au-delà du premier mois ; la préparation du pilulier seule n’est pas un acte de la nomenclature ; le BSI concerne les patients dépendants, et le médecin dispose de quelques jours pour donner son avis sur le plan de soins transmis par l’infirmier(e).'
     : docType === 'plan' ? 'À remplir avec le patient, dans ses mots. Le plan imprimé lui est remis ; il est aussi gardé dans sa fiche.' : '';
   afficherHistoriqueDocs();
 }
@@ -7053,13 +7282,172 @@ function afficherHistoriqueDocs() {
 }
 
 function imprimerDocumentCourant() {
-  const ordonnance = ['ordoTtt', 'ordoBioLibre'].includes(docType);
+  const ordonnance = ['ordoTtt', 'ordoBioLibre', 'ordoIde'].includes(docType);
   const entete = docType !== 'plan' ? enteteImpression({ avecRpps: ordonnance || estCertificat(docType) || docType === 'certificat' }) : '';
-  const titre = docType === 'ordoBioLibre' ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
+  const titre = ['ordoBioLibre', 'ordoIde'].includes(docType) ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
   imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}${titre}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
-    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
+    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'ordoIde', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
     ['cr', 'relais', 'confrere'].includes(docType) ? 'courrier' : '');
 }
+
+</script>
+  <script>
+/* =====================================================================
+   IDE.JS — annuaire des équipes infirmières (cabinets libéraux, IDE du
+   CMP, HAD, SSIAD…) et rattachement d'un patient à une équipe
+   ---------------------------------------------------------------------
+   Données : localStorage CLE_STOCKAGE + '_equipesIde' (incluses dans la
+   sauvegarde chiffrée). Le patient garde l'identifiant de son équipe
+   dans patient.ideEquipe. L'ordonnance de soins infirmiers est dans
+   documents.js (type « ordoIde »).
+   ===================================================================== */
+
+const CLE_EQUIPES_IDE = CLE_STOCKAGE + '_equipesIde';
+const TYPES_EQUIPE_IDE = ['Cabinet infirmier libéral', 'IDE du CMP / secteur', 'Hospitalisation à domicile (HAD)', 'SSIAD', 'Autre'];
+
+function lireEquipesIde() {
+  try { const l = JSON.parse(localStorage.getItem(CLE_EQUIPES_IDE) || '[]'); return Array.isArray(l) ? l : []; }
+  catch (erreur) { return []; }
+}
+function ecrireEquipesIde(liste) {
+  try { localStorage.setItem(CLE_EQUIPES_IDE, JSON.stringify(liste)); } catch (erreur) { alert('Enregistrement impossible dans ce navigateur.'); }
+  remplirSelectEquipesIde();
+}
+const equipeIde = id => lireEquipesIde().find(e => e.id === id) || null;
+const equipeDuPatient = p => (p && p.ideEquipe ? equipeIde(p.ideEquipe) : null);
+
+/** « Cabinet Les Oliviers · 04 … » : résumé d'une équipe pour l'affichage. */
+function resumeEquipeIde(e, avecContacts = true) {
+  if (!e) return '';
+  return [e.nom, avecContacts ? e.telephone : '', avecContacts ? e.email : ''].filter(Boolean).join(' · ');
+}
+
+/** Liste déroulante de la fiche patient. */
+function remplirSelectEquipesIde() {
+  const s = $('ideEquipe');
+  if (!s) return;
+  const valeur = s.value;
+  const liste = lireEquipesIde().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  remplirSelect(s, liste.map(e => [e.id, e.nom + (e.type ? ' (' + e.type.replace(/ \(.*\)$/, '') + ')' : '')]), 'Aucune');
+  s.value = liste.some(e => e.id === valeur) ? valeur : '';
+}
+
+/* ---------- Fenêtre « Équipes infirmières » ---------- */
+let equipeEnEdition = null;
+
+function creerFenetreEquipesIde() {
+  const d = document.createElement('dialog');
+  d.id = 'fenetreEquipesIde';
+  d.innerHTML = `
+    <div style="padding:18px 22px">
+      <h2 style="margin:0 0 4px;font-size:19px">Équipes infirmières</h2>
+      <p class="sec" style="margin:0 0 12px">Cabinets libéraux, IDE du CMP, HAD, SSIAD… Rattachez ensuite chaque patient à son équipe dans sa fiche.
+      Préférez une messagerie sécurisée de santé (MSSanté) pour transmettre des informations sur un patient.</p>
+      <div id="ideListe"></div>
+      <form id="ideForm" class="carte ide-form" hidden>
+        <h3 class="h3" id="ideFormTitre">Nouvelle équipe</h3>
+        <div class="g">
+          <div class="full"><label for="ide_nom">Nom de l’équipe ou du cabinet *</label><input id="ide_nom" required placeholder="ex. Cabinet infirmier des Oliviers"></div>
+          <div><label for="ide_type">Type</label><select id="ide_type">${TYPES_EQUIPE_IDE.map(t => `<option>${t}</option>`).join('')}</select></div>
+          <div><label for="ide_secteur">Secteur, communes couvertes</label><input id="ide_secteur" placeholder="ex. Marseille 4e, 5e, 12e"></div>
+          <div><label for="ide_telephone">Téléphone</label><input id="ide_telephone" inputmode="tel"></div>
+          <div><label for="ide_telephone2">Autre numéro (portable, astreinte)</label><input id="ide_telephone2" inputmode="tel"></div>
+          <div class="full"><label for="ide_email">Messagerie sécurisée (MSSanté) ou courriel</label><input id="ide_email" placeholder="ex. cabinet.oliviers@infirmier.mssante.fr"></div>
+          <div class="full"><label for="ide_adresse">Adresse</label><input id="ide_adresse"></div>
+          <div class="full"><label for="ide_contacts">Infirmier(e)s, référent(e)</label><input id="ide_contacts" placeholder="ex. Mme DUPONT (référente), M. MARTIN"></div>
+          <div class="full"><label for="ide_notes">Notes (horaires, soins réalisés, injections, week-ends…)</label><textarea id="ide_notes" rows="2" style="min-height:0"></textarea></div>
+        </div>
+        <div class="act"><button type="button" id="ideAnnuler">Annuler</button><span class="sp"></span><button type="submit" class="main">Enregistrer l’équipe</button></div>
+      </form>
+      <div class="act"><button type="button" id="ideAjouter">+ Ajouter une équipe</button><span class="sp"></span>
+        <button type="button" class="main" onclick="this.closest('dialog').close()">Fermer</button></div>
+    </div>`;
+  document.body.appendChild(d);
+  $('ideAjouter').onclick = () => editerEquipeIde(null);
+  $('ideAnnuler').onclick = () => { $('ideForm').hidden = true; };
+  $('ideForm').onsubmit = e => { e.preventDefault(); enregistrerEquipeIde(); };
+  $('ideListe').onclick = e => {
+    const b = e.target.closest('button[data-ide]');
+    if (!b) return;
+    if (b.dataset.ide === 'modifier') editerEquipeIde(b.dataset.id);
+    if (b.dataset.ide === 'supprimer') supprimerEquipeIde(b.dataset.id);
+  };
+  d.addEventListener('close', () => { if (typeof afficherTableau === 'function') afficherTableau(); });
+}
+
+function afficherEquipesIde() {
+  const liste = lireEquipesIde().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  const nbPatients = id => patients.filter(p => p.ideEquipe === id).length;
+  $('ideListe').innerHTML = liste.length ? liste.map(e => `
+    <div class="ide-carte">
+      <div class="ide-carte-texte">
+        <b>${echapper(e.nom)}</b> <span class="sec">${echapper(e.type || '')}${e.secteur ? ' · ' + echapper(e.secteur) : ''}</span>
+        <div>${[e.telephone && '☎ ' + e.telephone, e.telephone2 && '☎ ' + e.telephone2, e.email && '✉ ' + e.email].filter(Boolean).map(echapper).join(' · ')}</div>
+        ${e.adresse ? `<div class="sec">${echapper(e.adresse)}</div>` : ''}
+        ${e.contacts ? `<div class="sec">${echapper(e.contacts)}</div>` : ''}
+        ${e.notes ? `<div class="sec">${echapper(e.notes)}</div>` : ''}
+        <div class="sec">${nbPatients(e.id)} patient(s) rattaché(s)</div>
+      </div>
+      <div class="ide-carte-actions"><button type="button" data-ide="modifier" data-id="${e.id}">Modifier</button>
+        <button type="button" class="danger" data-ide="supprimer" data-id="${e.id}">Supprimer</button></div>
+    </div>`).join('') : '<p class="sec">Aucune équipe enregistrée.</p>';
+}
+
+function editerEquipeIde(id) {
+  equipeEnEdition = id;
+  const e = (id && equipeIde(id)) || {};
+  ['nom', 'secteur', 'telephone', 'telephone2', 'email', 'adresse', 'contacts', 'notes'].forEach(c => { $('ide_' + c).value = e[c] || ''; });
+  $('ide_type').value = e.type || TYPES_EQUIPE_IDE[0];
+  $('ideFormTitre').textContent = id ? 'Modifier l’équipe' : 'Nouvelle équipe';
+  $('ideForm').hidden = false;
+  $('ide_nom').focus();
+}
+
+function enregistrerEquipeIde() {
+  const e = { id: equipeEnEdition || 'ide-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) };
+  ['nom', 'type', 'secteur', 'telephone', 'telephone2', 'email', 'adresse', 'contacts', 'notes'].forEach(c => { e[c] = $('ide_' + c).value.trim(); });
+  if (!e.nom) return;
+  const liste = lireEquipesIde();
+  const ancienne = liste.find(x => x.id === e.id);
+  if (ancienne) Object.assign(ancienne, e); else liste.push(e);
+  ecrireEquipesIde(liste);
+  $('ideForm').hidden = true;
+  afficherEquipesIde();
+  toast('Équipe enregistrée.');
+}
+
+function supprimerEquipeIde(id) {
+  const n = patients.filter(p => p.ideEquipe === id).length;
+  if (!confirm(`Supprimer cette équipe ?${n ? `\n${n} patient(s) y sont rattachés : le rattachement sera retiré.` : ''}`)) return;
+  ecrireEquipesIde(lireEquipesIde().filter(e => e.id !== id));
+  if (n) { patients.forEach(p => { if (p.ideEquipe === id) delete p.ideEquipe; }); sauvegarderPatients(); }
+  afficherEquipesIde();
+}
+
+function ouvrirEquipesIde(nouvelle) {
+  if (!$('fenetreEquipesIde')) creerFenetreEquipesIde();
+  $('ideForm').hidden = true;
+  afficherEquipesIde();
+  $('fenetreEquipesIde').showModal();
+  if (nouvelle) editerEquipeIde(null);
+}
+
+(function brancherIde() {
+  remplirSelectEquipesIde();
+  const ref = $('btnPraticien');
+  if (ref) ref.insertAdjacentHTML('afterend', `<button type="button" class="tabs-reglage" id="btnEquipesIde">
+    <span data-icone="ide"></span><span class="libelle-onglet">Équipes infirmières</span></button>`);
+  $('btnEquipesIde').onclick = () => ouvrirEquipesIde(false);
+  $('ideGerer').onclick = () => {
+    ouvrirEquipesIde(!lireEquipesIde().length);
+    // De retour dans la fiche : liste à jour, nouvelle équipe présélectionnée si la fiche n'en avait pas.
+    $('fenetreEquipesIde').addEventListener('close', () => {
+      const avant = $('ideEquipe').value;
+      remplirSelectEquipesIde();
+      if (!avant && equipeEnEdition === null) { const l = lireEquipesIde(); if (l.length === 1) $('ideEquipe').value = l[0].id; }
+    }, { once: true });
+  };
+})();
 
 </script>
   <script>
@@ -7143,6 +7531,8 @@ function actionConsultation(action, d) {
     case 'humeur': changerOnglet('humeur', id); break;
     case 'document': changerOnglet('documents', id); afficherVueDocuments(id, d.type); break;
     case 'mdph': changerOnglet('mdph', id); break;
+    case 'rdv': ouvrirRdv(null, { patientId: id, date: aujourdhuiIso() }); break;
+    case 'rdvOuvrir': ouvrirRdv(lireRdv().find(r => r.id === d.id)); break;
     case 'ordonnance': ouvrirFiche(id); setTimeout(() => $('btnOrdonnance').click(), 0); break;
     case 'note': {
       const p = patientCons();
@@ -7206,7 +7596,8 @@ function afficherConsultation() {
     dernierScoreQids && dernierScoreQids.total >= 16 ? `<span class="drapeau orange">QIDS ${dernierScoreQids.total}/27 (${formaterDate(dernierScoreQids.date)})</span>` : '',
     retard.length ? `<span class="drapeau orange">${retard.length} bilan(s) en retard</span>` : '',
     p.ald ? '<span class="drapeau gris">ALD</span>' : '',
-    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais : ${echapper(p.statut || '')}${p.relaisVers ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
+    equipeDuPatient(p) ? `<span class="drapeau ide" title="${echapper(resumeEquipeIde(equipeDuPatient(p)))}">IDE : ${echapper(equipeDuPatient(p).nom)}</span>` : '',
+    estARelayer(p) && !estClos(p.statut) ? `<span class="drapeau bleu">Relais${p.typeRelais && p.typeRelais !== 'CMP' ? ' ' + echapper(p.typeRelais.replace(/ \(.*\)$/, '').toLowerCase()) : ''} : ${echapper(p.statut || '')}${p.relaisVers && !RELAIS_SANS_NIVEAU.includes(p.typeRelais) ? ' · vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</span>` : '',
   ].filter(Boolean).join('');
 
   const carteTraitements = `
@@ -7271,6 +7662,8 @@ function afficherConsultation() {
       <div>
         <div class="cons-nom">${echapper(nomPatient(p))}</div>
         <div class="sec">${[libelleSexe(p.sexe), age !== '' ? age + ' ans' : '', p.dossier ? 'Dossier ' + echapper(p.dossier) : '', p.rythme ? 'Suivi ' + echapper(p.rythme.toLowerCase()) : '', p.prochain ? 'Consultation : ' + formaterDate(p.prochain) : ''].filter(Boolean).join(' · ')}</div>
+        ${equipeDuPatient(p) ? `<div class="sec cons-ide">Soins infirmiers : <b>${echapper(equipeDuPatient(p).nom)}</b>${equipeDuPatient(p).telephone ? ' · ☎ ' + echapper(equipeDuPatient(p).telephone) : ''}${equipeDuPatient(p).email ? ' · ✉ ' + echapper(equipeDuPatient(p).email) : ''}</div>` : ''}
+        ${ligneRdvConsultation(p)}
         <div class="cons-diag">${echapper(p.dp || 'Diagnostic principal non renseigné')}${p.ds ? `<span class="sec"> · ${echapper(p.ds)}</span>` : ''}</div>
         ${drapeaux ? `<div class="drapeaux">${drapeaux}</div>` : ''}
       </div>
@@ -7299,7 +7692,7 @@ function definirPatientCourant(id, rafraichir) {
 
 /** Après l'affichage d'un module qui impose un patient : le patient choisi par défaut devient le patient courant. */
 function synchroniserPatientCourant() {
-  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil') { majBandeauPatient(); return; }
+  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil' || onglet === 'agenda') { majBandeauPatient(); return; }
   const select = { consultation: 'consPatient', humeur: 'humPatient', documents: 'docPatient', mdph: 'mdphPatient' }[onglet];
   if (select && $(select) && $(select).value) consPatientId = $(select).value;
   majBandeauPatient();
@@ -7320,6 +7713,7 @@ function majBandeauPatient() {
         <b>${echapper(nomPatient(p))}</b><span class="sec">${[libelleSexe(p.sexe), age !== '' ? age + ' ans' : '', p.dossier].filter(Boolean).map(echapper).join(' · ')}</span>
       </button>
       ${p.allergies ? `<button type="button" class="pastille-bandeau allergie" data-bandeau="allergies" title="Allergies / contre-indications : ${echapper(p.allergies)} (cliquer pour modifier)">⚠ ${echapper(p.allergies)}</button>` : ''}
+      ${equipeDuPatient(p) ? `<button type="button" class="pastille-bandeau ide" data-bandeau="ide" title="Soins infirmiers : ${echapper(resumeEquipeIde(equipeDuPatient(p)))} (cliquer pour l’annuaire)">IDE</button>` : ''}
       ${p.vigilance ? `<span class="pastille-bandeau vigilance" title="${echapper(p.vigtxt || '')}">Vigilance</span>` : ''}
       ${risque ? '<span class="pastille-bandeau vigilance">Idées suicidaires</span>' : ''}
       <button type="button" class="outil" data-bandeau="fiche" title="Modifier la fiche"><span data-icone="crayon"></span></button>
@@ -7341,6 +7735,7 @@ document.addEventListener('click', e => {
     setTimeout(() => { const c = $('allergies'); if (c) { c.focus(); c.select(); } }, 50);
   }
   if (action === 'fermer') definirPatientCourant('', true);
+  if (action === 'ide' && typeof ouvrirEquipesIde === 'function') ouvrirEquipesIde(false);
 });
 
 
@@ -7362,10 +7757,466 @@ function carteRappels(p) {
         <div class="choix-multiples">${[['7', '+1 sem.'], ['30', '+1 mois'], ['91', '+3 mois'], ['182', '+6 mois'], ['365', '+1 an']].map(([j, l]) => `<button type="button" data-action="rappel-delai" data-jours="${j}">${l}</button>`).join('')}</div>
         <button type="button" class="main" data-action="rappel-ajouter">Ajouter le rappel</button>
       </div>
-      <datalist id="listeRappels">${['Renouveler l’ALD', 'Renouveler le dossier MDPH', 'Certificat mensuel de soins sans consentement', 'Réévaluer le traitement', 'Contrôler la lithémie', 'Bilan métabolique', 'ECG de contrôle', 'Coter une QIDS', 'Prévoir le relais CMP', 'Réévaluer le programme de soins']
+      <datalist id="listeRappels">${['Renouveler l’ALD', 'Renouveler le dossier MDPH', 'Certificat mensuel de soins sans consentement', 'Réévaluer le traitement', 'Contrôler la lithémie', 'Bilan métabolique', 'ECG de contrôle', 'Coter une QIDS', 'Prévoir le relais', 'Réévaluer le programme de soins']
         .map(t => `<option value="${t}">`).join('')}</datalist>
     </div>`;
 }
+
+/** Ligne « prochain rendez-vous » de l'écran Consultation (agenda). */
+function ligneRdvConsultation(p) {
+  if (typeof prochainRdv !== 'function') return '';
+  const r = prochainRdv(p.id);
+  const il6mois = versIso(ajouterJours(aujourdhui(), -183));
+  const absences = rdvDuPatient(p.id).filter(x => x.statut === 'Non venu' && x.date >= il6mois).length;
+  const quand = r ? dateLocale(r.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  return `<div class="sec cons-rdv">${r
+    ? `Prochain rendez-vous : <button type="button" class="lien" data-action="rdvOuvrir" data-id="${r.id}">${quand} à ${r.debut}</button> · ${echapper(r.type)}`
+    : 'Aucun rendez-vous à venir'}${absences ? ` · <b class="texte-retard">${absences} non venu(s) sur 6 mois</b>` : ''}
+    · <button type="button" class="lien" data-action="rdv">+ Planifier</button></div>`;
+}
+
+</script>
+  <script>
+/* =====================================================================
+   AGENDA.JS — planning des consultations (vues jour, semaine, mois)
+   ---------------------------------------------------------------------
+   Données (dans ce navigateur, incluses dans la sauvegarde chiffrée) :
+     CLE_STOCKAGE + '_rdv'              liste des rendez-vous
+     CLE_STOCKAGE + '_agendaReglages'   horaires, pas, jours affichés
+   Un rendez-vous : { id, patientId | '', libelle, date 'AAAA-MM-JJ',
+     debut 'HH:MM', duree (min), type, lieu, statut, notes, serie }
+   Le champ « prochaine consultation » de la fiche est tenu à jour à
+   partir de l'agenda.
+   ===================================================================== */
+
+const CLE_RDV = CLE_STOCKAGE + '_rdv';
+const CLE_AGENDA_REGLAGES = CLE_STOCKAGE + '_agendaReglages';
+const TYPES_RDV = {
+  'Consultation de suivi': 'suivi',
+  'Première consultation': 'premiere',
+  'Consultation post-hospitalisation': 'posthospit',
+  'Téléconsultation': 'teleconsult',
+  'Injection retard / soin': 'soin',
+  'Entretien familial': 'famille',
+  'Visite à domicile': 'domicile',
+  'Réunion, synthèse': 'reunion',
+  'Indisponibilité': 'indispo',
+};
+const STATUTS_RDV = ['Prévu', 'Confirmé', 'Honoré', 'Non venu', 'Annulé (patient)', 'Annulé (praticien)'];
+const LIEUX_RDV = ['Cabinet / bureau', 'CMP', 'Téléconsultation', 'Domicile', 'Service hospitalier'];
+const REGLAGES_AGENDA_DEFAUT = { debut: '08:00', fin: '19:00', pas: 15, duree: 30, jours: 5 };
+const HAUTEUR_PAS = 18;          // pixels par pas de temps (vue jour / semaine)
+const JOURS_COURTS = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
+
+let agendaVue = 'semaine';       // 'jour', 'semaine', 'mois'
+let agendaDate = aujourdhuiIso();
+let rdvEdition = null;
+
+/* ---------- Données ---------- */
+function lireRdv() { try { const l = JSON.parse(localStorage.getItem(CLE_RDV) || '[]'); return Array.isArray(l) ? l : []; } catch (erreur) { return []; } }
+function ecrireRdv(liste) {
+  try { localStorage.setItem(CLE_RDV, JSON.stringify(liste)); } catch (erreur) { alert('Enregistrement impossible dans ce navigateur.'); }
+}
+function reglagesAgenda() {
+  try { return { ...REGLAGES_AGENDA_DEFAUT, ...(JSON.parse(localStorage.getItem(CLE_AGENDA_REGLAGES) || '{}') || {}) }; }
+  catch (erreur) { return { ...REGLAGES_AGENDA_DEFAUT }; }
+}
+const minutes = hhmm => { const [h, m] = String(hhmm || '0:0').split(':').map(Number); return h * 60 + (m || 0); };
+const hhmm = min => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+const dateLocale = iso => { const [a, m, j] = iso.split('-').map(Number); return new Date(a, m - 1, j); };
+const lundiDe = iso => { const d = dateLocale(iso); return versIso(ajouterJours(d, -((d.getDay() + 6) % 7))); };
+const estActif = r => !/^Annulé/.test(r.statut || '');
+const classeType = r => TYPES_RDV[r.type] || 'suivi';
+const classeStatut = r => 'st-' + (r.statut || 'Prévu').normalize('NFD').replace(/[^A-Za-z]/g, '');
+
+function rdvDuPatient(id) { return lireRdv().filter(r => r.patientId === id).sort((a, b) => (a.date + a.debut < b.date + b.debut ? -1 : 1)); }
+/** Prochain rendez-vous actif d'un patient (aujourd'hui inclus). */
+function prochainRdv(id) {
+  const maintenant = aujourdhuiIso();
+  return rdvDuPatient(id).find(r => estActif(r) && r.date >= maintenant && r.statut !== 'Honoré' && r.statut !== 'Non venu') || null;
+}
+function libelleRdv(r, court) {
+  const p = r.patientId && patients.find(x => x.id === r.patientId);
+  if (!p) return r.libelle || r.type || 'Rendez-vous';
+  return court ? `${(p.nom || '').toUpperCase()} ${(p.prenom || '').charAt(0)}.` : nomPatient(p);
+}
+/** Met à jour le champ « prochaine consultation » des fiches concernées. */
+function synchroniserProchain(ids) {
+  let modif = false;
+  ids.filter(Boolean).forEach(id => {
+    const p = patients.find(x => x.id === id);
+    if (!p) return;
+    const r = prochainRdv(id);
+    if (r && p.prochain !== r.date) { p.prochain = r.date; modif = true; }
+  });
+  if (modif) sauvegarderPatients();
+}
+
+/* ---------- Vue ---------- */
+function htmlBarreAgenda() {
+  const d = dateLocale(agendaDate);
+  let titre;
+  if (agendaVue === 'jour') titre = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  else if (agendaVue === 'mois') titre = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  else {
+    const l = dateLocale(lundiDe(agendaDate)), f = ajouterJours(l, reglagesAgenda().jours - 1);
+    titre = `${l.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} – ${f.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  }
+  return `
+    <div class="agenda-barre">
+      <div class="agenda-nav">
+        <button type="button" data-ag="prec" title="Précédent" aria-label="Précédent">‹</button>
+        <button type="button" data-ag="auj">Aujourd’hui</button>
+        <button type="button" data-ag="suiv" title="Suivant" aria-label="Suivant">›</button>
+        <h2 class="agenda-titre">${titre.charAt(0).toUpperCase() + titre.slice(1)}</h2>
+      </div>
+      <div class="agenda-outils">
+        <div class="segments">${['jour', 'semaine', 'mois'].map(v => `<button type="button" data-ag-vue="${v}" class="${agendaVue === v ? 'on' : ''}">${v.charAt(0).toUpperCase() + v.slice(1)}</button>`).join('')}</div>
+        <button type="button" class="main" data-ag="nouveau">+ Rendez-vous</button>
+        <details class="menu-plus"><summary>Plus</summary><div class="menu-plus-liste">
+          <button type="button" data-ag="imprimer">Imprimer la liste du jour</button>
+          <button type="button" data-ag="ics">Exporter la période (.ics, initiales)</button>
+          <button type="button" data-ag="reglages">Horaires et affichage…</button>
+        </div></details>
+      </div>
+    </div>`;
+}
+
+function htmlGrille(jours) {
+  const reg = reglagesAgenda();
+  const debut = minutes(reg.debut), fin = minutes(reg.fin), pas = Number(reg.pas) || 15;
+  const nbPas = Math.ceil((fin - debut) / pas);
+  const auj = aujourdhuiIso();
+  const tous = lireRdv();
+  const lignesHeures = [];
+  for (let m = debut; m < fin; m += 60) lignesHeures.push(`<div class="ag-heure" style="top:${((m - debut) / pas) * HAUTEUR_PAS}px">${hhmm(m)}</div>`);
+  const maintenant = new Date(), minMaintenant = maintenant.getHours() * 60 + maintenant.getMinutes();
+  const colonnes = jours.map(iso => {
+    const d = dateLocale(iso);
+    const liste = tous.filter(r => r.date === iso).sort((a, b) => minutes(a.debut) - minutes(b.debut));
+    // Chevauchements : rendez-vous côte à côte.
+    const pistes = [];
+    liste.forEach(r => {
+      const s = minutes(r.debut), e = s + (Number(r.duree) || 30);
+      let i = pistes.findIndex(fin => fin <= s);
+      if (i < 0) { i = pistes.length; pistes.push(0); }
+      pistes[i] = e; r._piste = i;
+    });
+    const largeur = 100 / Math.max(1, pistes.length);
+    const evts = liste.map(r => {
+      const s = minutes(r.debut), duree = Number(r.duree) || 30;
+      const top = Math.max(0, (s - debut) / pas) * HAUTEUR_PAS, h = Math.max(HAUTEUR_PAS - 2, (duree / pas) * HAUTEUR_PAS - 2);
+      return `<button type="button" class="ag-rdv t-${classeType(r)} ${classeStatut(r)}" draggable="true" data-rdv="${r.id}"
+        style="top:${top}px;height:${h}px;left:${r._piste * largeur}%;width:calc(${largeur}% - 3px)"
+        title="${echapper(`${r.debut} · ${libelleRdv(r)} · ${r.type}${r.lieu ? ' · ' + r.lieu : ''} · ${r.statut || 'Prévu'}${r.notes ? '\n' + r.notes : ''}`)}">
+        <b>${r.debut}</b> ${echapper(libelleRdv(r, true))}${h > 30 ? `<span>${echapper(r.type)}</span>` : ''}${r.statut === 'Honoré' ? ' ✓' : r.statut === 'Non venu' ? ' ✗' : ''}</button>`;
+    }).join('');
+    const ligneMaintenant = iso === auj && minMaintenant >= debut && minMaintenant <= fin ? `<div class="ag-maintenant" style="top:${((minMaintenant - debut) / pas) * HAUTEUR_PAS}px"></div>` : '';
+    const ferme = d.getDay() === 0 || (d.getDay() === 6 && reg.jours < 6);
+    return `<div class="ag-col ${iso === auj ? 'auj' : ''}">
+      <div class="ag-col-tete ${iso === auj ? 'auj' : ''}" data-ag-jour="${iso}">${JOURS_COURTS[(d.getDay() + 6) % 7]} <b>${d.getDate()}</b>
+        <span class="sec">${liste.filter(r => estActif(r) && r.type !== 'Indisponibilité').length || ''}</span></div>
+      <div class="ag-col-corps ${ferme ? 'ferme' : ''}" data-ag-date="${iso}" style="height:${nbPas * HAUTEUR_PAS}px;--pas:${HAUTEUR_PAS}px;--heure:${(60 / pas) * HAUTEUR_PAS}px">${evts}${ligneMaintenant}</div>
+    </div>`;
+  }).join('');
+  return `<div class="ag-grille" style="--nbjours:${jours.length}">
+    <div class="ag-heures"><div class="ag-col-tete"></div><div class="ag-heures-corps" style="height:${nbPas * HAUTEUR_PAS}px">${lignesHeures.join('')}</div></div>
+    ${colonnes}</div>`;
+}
+
+function htmlMois() {
+  const d = dateLocale(agendaDate);
+  const premier = new Date(d.getFullYear(), d.getMonth(), 1);
+  const debut = dateLocale(lundiDe(versIso(premier)));
+  const auj = aujourdhuiIso();
+  const tous = lireRdv();
+  let cases = '';
+  for (let i = 0; i < 42; i++) {
+    const jour = ajouterJours(debut, i), iso = versIso(jour);
+    if (i >= 35 && jour.getMonth() !== d.getMonth()) break;
+    const liste = tous.filter(r => r.date === iso).sort((a, b) => minutes(a.debut) - minutes(b.debut));
+    cases += `<div class="ag-mois-case ${jour.getMonth() !== d.getMonth() ? 'hors' : ''} ${iso === auj ? 'auj' : ''}" data-ag-jour="${iso}">
+      <div class="ag-mois-num">${jour.getDate()}</div>
+      ${liste.slice(0, 4).map(r => `<button type="button" class="ag-mini t-${classeType(r)} ${classeStatut(r)}" data-rdv="${r.id}">${r.debut} ${echapper(libelleRdv(r, true))}</button>`).join('')}
+      ${liste.length > 4 ? `<div class="sec">+ ${liste.length - 4} autre(s)</div>` : ''}</div>`;
+  }
+  return `<div class="ag-mois">${JOURS_COURTS.map(j => `<div class="ag-mois-tete">${j}</div>`).join('')}${cases}</div>`;
+}
+
+function statistiquesPeriode(jours) {
+  const l = lireRdv().filter(r => jours.includes(r.date) && r.type !== 'Indisponibilité');
+  const n = s => l.filter(r => r.statut === s).length;
+  return `${l.filter(estActif).length} rendez-vous${n('Honoré') ? ` · ${n('Honoré')} honoré(s)` : ''}${n('Non venu') ? ` · <b class="texte-retard">${n('Non venu')} non venu(s)</b>` : ''}${l.length - l.filter(estActif).length ? ` · ${l.length - l.filter(estActif).length} annulé(s)` : ''}`;
+}
+
+function joursAffiches() {
+  if (agendaVue === 'jour') return [agendaDate];
+  if (agendaVue === 'mois') {
+    const d = dateLocale(agendaDate), n = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    return Array.from({ length: n }, (_, i) => versIso(new Date(d.getFullYear(), d.getMonth(), i + 1)));
+  }
+  const l = dateLocale(lundiDe(agendaDate));
+  return Array.from({ length: reglagesAgenda().jours }, (_, i) => versIso(ajouterJours(l, i)));
+}
+
+function afficherAgenda() {
+  const jours = joursAffiches();
+  $('vueAgenda').innerHTML = `<div class="carte agenda">${htmlBarreAgenda()}
+    <div class="agenda-stats sec">${statistiquesPeriode(jours)}</div>
+    <div class="agenda-corps">${agendaVue === 'mois' ? htmlMois() : htmlGrille(jours)}</div>
+    <p class="sec agenda-aide">Cliquer sur un créneau pour créer un rendez-vous · glisser un rendez-vous pour le déplacer · cliquer dessus pour le modifier, le marquer honoré ou non venu.</p></div>`;
+  // Faire défiler jusqu'à l'heure courante (ou au début de journée).
+  const corps = $('vueAgenda').querySelector('.agenda-corps');
+  const ligne = $('vueAgenda').querySelector('.ag-maintenant');
+  if (corps && ligne) corps.scrollTop = Math.max(0, parseInt(ligne.style.top, 10) - 120);
+}
+
+/* ---------- Fenêtre « rendez-vous » ---------- */
+function creerFenetreRdv() {
+  const d = document.createElement('dialog');
+  d.id = 'fenetreRdv';
+  d.innerHTML = `
+    <form id="formRdv" style="padding:18px 22px">
+      <h2 id="rdvTitre" style="margin:0 0 10px;font-size:19px">Rendez-vous</h2>
+      <div class="g">
+        <div class="full"><label for="rdvPatient">Patient (rechercher par nom, prénom ou dossier)</label>
+          <input id="rdvPatient" list="rdvListePatients" autocomplete="off" placeholder="Laisser vide pour une réunion ou une indisponibilité">
+          <datalist id="rdvListePatients"></datalist></div>
+        <div class="full" id="rdvLibelleZone"><label for="rdvLibelle">Intitulé (sans patient)</label><input id="rdvLibelle" placeholder="ex. Synthèse d’équipe, formation, congés"></div>
+        <div><label for="rdvType">Type</label><select id="rdvType">${Object.keys(TYPES_RDV).map(t => `<option>${t}</option>`).join('')}</select></div>
+        <div><label for="rdvLieu">Lieu</label><input id="rdvLieu" list="rdvListeLieux"><datalist id="rdvListeLieux">${LIEUX_RDV.map(l => `<option value="${l}">`).join('')}</datalist></div>
+        <div><label for="rdvDate">Date</label><input id="rdvDate" type="date" required></div>
+        <div class="g" style="gap:8px"><div><label for="rdvDebut">Heure</label><input id="rdvDebut" type="time" step="300" required></div>
+          <div><label for="rdvDuree">Durée</label><select id="rdvDuree">${[10, 15, 20, 30, 45, 60, 90, 120, 240].map(m => `<option value="${m}">${m < 60 ? m + ' min' : (m / 60) + ' h'}</option>`).join('')}</select></div></div>
+        <div><label for="rdvStatut">Statut</label><select id="rdvStatut">${STATUTS_RDV.map(s => `<option>${s}</option>`).join('')}</select></div>
+        <div id="rdvRecurrenceZone"><label for="rdvRecurrence">Répéter</label>
+          <div class="g" style="gap:8px"><select id="rdvRecurrence"><option value="0">Non</option><option value="7">Chaque semaine</option><option value="14">Toutes les 2 semaines</option><option value="21">Toutes les 3 semaines</option><option value="28">Toutes les 4 semaines</option><option value="mois">Chaque mois</option></select>
+          <select id="rdvOccurrences">${[2, 3, 4, 6, 8, 10, 12].map(n => `<option value="${n}">${n} fois</option>`).join('')}</select></div></div>
+        <div class="full"><label for="rdvNotes">Notes (motif, consignes, transport…)</label><textarea id="rdvNotes" rows="2" style="min-height:0"></textarea></div>
+      </div>
+      <p class="ordo-alerte" id="rdvConflit" hidden></p>
+      <div class="act" style="flex-wrap:wrap">
+        <button type="button" class="danger" id="rdvSupprimer">Supprimer</button>
+        <button type="button" id="rdvDossier">Ouvrir le dossier</button>
+        <button type="button" id="rdvNote">Note de suivi</button>
+        <span class="sp"></span>
+        <button type="button" onclick="this.closest('dialog').close()">Annuler</button>
+        <button type="submit" class="main">Enregistrer</button>
+      </div>
+    </form>`;
+  document.body.appendChild(d);
+  const verifier = () => verifierConflit();
+  ['rdvDate', 'rdvDebut', 'rdvDuree'].forEach(id => $(id).addEventListener('change', verifier));
+  $('rdvPatient').addEventListener('input', () => { $('rdvLibelleZone').hidden = !!patientSaisi(); verifier(); });
+  $('rdvType').addEventListener('change', () => { if ($('rdvType').value === 'Téléconsultation') $('rdvLieu').value = 'Téléconsultation'; });
+  $('formRdv').onsubmit = e => { e.preventDefault(); enregistrerRdv(); };
+  $('rdvSupprimer').onclick = supprimerRdv;
+  $('rdvDossier').onclick = () => { const p = patientSaisi(); if (!p) return; d.close(); definirPatientCourant(p.id); changerOnglet('consultation', p.id); };
+  $('rdvNote').onclick = () => {
+    const p = patientSaisi(); if (!p) return;
+    if (['Prévu', 'Confirmé'].includes($('rdvStatut').value)) $('rdvStatut').value = 'Honoré';
+    enregistrerRdv(true);
+    definirPatientCourant(p.id);
+    actionConsultationDepuisAgenda(p.id);
+  };
+}
+function actionConsultationDepuisAgenda(id) {
+  changerOnglet('observation', id);
+  if (obsType !== 'suivi') changerTypeObs('suivi');
+  else if (!Object.keys(obsEtat).length || obsPatientId !== id) nouvelleObservation(false, 'suivi');
+}
+
+const etiquettePatient = p => `${nomPatient(p)}${p.dossier ? ' · ' + p.dossier : ''}`;
+function patientSaisi() {
+  const v = $('rdvPatient').value.trim();
+  if (!v) return null;
+  return patients.find(p => etiquettePatient(p) === v) || patients.find(p => nomPatient(p).toLowerCase() === v.toLowerCase()) || null;
+}
+function verifierConflit() {
+  const date = $('rdvDate').value, s = minutes($('rdvDebut').value), e = s + Number($('rdvDuree').value);
+  const autres = lireRdv().filter(r => r.date === date && r.id !== (rdvEdition && rdvEdition.id) && estActif(r)
+    && minutes(r.debut) < e && minutes(r.debut) + (Number(r.duree) || 30) > s);
+  $('rdvConflit').hidden = !autres.length;
+  $('rdvConflit').textContent = autres.length ? `Chevauchement avec : ${autres.map(r => `${r.debut} ${libelleRdv(r)}`).join(', ')}.` : '';
+  const p = patientSaisi();
+  if (p && !$('rdvConflit').hidden) return;
+  if ($('rdvPatient').value.trim() && !p) { $('rdvConflit').hidden = false; $('rdvConflit').textContent = 'Patient non trouvé : choisissez-le dans la liste proposée (ou videz le champ pour un rendez-vous sans patient).'; }
+}
+
+/** Ouvre la fenêtre : r = rendez-vous existant, ou valeurs initiales { date, debut, patientId }. */
+function ouvrirRdv(r, init = {}) {
+  if (!$('fenetreRdv')) creerFenetreRdv();
+  const reg = reglagesAgenda();
+  rdvEdition = r && r.id ? r : null;
+  const v = rdvEdition || {};
+  $('rdvListePatients').innerHTML = [...patients].sort((a, b) => nomPatient(a).localeCompare(nomPatient(b), 'fr')).map(p => `<option value="${echapper(etiquettePatient(p))}">`).join('');
+  const p = patients.find(x => x.id === (v.patientId || init.patientId));
+  $('rdvPatient').value = p ? etiquettePatient(p) : '';
+  $('rdvLibelle').value = v.libelle || '';
+  $('rdvLibelleZone').hidden = !!p;
+  $('rdvType').value = v.type || init.type || (p && !(p.obs || []).length ? 'Première consultation' : 'Consultation de suivi');
+  $('rdvLieu').value = v.lieu || '';
+  $('rdvDate').value = v.date || init.date || agendaDate;
+  $('rdvDebut').value = v.debut || init.debut || '09:00';
+  $('rdvDuree').value = String(v.duree || init.duree || reg.duree);
+  if (!$('rdvDuree').value) $('rdvDuree').value = '30';
+  $('rdvStatut').value = v.statut || 'Prévu';
+  $('rdvNotes').value = v.notes || '';
+  $('rdvRecurrence').value = '0';
+  $('rdvRecurrenceZone').hidden = !!rdvEdition;
+  $('rdvTitre').textContent = rdvEdition ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous';
+  $('rdvSupprimer').hidden = !rdvEdition;
+  $('rdvDossier').hidden = $('rdvNote').hidden = !p;
+  verifierConflit();
+  $('fenetreRdv').showModal();
+  if (!p && !rdvEdition) $('rdvPatient').focus();
+}
+
+function enregistrerRdv(silencieux) {
+  const p = patientSaisi();
+  if ($('rdvPatient').value.trim() && !p) { verifierConflit(); return; }
+  if (!$('rdvDate').value || !$('rdvDebut').value) return;
+  const base = {
+    patientId: p ? p.id : '', libelle: p ? '' : $('rdvLibelle').value.trim(),
+    type: $('rdvType').value, lieu: $('rdvLieu').value.trim(), date: $('rdvDate').value, debut: $('rdvDebut').value,
+    duree: Number($('rdvDuree').value), statut: $('rdvStatut').value, notes: $('rdvNotes').value.trim(),
+  };
+  const liste = lireRdv();
+  const anciensPatients = rdvEdition ? [rdvEdition.patientId] : [];
+  if (rdvEdition) Object.assign(liste.find(x => x.id === rdvEdition.id) || {}, base);
+  else {
+    const rec = $('rdvRecurrence').value, n = rec === '0' ? 1 : Number($('rdvOccurrences').value);
+    const serie = n > 1 ? 'serie-' + Date.now().toString(36) : '';
+    for (let i = 0; i < n; i++) {
+      let date = dateLocale(base.date);
+      if (rec === 'mois') date = new Date(date.getFullYear(), date.getMonth() + i, date.getDate());
+      else date = ajouterJours(date, i * Number(rec));
+      liste.push({ ...base, date: versIso(date), id: 'rdv-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), serie });
+    }
+  }
+  ecrireRdv(liste);
+  synchroniserProchain([base.patientId, ...anciensPatients]);
+  $('fenetreRdv').close();
+  if (!silencieux) toast(rdvEdition ? 'Rendez-vous modifié.' : 'Rendez-vous enregistré.');
+  rafraichirApresRdv();
+}
+
+function supprimerRdv() {
+  if (!rdvEdition) return;
+  const serie = rdvEdition.serie && lireRdv().filter(r => r.serie === rdvEdition.serie && r.date >= rdvEdition.date).length > 1;
+  let tous = false;
+  if (serie) tous = confirm('Ce rendez-vous fait partie d’une série.\nOK = supprimer aussi les suivants de la série ; Annuler = seulement celui-ci.');
+  else if (!confirm('Supprimer ce rendez-vous ?')) return;
+  const garde = r => !(r.id === rdvEdition.id || (tous && r.serie === rdvEdition.serie && r.date >= rdvEdition.date));
+  ecrireRdv(lireRdv().filter(garde));
+  synchroniserProchain([rdvEdition.patientId]);
+  $('fenetreRdv').close();
+  rafraichirApresRdv();
+}
+
+function rafraichirApresRdv() {
+  if (onglet === 'agenda') afficherAgenda();
+  if (onglet === 'accueil') afficherAccueil();
+  if (onglet === 'consultation' && typeof afficherConsultation === 'function') afficherConsultation();
+  if (typeof majBandeauPatient === 'function') majBandeauPatient();
+  if ($('nbAccueil') && typeof compteurAccueil === 'function') $('nbAccueil').textContent = compteurAccueil() || '';
+}
+
+/* ---------- Export, impression, réglages ---------- */
+function exporterIcs() {
+  const jours = joursAffiches();
+  const l = lireRdv().filter(r => jours.includes(r.date) && estActif(r));
+  if (!l.length) return toast('Aucun rendez-vous sur la période affichée.');
+  const t = (date, min) => date.replace(/-/g, '') + 'T' + hhmm(min).replace(':', '') + '00';
+  const initiales = r => { const p = patients.find(x => x.id === r.patientId); return p ? `${(p.nom || '?').charAt(0)}.${(p.prenom || '?').charAt(0)}.` : (r.libelle || ''); };
+  const lignes = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Portail psy//FR', 'CALSCALE:GREGORIAN',
+    ...l.flatMap(r => ['BEGIN:VEVENT', `UID:${r.id}@portail-psy`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`,
+      `DTSTART:${t(r.date, minutes(r.debut))}`, `DTEND:${t(r.date, minutes(r.debut) + (Number(r.duree) || 30))}`,
+      `SUMMARY:${(r.type + ' ' + initiales(r)).replace(/[,;]/g, ' ')}`, r.lieu ? `LOCATION:${r.lieu.replace(/[,;]/g, ' ')}` : '', 'END:VEVENT'].filter(Boolean)),
+    'END:VCALENDAR'];
+  telecharger(`agenda-${jours[0]}.ics`, lignes.join('\r\n'), 'text/calendar');
+  toast('Export : seules les initiales des patients figurent dans le fichier.');
+}
+
+function imprimerJour() {
+  const iso = agendaVue === 'jour' ? agendaDate : (joursAffiches().includes(aujourdhuiIso()) ? aujourdhuiIso() : agendaDate);
+  const l = lireRdv().filter(r => r.date === iso).sort((a, b) => minutes(a.debut) - minutes(b.debut));
+  const titre = dateLocale(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  imprimerDocument(`<div class="ordo doc"><h2 style="text-align:left">Consultations du ${titre}</h2>
+    <table class="tableau-doc" style="width:100%"><tbody>${l.map(r => {
+      const p = patients.find(x => x.id === r.patientId);
+      return `<tr><td>${r.debut}</td><td>${r.duree} min</td><td><b>${echapper(libelleRdv(r))}</b>${p && p.dossier ? ' · ' + echapper(p.dossier) : ''}</td><td>${echapper(r.type)}</td><td>${echapper(r.lieu || '')}</td><td>${echapper(r.statut || '')}</td></tr>`;
+    }).join('') || '<tr><td>Aucun rendez-vous.</td></tr>'}</tbody></table></div>`);
+}
+
+function ouvrirReglagesAgenda() {
+  const reg = reglagesAgenda();
+  const debut = prompt('Heure de début de journée (HH:MM)', reg.debut); if (debut === null) return;
+  const fin = prompt('Heure de fin de journée (HH:MM)', reg.fin); if (fin === null) return;
+  const duree = prompt('Durée par défaut d’un rendez-vous (minutes)', reg.duree); if (duree === null) return;
+  const jours = prompt('Jours affichés dans la semaine : 5 (lundi-vendredi), 6 (jusqu’au samedi) ou 7', reg.jours); if (jours === null) return;
+  const ok = /^\d{1,2}:\d{2}$/.test(debut) && /^\d{1,2}:\d{2}$/.test(fin) && minutes(fin) > minutes(debut);
+  if (!ok) return alert('Horaires invalides.');
+  try {
+    localStorage.setItem(CLE_AGENDA_REGLAGES, JSON.stringify({ ...reg, debut, fin, duree: Number(duree) || 30, jours: [5, 6, 7].includes(Number(jours)) ? Number(jours) : 5 }));
+  } catch (erreur) { /* ignoré */ }
+  afficherAgenda();
+}
+
+/* ---------- Événements ---------- */
+function initialiserAgenda() {
+  const v = $('vueAgenda');
+  v.addEventListener('click', e => {
+    const rdv = e.target.closest('[data-rdv]');
+    if (rdv) { ouvrirRdv(lireRdv().find(r => r.id === rdv.dataset.rdv)); return; }
+    const nav = e.target.closest('[data-ag]');
+    if (nav) {
+      const a = nav.dataset.ag, d = dateLocale(agendaDate);
+      const pas = agendaVue === 'jour' ? 1 : agendaVue === 'semaine' ? 7 : 0;
+      if (a === 'auj') agendaDate = aujourdhuiIso();
+      if (a === 'prec' || a === 'suiv') {
+        const s = a === 'prec' ? -1 : 1;
+        agendaDate = pas ? versIso(ajouterJours(d, s * pas)) : versIso(new Date(d.getFullYear(), d.getMonth() + s, 1));
+      }
+      if (a === 'nouveau') return ouvrirRdv(null, { date: agendaVue === 'jour' ? agendaDate : aujourdhuiIso() });
+      if (a === 'imprimer') return imprimerJour();
+      if (a === 'ics') return exporterIcs();
+      if (a === 'reglages') return ouvrirReglagesAgenda();
+      afficherAgenda();
+      return;
+    }
+    const vue = e.target.closest('[data-ag-vue]');
+    if (vue) { agendaVue = vue.dataset.agVue; afficherAgenda(); return; }
+    const jour = e.target.closest('[data-ag-jour]');
+    if (jour) { agendaDate = jour.dataset.agJour; agendaVue = 'jour'; afficherAgenda(); return; }
+    const col = e.target.closest('.ag-col-corps');
+    if (col) ouvrirRdv(null, { date: col.dataset.agDate, debut: heureDepuisPosition(col, e) });
+  });
+  // Glisser-déposer : déplacer un rendez-vous (vues jour et semaine).
+  v.addEventListener('dragstart', e => { const r = e.target.closest('.ag-rdv'); if (r) e.dataTransfer.setData('text/plain', r.dataset.rdv); });
+  v.addEventListener('dragover', e => { if (e.target.closest('.ag-col-corps')) e.preventDefault(); });
+  v.addEventListener('drop', e => {
+    const col = e.target.closest('.ag-col-corps');
+    const id = e.dataTransfer.getData('text/plain');
+    if (!col || !id) return;
+    e.preventDefault();
+    const liste = lireRdv(), r = liste.find(x => x.id === id);
+    if (!r) return;
+    r.date = col.dataset.agDate;
+    r.debut = heureDepuisPosition(col, e);
+    ecrireRdv(liste);
+    synchroniserProchain([r.patientId]);
+    afficherAgenda();
+    toast(`Déplacé au ${formaterDate(r.date)} à ${r.debut}.`);
+  });
+}
+function heureDepuisPosition(col, e) {
+  const reg = reglagesAgenda(), pas = Number(reg.pas) || 15;
+  const y = e.clientY - col.getBoundingClientRect().top;
+  const m = minutes(reg.debut) + Math.max(0, Math.floor(y / HAUTEUR_PAS)) * pas;
+  return hhmm(Math.min(m, minutes(reg.fin) - pas));
+}
+initialiserAgenda();
 
 </script>
   <script>
@@ -7389,6 +8240,7 @@ function initialiserAccueil() {
     const a = e.target.closest('[data-accueil]');
     if (a && a.dataset.accueil === 'sauvegarde') sauvegardeChiffree();
     if (a && a.dataset.accueil === 'nouveau') ouvrirFiche(null);
+    if (a && a.dataset.accueil === 'agenda') changerOnglet('agenda');
   });
 }
 
@@ -7396,11 +8248,25 @@ function elementsAccueil() {
   const auj = aujourdhuiIso();
   const dans7 = versIso(ajouterJours(aujourdhui(), 7));
   const brouillons = typeof lireBrouillons === 'function' ? lireBrouillons() : {};
-  const r = { rdvJour: [], rdvSemaine: [], rappels: [], alertes: [], bilans: [], relais: [], brouillons: [] };
+  const r = { rdvJour: [], rdvSemaine: [], rappels: [], alertes: [], bilans: [], relais: [], brouillons: [], nonVenus: [] };
+  // Rendez-vous de l'agenda (les fiches sans rendez-vous gardent leur date « prochaine consultation »).
+  const agenda = typeof lireRdv === 'function' ? lireRdv().filter(x => x.patientId && estActif(x)) : [];
+  const avecRdv = new Set();
+  agenda.forEach(x => {
+    const p = patients.find(y => y.id === x.patientId);
+    if (!p) return;
+    if (x.date === auj) { r.rdvJour.push({ p, rdv: x }); avecRdv.add(p.id + auj); }
+    else if (x.date > auj && x.date <= dans7) { r.rdvSemaine.push({ p, date: x.date, rdv: x }); avecRdv.add(p.id + x.date); }
+  });
+  const il14 = versIso(ajouterJours(aujourdhui(), -14));
+  agenda.filter(x => x.statut === 'Non venu' && x.date >= il14 && x.date <= auj).forEach(x => {
+    const p = patients.find(y => y.id === x.patientId);
+    if (p && !(prochainRdv(p.id)) && !r.nonVenus.some(n => n.p.id === p.id)) r.nonVenus.push({ p, rdv: x });
+  });
 
   patients.forEach(p => {
-    if (p.prochain === auj) r.rdvJour.push({ p });
-    else if (p.prochain > auj && p.prochain <= dans7) r.rdvSemaine.push({ p, date: p.prochain });
+    if (p.prochain === auj && !avecRdv.has(p.id + auj)) r.rdvJour.push({ p });
+    else if (p.prochain > auj && p.prochain <= dans7 && !avecRdv.has(p.id + p.prochain) && !r.rdvSemaine.some(x => x.p.id === p.id)) r.rdvSemaine.push({ p, date: p.prochain });
 
     (p.rappels || []).filter(x => !x.fait && x.date <= dans7).forEach(x => r.rappels.push({ p, rappel: x, echu: x.date <= auj }));
 
@@ -7420,7 +8286,8 @@ function elementsAccueil() {
 
     if (brouillons[p.id]) r.brouillons.push({ p, maj: brouillons[p.id].maj });
   });
-  r.rdvSemaine.sort((a, b) => (a.date < b.date ? -1 : 1));
+  r.rdvJour.sort((a, b) => ((a.rdv ? a.rdv.debut : '99') < (b.rdv ? b.rdv.debut : '99') ? -1 : 1));
+  r.rdvSemaine.sort((a, b) => (a.date + (a.rdv ? a.rdv.debut : '') < b.date + (b.rdv ? b.rdv.debut : '') ? -1 : 1));
   r.rappels.sort((a, b) => (a.rappel.date < b.rappel.date ? -1 : 1));
   r.relais.sort((a, b) => a.p.priorite - b.p.priorite);
   return r;
@@ -7429,7 +8296,7 @@ function elementsAccueil() {
 /** Nombre d'éléments demandant une action aujourd'hui (pastille de l'onglet). */
 function compteurAccueil() {
   const r = elementsAccueil();
-  return r.rdvJour.length + r.rappels.filter(x => x.echu).length + r.alertes.length;
+  return r.rdvJour.length + r.rappels.filter(x => x.echu).length + r.alertes.length + r.nonVenus.length;
 }
 
 function afficherAccueil() {
@@ -7475,21 +8342,23 @@ function afficherAccueil() {
 `;
   const grille = `
       ${carte(`Consultations du jour <span class="n">${r.rdvJour.length}</span>`,
-        r.rdvJour.map(x => ligne(x.p, [x.p.dp, x.p.rythme].filter(Boolean).map(echapper).join(' · '))).join(''),
-        'Aucune consultation prévue aujourd’hui (date « prochaine consultation » des fiches).', 'accent', true)}
+        r.rdvJour.map(x => ligne(x.p, [x.rdv ? `<b>${x.rdv.debut}</b> ${echapper(x.rdv.type)}${x.rdv.statut === 'Honoré' ? ' ✓' : ''}` : '', echapper(x.p.dp || '')].filter(Boolean).join(' · '))).join(''),
+        'Aucune consultation prévue aujourd’hui. <button type="button" class="discret" data-accueil="agenda">Ouvrir l’agenda</button>', 'accent', true)}
+      ${carte(`Non venus, à recontacter <span class="n">${r.nonVenus.length}</span>`,
+        r.nonVenus.map(x => ligne(x.p, `absent le ${formaterDate(x.rdv.date)} à ${x.rdv.debut} · aucun nouveau rendez-vous`, '', 'rouge')).join(''), '')}
       ${carte(`Alertes cliniques <span class="n">${r.alertes.length}</span>`,
         r.alertes.map(x => ligne(x.p, echapper(x.texte), x.vers, 'rouge')).join(''), 'Aucune alerte.', r.alertes.length ? 'rouge' : '')}
       ${carte(`Rappels <span class="n">${r.rappels.length}</span>`,
         r.rappels.map(x => ligne(x.p, `${x.echu ? '<b class="texte-retard">échu</b> · ' : ''}${formaterDate(x.rappel.date)} · ${echapper(x.rappel.texte)}`)).join(''),
         'Aucun rappel dans les 7 jours.')}
       ${carte(`Cette semaine <span class="n">${r.rdvSemaine.length}</span>`,
-        r.rdvSemaine.map(x => ligne(x.p, `${new Date(x.date + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}`)).join(''),
+        r.rdvSemaine.map(x => ligne(x.p, `${new Date(x.date + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}${x.rdv ? ' à ' + x.rdv.debut : ''}`)).join(''),
         'Aucune consultation prévue dans les 7 jours.')}
       ${carte(`Bilans en retard <span class="n">${r.bilans.length}</span>`,
         r.bilans.map(x => ligne(x.p, x.liste.slice(0, 2).map(a => `${echapper(a.traitement.nom.split(' (')[0])} : ${echapper(a.libelle)}`).join(' · ') + (x.liste.length > 2 ? ` · +${x.liste.length - 2}` : ''))).join(''),
         'Aucun bilan en retard.')}
       ${carte(`Relais prioritaires <span class="n">${r.relais.length}</span>`,
-        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp ? ' · ' + echapper(x.p.cmp) : ''}${x.p.relaisVers ? ' · vers ' + echapper(x.p.relaisVers.toLowerCase()) : ''}`)).join(''),
+        r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp || x.p.typeRelais ? ' · ' + echapper(libelleDestinataire(x.p)) : ''}${x.p.relaisVers && !RELAIS_SANS_NIVEAU.includes(x.p.typeRelais) ? ' · vers ' + echapper(x.p.relaisVers.toLowerCase()) : ''}`)).join(''),
         'Aucun relais urgent ou élevé en attente.')}
       ${r.brouillons.length ? carte(`Notes en brouillon <span class="n">${r.brouillons.length}</span>`,
         r.brouillons.map(x => ligne(x.p, `modifiée le ${new Date(x.maj).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`, 'observation')).join(''), '') : ''}`;
@@ -7558,7 +8427,7 @@ function genererPatientsDemo() {
       synthese: 'Schizophrénie paranoïde résistante (échec de rispéridone et d’olanzapine à posologie efficace). Clozapine depuis 6 mois avec nette réduction des hallucinations. Vit seul, curatelle simple.',
       vigilance: 1, vigtxt: 'Rupture de soins en 2023 avec hospitalisation en SDRE',
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
+      aRelayer: true, priorite: 1, statut: 'À faire', typeRelais: 'CMP', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
         { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
@@ -7618,7 +8487,7 @@ function genererPatientsDemo() {
       dp: 'F10.2 – Alcool : dépendance', ds: 'F32.1 – Épisode dépressif moyen',
       synthese: 'Dépendance à l’alcool ancienne, sevrage ambulatoire réussi il y a 4 mois, abstinent depuis. Épisode dépressif secondaire en amélioration.',
       rythme: 'Toutes les 6 semaines', prochain: j(6), tel: 'CSAPA du secteur',
-      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
+      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', typeRelais: 'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Sertraline (Zoloft)', dose: '100 mg/j', intro: j(-110), bil: {} },
         { g: 'fond', nom: 'Acamprosate (Aotal)', dose: '2 cp x 3/j', intro: j(-120), bil: {} },
@@ -7633,7 +8502,7 @@ function genererPatientsDemo() {
       dp: 'F90.0 – TDAH de l’adulte, présentation mixte', ds: '',
       synthese: 'TDAH diagnostiqué à 29 ans (bilan neuropsychologique concordant). Méthylphénidate efficace sur la concentration au travail.',
       rythme: 'Trimestriel', prochain: j(5), tel: 'Dr Arnaud, médecin traitant',
-      aRelayer: false, priorite: 4, statut: 'À faire',
+      aRelayer: true, priorite: 3, statut: 'Courrier / synthèse envoyée', typeRelais: 'Psychiatre libéral', cmp: 'Dr Lemaire, psychiatre libéral (Aix-en-Provence)',
       trt: [{ g: 'fond', nom: 'Méthylphénidate LP (Concerta)', dose: '36 mg le matin', intro: j(-200), bil: {} }],
       ech: [],
       obs: [note(-85, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nBonne efficacité, meilleure organisation professionnelle. Appétit diminué le midi, poids stable. TA 118/72, FC 78.\n\nCONDUITE À TENIR\n- Renouvellement (ordonnance sécurisée, 28 jours)')],
@@ -7644,7 +8513,7 @@ function genererPatientsDemo() {
       dp: 'F25.0 – Trouble schizo-affectif, type maniaque', ds: '',
       synthese: 'Trouble schizo-affectif évoluant depuis 30 ans, stabilisé sous aripiprazole injectable et valproate. Vit en famille d’accueil.',
       rythme: 'Mensuel', prochain: j(12), tel: 'Famille d’accueil : M. et Mme Ortiz', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
+      aRelayer: true, priorite: 3, statut: 'RDV fixé avec le receveur', typeRelais: 'CMP', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Aripiprazole LP injectable (Abilify Maintena)', dose: '400 mg/mois', intro: j(-1500), pre: j(-1500), bil: { bio: j(-200) } },
         { g: 'fond', nom: 'Valproate (Dépakote)', dose: '1000 mg/j', intro: j(-3000), pre: j(-3000), bil: { bio: j(-150) } },
@@ -7672,7 +8541,7 @@ function genererPatientsDemo() {
       synthese: 'Premier épisode psychotique il y a 2 mois dans un contexte de consommation de cannabis. Hospitalisation de 3 semaines. Suivi intensif post-hospitalisation.',
       vigilance: 1, vigtxt: 'Premier épisode : risque de rupture de soins et de rechute',
       rythme: 'Tous les 15 jours', prochain: j(1), tel: 'Parents (accord du patient)',
-      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
+      aRelayer: true, priorite: 2, statut: 'À faire', typeRelais: 'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
       trt: [{ g: 'fond', nom: 'Aripiprazole (Abilify)', dose: '10 mg/j', intro: j(-60), bil: {} }],
       ech: [],
       obs: [note(-12, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nAmendement des idées délirantes. Persistance d’un émoussement affectif. Abstinence de cannabis déclarée depuis la sortie.\n\nCONDUITE À TENIR\n- Bilan métabolique de surveillance\n- Orientation vers l’équipe de premiers épisodes')],
@@ -7680,10 +8549,48 @@ function genererPatientsDemo() {
   ];
 }
 
+/** Rendez-vous fictifs autour d'aujourd'hui (jours ouvrés). */
+function genererRdvDemo() {
+  const ouvre = n => { let d = ajouterJours(aujourdhui(), n); while (d.getDay() === 0 || d.getDay() === 6) d = ajouterJours(d, n < 0 ? -1 : 1); return versIso(d); };
+  const R = [];
+  const add = (patientId, jour, debut, type = 'Consultation de suivi', statut = 'Prévu', duree = 30, lieu = 'Cabinet / bureau', libelle = '', notes = '') =>
+    R.push({ id: `demo-rdv-${R.length}`, demo: true, patientId, libelle, date: ouvre(jour), debut, duree, type, lieu, statut, notes });
+  add('demo-01', 0, '09:00', 'Consultation de suivi', 'Confirmé');
+  add('demo-02', 0, '09:45', 'Consultation de suivi', 'Prévu', 30, 'CMP', '', 'Apporter le carnet de suivi clozapine.');
+  add('demo-03', 0, '10:30', 'Consultation de suivi', 'Prévu', 45);
+  add('', 0, '13:30', 'Réunion, synthèse', 'Prévu', 60, 'Service', 'Synthèse d’équipe');
+  add('demo-10', 1, '09:30', 'Consultation post-hospitalisation', 'Prévu', 45);
+  add('demo-05', 2, '15:00');
+  add('', 2, '12:00', 'Indisponibilité', 'Prévu', 120, '', 'Formation');
+  add('demo-04', 3, '14:00', 'Consultation de suivi', 'Prévu', 60, 'Cabinet / bureau', '', 'Restitution des autoquestionnaires.');
+  add('demo-07', 4, '16:30', 'Téléconsultation', 'Prévu', 20, 'Téléconsultation');
+  add('demo-06', 5, '09:30');
+  add('demo-09', 8, '11:00');
+  add('demo-08', 10, '10:00', 'Injection retard / soin', 'Prévu', 20, 'CMP');
+  add('demo-01', -7, '09:00', 'Consultation de suivi', 'Honoré');
+  add('demo-05', -2, '15:00', 'Consultation de suivi', 'Honoré');
+  add('demo-03', -6, '10:30', 'Consultation de suivi', 'Honoré', 45);
+  add('demo-09', -3, '11:00', 'Consultation de suivi', 'Non venu');
+  add('demo-02', -14, '09:45', 'Consultation de suivi', 'Honoré', 30, 'CMP');
+  add('demo-06', -4, '14:00', 'Consultation de suivi', 'Annulé (patient)');
+  return R;
+}
+
 function chargerDemo() {
   const deja = patients.some(p => p.demo);
   if (deja && !confirm('Des patients fictifs sont déjà chargés. Les remplacer par une version à jour ?')) return;
   patients = patients.filter(p => !p.demo).concat(genererPatientsDemo());
+  // Deux équipes infirmières fictives, rattachées à deux patients.
+  if (typeof lireEquipesIde === 'function') {
+    ecrireEquipesIde([...lireEquipesIde().filter(e => !e.demo),
+      { id: 'demo-ide-1', demo: true, nom: 'Cabinet infirmier des Oliviers (fictif)', type: 'Cabinet infirmier libéral', secteur: 'Marseille 4e, 5e, 12e', telephone: '04 00 00 00 10', telephone2: '06 00 00 00 10', email: 'cabinet.oliviers@exemple.mssante.fr', adresse: '10 rue Exemple, 13005 Marseille', contacts: 'Mme MARTIN (référente), M. DURAND', notes: 'Passages 7 j/7 matin et soir ; injections retard au domicile.' },
+      { id: 'demo-ide-2', demo: true, nom: 'IDE du CMP secteur 13G03 (fictif)', type: 'IDE du CMP / secteur', telephone: '04 00 00 00 20', notes: 'Visites à domicile du lundi au vendredi.' }]);
+    patients.forEach(p => { if (p.id === 'demo-02') p.ideEquipe = 'demo-ide-1'; if (p.id === 'demo-08') p.ideEquipe = 'demo-ide-2'; });
+  }
+  if (typeof lireRdv === 'function') {
+    ecrireRdv([...lireRdv().filter(r => !r.demo), ...genererRdvDemo()]);
+    synchroniserProchain(patients.filter(p => p.demo).map(p => p.id));
+  }
   sauvegarderPatients();
   definirPatientCourant('demo-01', true);
   afficherTableau();
@@ -7695,6 +8602,8 @@ function retirerDemo() {
   if (!n) return toast('Aucun patient fictif à retirer.');
   if (!confirm(`Retirer les ${n} patients fictifs ? Les vraies fiches ne sont pas touchées.`)) return;
   patients = patients.filter(p => !p.demo);
+  if (typeof lireEquipesIde === 'function') ecrireEquipesIde(lireEquipesIde().filter(e => !e.demo));
+  if (typeof lireRdv === 'function') ecrireRdv(lireRdv().filter(r => !r.demo));
   sauvegarderPatients();
   if (typeof consPatientId !== 'undefined' && String(consPatientId).startsWith('demo-')) definirPatientCourant('', true);
   afficherTableau();
@@ -7882,7 +8791,7 @@ function contexteFormulaire(traitement) {
 // Champs texte de la fiche : chaque id de champ = propriété enregistrée.
 const CHAMPS_FICHE = [
   'nom', 'prenom', 'ddn', 'sexe', 'dossier', 'aldTexte', 'allergies', 'dp', 'ds', 'synthese', 'vigtxt',
-  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp', 'relaisVers',
+  'rythme', 'prochain', 'tel', 'ideEquipe', 'notes', 'priorite', 'statut', 'typeRelais', 'cmp', 'relaisVers',
 ];
 
 
@@ -7895,6 +8804,8 @@ function remplirListesModifiables() {
   remplirSelect($('statut'), statuts.map(s => [s, s]));
   remplirSelect($('rythme'), rythmes.map(r => [r, r]));
   remplirSelect($('relaisVers'), RELAIS_VERS.map(s => [s, s]), 'Non précisé');
+  remplirSelect($('typeRelais'), TYPES_RELAIS.map(s => [s, s]), 'Non précisé');
+  if (!$('filtreTypeRelais').options.length) remplirSelect($('filtreTypeRelais'), TYPES_RELAIS.map(s => [s, s.replace(/ \(.*\)$/, '')]), 'Tous types de relais');
   if (!$('filtreRelaisVers').options.length) remplirSelect($('filtreRelaisVers'), [...RELAIS_VERS.map(s => [s, 'Relais vers ' + s.toLowerCase()]), ['-', 'Relais vers : non précisé']], 'Relais vers : tous');
 
   const filtreActuel = $('filtreStatut').value;               // on garde la sélection en cours
@@ -7921,6 +8832,7 @@ function remplirListesFixes() {
 // Ordre = ordre affiché dans la navigation (et raccourcis Alt+1 … Alt+9).
 const ONGLETS = [
   ['accueil', 'ongletAccueil', 'vueAccueil'],
+  ['agenda', 'ongletAgenda', 'vueAgenda'],
   ['consultation', 'ongletConsultation', 'vueConsultation'],
   ['observation', 'ongletObservation', 'vueObservation'],
   ['echelles', 'ongletEchelles', 'vueEchelles'],
@@ -7936,7 +8848,7 @@ const ongletPatients = () => onglet === 'active' || onglet === 'relais';
 function afficherOnglets() {
   ONGLETS.forEach(([valeur, bouton]) => $(bouton).setAttribute('aria-selected', String(onglet === valeur)));
   const sectionVisible = (ONGLETS.find(([valeur]) => valeur === onglet) || ONGLETS[0])[2];
-  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil'].forEach(id => { $(id).hidden = id !== sectionVisible; });
+  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil', 'vueAgenda'].forEach(id => { $(id).hidden = id !== sectionVisible; });
 
   // Filtres « priorité » et « statut du relais » : uniquement dans l'onglet relais.
   document.querySelectorAll('.relais-seul').forEach(element => { element.hidden = !enRelais(); });
@@ -7944,7 +8856,7 @@ function afficherOnglets() {
   // Vues proposées : « Par CMP » n'existe que dans l'onglet relais.
   const vueActuelle = $('vue').value;
   const vues = [['liste', 'Vue liste']];
-  if (enRelais()) vues.push(['cmp', 'Vue par CMP']);
+  if (enRelais()) vues.push(['cmp', 'Vue par destinataire']);
   vues.push(['bilans', 'Bilans à faire']);
   remplirSelect($('vue'), vues);
   $('vue').value = vues.some(([valeur]) => valeur === vueActuelle) ? vueActuelle : 'liste';
@@ -7975,6 +8887,7 @@ function afficherModule(idPatient) {
   if (onglet === 'consultation') afficherVueConsultation(idPatient);
   if (onglet === 'documents') afficherVueDocuments(idPatient);
   if (onglet === 'accueil') afficherAccueil();
+  if (onglet === 'agenda') afficherAgenda();
   synchroniserPatientCourant();
 }
 
@@ -8039,11 +8952,13 @@ function patientsFiltres() {
   const statut = enRelais() ? $('filtreStatut').value : '';
   const seulementRetard = $('filtreBilans').value;
   const relaisVers = enRelais() ? $('filtreRelaisVers').value : '';
+  const typeRelais = enRelais() ? $('filtreTypeRelais').value : '';
   const base = enRelais() ? patients.filter(estARelayer) : patients;
 
   return base.filter(p => {
     if (priorite && p.priorite != priorite) return false;
     if (statut && p.statut !== statut) return false;
+    if (typeRelais && (p.typeRelais || 'CMP') !== typeRelais) return false;
     if (relaisVers && (relaisVers === '-' ? !!p.relaisVers : p.relaisVers !== relaisVers)) return false;
     if (seulementRetard && !listerAlertes(p).some(a => a.statut === 'retard')) return false;
 
@@ -8104,7 +9019,7 @@ function htmlLignePatient(p) {
 
   const cellulePatient = `
       <td>
-        <b>${echapper(p.nom.toUpperCase())}</b> ${echapper(p.prenom)}${p.ald ? ' <span class="tag t4">ALD</span>' : ''}
+        <b>${echapper(p.nom.toUpperCase())}</b> ${echapper(p.prenom)}${p.ald ? ' <span class="tag t4">ALD</span>' : ''}${equipeDuPatient(p) ? ` <span class="tag tag-ide" title="Soins infirmiers : ${echapper(resumeEquipeIde(equipeDuPatient(p)))}">IDE</span>` : ''}
         <div class="sec">
           ${[libelleSexe(p.sexe), p.ddn ? formaterDate(p.ddn) + ' · ' + calculerAge(p.ddn) + ' ans' : ''].filter(Boolean).join(' · ')}
           ${p.dossier ? '<br>N° ' + echapper(p.dossier) : ''}
@@ -8140,11 +9055,11 @@ function htmlLignePatient(p) {
     celluleRelais = `
       <td class="st ${clos ? 'clos' : ''}">
         ${echapper(p.statut)}
-        ${p.cmp ? `<div class="sec">${echapper(p.cmp)}</div>` : ''}
+        ${p.cmp || p.typeRelais ? `<div class="sec">${echapper(libelleDestinataire(p))}</div>` : ''}
         ${etiquetteRelaisVers(p)}
       </td>`;
   } else if (estARelayer(p)) {
-    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
+    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp || p.typeRelais ? ' · ' + echapper(libelleDestinataire(p)) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
   } else {
     celluleRelais = '<td class="st"><span class="sec">Non concerné</span></td>';
   }
@@ -8156,7 +9071,7 @@ function htmlLignePatient(p) {
   return `<tr data-id="${p.id}" tabindex="0">${cellules.join('')}</tr>`;
 }
 
-/** Vue « Par CMP » (onglet relais) : patients regroupés par CMP receveur. */
+/** Vue « Par destinataire » (onglet relais) : patients regroupés par CMP, praticien ou structure receveur. */
 function htmlVueParCmp(liste) {
   const groupes = {};
   liste.forEach(p => {
@@ -8226,7 +9141,7 @@ function afficherTableau() {
 
   $('messageVide').hidden = liste.length > 0;
   $('messageVide').textContent = enRelais()
-    ? 'Aucun patient à relayer. Cochez « Patient à relayer vers un CMP » dans une fiche.'
+    ? 'Aucun patient à relayer. Cochez « Patient à relayer » dans une fiche.'
     : 'Aucun patient. Cliquez sur « Nouveau patient » pour commencer.';
   afficherStatistiques();
   if ($('nbAccueil')) $('nbAccueil').textContent = compteurAccueil() || '';
@@ -8446,6 +9361,10 @@ function gererChangementTraitements(evenement) {
 /** Affiche ou masque les champs de relais selon la case « Patient à relayer ». */
 function afficherSectionRelais() {
   $('sectionRelais').hidden = !$('aRelayer').checked;
+  // « Interne ou sénior » : seulement pour un relais vers une équipe (CMP, structure).
+  const t = $('typeRelais').value;
+  $('zoneRelaisVers').hidden = RELAIS_SANS_NIVEAU.includes(t);
+  $('cmp').placeholder = t === 'Psychiatre libéral' ? 'ex. Dr NOM, psychiatre, ville' : t === 'Médecin traitant' ? 'ex. Dr NOM, médecin généraliste' : t === 'CMP' ? 'ex. CMP secteur 13G05' : t ? 'ex. CSAPA, hôpital de jour, centre expert…' : '';
 }
 
 /** Affiche ou masque le champ « ALD : numéro / intitulé » selon la case ALD. */
@@ -8530,6 +9449,7 @@ function brancherEvenements() {
   $('ongletConsultation').onclick = () => changerOnglet('consultation');
   $('ongletDocuments').onclick = () => changerOnglet('documents');
   $('ongletAccueil').onclick = () => changerOnglet('accueil');
+  $('ongletAgenda').onclick = () => changerOnglet('agenda');
   $('btnNouveauGlobal').onclick = () => ouvrirFiche(null);
 
   // Depuis la fiche : ouvrir un module sur ce patient (la fiche est enregistrée d'abord).
@@ -8550,6 +9470,7 @@ function brancherEvenements() {
   $('btnAnnuler').onclick = () => $('fenetrePatient').close();
   $('btnNouveau').onclick = () => ouvrirFiche(null);
   $('aRelayer').addEventListener('change', afficherSectionRelais);
+  $('typeRelais').addEventListener('change', afficherSectionRelais);
   $('ald').addEventListener('change', afficherSectionAld);
   $('btnSupprimer').onclick = () => {
     if (!confirm('Supprimer définitivement cette fiche ?')) return;
@@ -8593,7 +9514,7 @@ function brancherEvenements() {
   });
 
   // --- Recherche, filtres, choix de la vue ---
-  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreRelaisVers', 'filtreBilans', 'vue']
+  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreTypeRelais', 'filtreRelaisVers', 'filtreBilans', 'vue']
     .forEach(id => $(id).addEventListener('input', afficherTableau));
 
   // --- Import / export / impression ---
@@ -8678,6 +9599,63 @@ brancherEvenements();
 brancherSauvegarde();
 afficherTableau();
 if (!ongletPatients()) afficherModule();
+
+</script>
+  <script>
+/* =====================================================================
+   FICHE.JS — fiche patient en trois onglets : identité, synthèse et
+   traitements, relais
+   ---------------------------------------------------------------------
+   Nouveau patient : la fiche s'ouvre sur « Identité » (bouton
+   « Suivant » pour passer aux onglets suivants). Patient existant : elle
+   s'ouvre sur « Synthèse et traitements ».
+   ===================================================================== */
+
+// Champs ajoutés à la fiche (identité, entourage).
+CHAMPS_FICHE.push('telPatient', 'adresse', 'personneConfiance', 'protection', 'protecteur');
+const ORDRE_ONGLETS_FICHE = ['identite', 'synthese', 'relais'];
+
+function afficherOngletFiche(nom) {
+  document.querySelectorAll('[data-fiche-onglet]').forEach(b => {
+    const actif = b.dataset.ficheOnglet === nom;
+    b.classList.toggle('on', actif);
+    b.setAttribute('aria-selected', String(actif));
+  });
+  document.querySelectorAll('[data-fiche-panneau]').forEach(p => { p.hidden = p.dataset.fichePanneau !== nom; });
+  $('ficheSuivant').hidden = nom === ORDRE_ONGLETS_FICHE[ORDRE_ONGLETS_FICHE.length - 1];
+  majIndicateursFiche();
+}
+
+function majIndicateursFiche() {
+  $('fichePastilleRelais').hidden = !$('aRelayer').checked;
+  $('zoneProtecteur').hidden = !$('protection').value;
+}
+
+(function brancherFiche() {
+  document.querySelector('.fiche-onglets').addEventListener('click', e => {
+    const b = e.target.closest('[data-fiche-onglet]');
+    if (b) afficherOngletFiche(b.dataset.ficheOnglet);
+  });
+  $('ficheSuivant').onclick = () => {
+    const actuel = document.querySelector('[data-fiche-onglet].on').dataset.ficheOnglet;
+    afficherOngletFiche(ORDRE_ONGLETS_FICHE[Math.min(ORDRE_ONGLETS_FICHE.indexOf(actuel) + 1, ORDRE_ONGLETS_FICHE.length - 1)]);
+  };
+  $('aRelayer').addEventListener('change', majIndicateursFiche);
+  $('protection').addEventListener('change', majIndicateursFiche);
+  // Champ obligatoire vide dans un onglet masqué : afficher cet onglet avant que le navigateur ne le signale.
+  $('formPatient').addEventListener('invalid', e => {
+    const panneau = e.target.closest('[data-fiche-panneau]');
+    if (panneau && panneau.hidden) afficherOngletFiche(panneau.dataset.fichePanneau);
+  }, true);
+  // À chaque ouverture : onglet adapté (nouveau patient → identité ; patient existant → synthèse).
+  const ouvrirFicheSeule = ouvrirFiche;
+  ouvrirFiche = function (id, ...reste) {
+    const r = ouvrirFicheSeule(id, ...reste);
+    afficherOngletFiche(id ? 'synthese' : 'identite');
+    if (!id) setTimeout(() => $('nom').focus(), 0);
+    return r;
+  };
+})();
 
 </script>
   <script>
@@ -8788,6 +9766,8 @@ const ICONES = {
   relais: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   praticien: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17a4 4 0 0 1 8 0"/>',
   reglages: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  calendrier: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2"/>',
+  ide: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
   crayon: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
   changer: '<path d="M7 7h12l-3-3M17 17H5l3 3"/>',
   fermer: '<path d="M6 6l12 12M18 6 6 18"/>',
@@ -8830,6 +9810,7 @@ function toast(texte, type = 'info') {
   t.className = 'toast ' + type;
   t.textContent = texte;
   zone.appendChild(t);
+  while (zone.children.length > 3) zone.firstChild.remove();   // trois notifications au plus
   requestAnimationFrame(() => t.classList.add('visible'));
   setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 300); }, 3200);
 }

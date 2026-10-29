@@ -55,7 +55,7 @@ function genererPatientsDemo() {
       synthese: 'Schizophrénie paranoïde résistante (échec de rispéridone et d’olanzapine à posologie efficace). Clozapine depuis 6 mois avec nette réduction des hallucinations. Vit seul, curatelle simple.',
       vigilance: 1, vigtxt: 'Rupture de soins en 2023 avec hospitalisation en SDRE',
       rythme: 'Tous les 15 jours', prochain: j(0), tel: 'IDE CMP : Mme Rossi', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 1, statut: 'À faire', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
+      aRelayer: true, priorite: 1, statut: 'À faire', typeRelais: 'CMP', cmp: 'CMP secteur 13G05', relaisVers: 'Sénior',
       trt: [
         { g: 'fond', nom: 'Clozapine (Léponex)', dose: '350 mg/j', intro: j(-185), pre: j(-190), bil: { pnn: j(-40), met: j(-100) } },
         { g: 'symp', nom: 'Cyamémazine (Tercian)', dose: '25 mg si besoin', intro: j(-185), bil: {} },
@@ -115,7 +115,7 @@ function genererPatientsDemo() {
       dp: 'F10.2 – Alcool : dépendance', ds: 'F32.1 – Épisode dépressif moyen',
       synthese: 'Dépendance à l’alcool ancienne, sevrage ambulatoire réussi il y a 4 mois, abstinent depuis. Épisode dépressif secondaire en amélioration.',
       rythme: 'Toutes les 6 semaines', prochain: j(6), tel: 'CSAPA du secteur',
-      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
+      aRelayer: true, priorite: 2, statut: 'Courrier / synthèse envoyée', typeRelais: 'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)', cmp: 'CSAPA Marseille Centre', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Sertraline (Zoloft)', dose: '100 mg/j', intro: j(-110), bil: {} },
         { g: 'fond', nom: 'Acamprosate (Aotal)', dose: '2 cp x 3/j', intro: j(-120), bil: {} },
@@ -130,7 +130,7 @@ function genererPatientsDemo() {
       dp: 'F90.0 – TDAH de l’adulte, présentation mixte', ds: '',
       synthese: 'TDAH diagnostiqué à 29 ans (bilan neuropsychologique concordant). Méthylphénidate efficace sur la concentration au travail.',
       rythme: 'Trimestriel', prochain: j(5), tel: 'Dr Arnaud, médecin traitant',
-      aRelayer: false, priorite: 4, statut: 'À faire',
+      aRelayer: true, priorite: 3, statut: 'Courrier / synthèse envoyée', typeRelais: 'Psychiatre libéral', cmp: 'Dr Lemaire, psychiatre libéral (Aix-en-Provence)',
       trt: [{ g: 'fond', nom: 'Méthylphénidate LP (Concerta)', dose: '36 mg le matin', intro: j(-200), bil: {} }],
       ech: [],
       obs: [note(-85, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nBonne efficacité, meilleure organisation professionnelle. Appétit diminué le midi, poids stable. TA 118/72, FC 78.\n\nCONDUITE À TENIR\n- Renouvellement (ordonnance sécurisée, 28 jours)')],
@@ -141,7 +141,7 @@ function genererPatientsDemo() {
       dp: 'F25.0 – Trouble schizo-affectif, type maniaque', ds: '',
       synthese: 'Trouble schizo-affectif évoluant depuis 30 ans, stabilisé sous aripiprazole injectable et valproate. Vit en famille d’accueil.',
       rythme: 'Mensuel', prochain: j(12), tel: 'Famille d’accueil : M. et Mme Ortiz', ald: true, aldTexte: 'ALD 23',
-      aRelayer: true, priorite: 3, statut: 'RDV CMP fixé', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
+      aRelayer: true, priorite: 3, statut: 'RDV fixé avec le receveur', typeRelais: 'CMP', cmp: 'CMP secteur 13G03', relaisVers: 'Interne',
       trt: [
         { g: 'fond', nom: 'Aripiprazole LP injectable (Abilify Maintena)', dose: '400 mg/mois', intro: j(-1500), pre: j(-1500), bil: { bio: j(-200) } },
         { g: 'fond', nom: 'Valproate (Dépakote)', dose: '1000 mg/j', intro: j(-3000), pre: j(-3000), bil: { bio: j(-150) } },
@@ -169,7 +169,7 @@ function genererPatientsDemo() {
       synthese: 'Premier épisode psychotique il y a 2 mois dans un contexte de consommation de cannabis. Hospitalisation de 3 semaines. Suivi intensif post-hospitalisation.',
       vigilance: 1, vigtxt: 'Premier épisode : risque de rupture de soins et de rechute',
       rythme: 'Tous les 15 jours', prochain: j(1), tel: 'Parents (accord du patient)',
-      aRelayer: true, priorite: 2, statut: 'À faire', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
+      aRelayer: true, priorite: 2, statut: 'À faire', typeRelais: 'Autre structure (CSAPA, CMPP, hôpital de jour, centre expert…)', cmp: 'Équipe premiers épisodes', relaisVers: 'Sénior',
       trt: [{ g: 'fond', nom: 'Aripiprazole (Abilify)', dose: '10 mg/j', intro: j(-60), bil: {} }],
       ech: [],
       obs: [note(-12, 'suivi', 'NOTE DE SUIVI\n\nÉVOLUTION\nAmendement des idées délirantes. Persistance d’un émoussement affectif. Abstinence de cannabis déclarée depuis la sortie.\n\nCONDUITE À TENIR\n- Bilan métabolique de surveillance\n- Orientation vers l’équipe de premiers épisodes')],
@@ -177,10 +177,48 @@ function genererPatientsDemo() {
   ];
 }
 
+/** Rendez-vous fictifs autour d'aujourd'hui (jours ouvrés). */
+function genererRdvDemo() {
+  const ouvre = n => { let d = ajouterJours(aujourdhui(), n); while (d.getDay() === 0 || d.getDay() === 6) d = ajouterJours(d, n < 0 ? -1 : 1); return versIso(d); };
+  const R = [];
+  const add = (patientId, jour, debut, type = 'Consultation de suivi', statut = 'Prévu', duree = 30, lieu = 'Cabinet / bureau', libelle = '', notes = '') =>
+    R.push({ id: `demo-rdv-${R.length}`, demo: true, patientId, libelle, date: ouvre(jour), debut, duree, type, lieu, statut, notes });
+  add('demo-01', 0, '09:00', 'Consultation de suivi', 'Confirmé');
+  add('demo-02', 0, '09:45', 'Consultation de suivi', 'Prévu', 30, 'CMP', '', 'Apporter le carnet de suivi clozapine.');
+  add('demo-03', 0, '10:30', 'Consultation de suivi', 'Prévu', 45);
+  add('', 0, '13:30', 'Réunion, synthèse', 'Prévu', 60, 'Service', 'Synthèse d’équipe');
+  add('demo-10', 1, '09:30', 'Consultation post-hospitalisation', 'Prévu', 45);
+  add('demo-05', 2, '15:00');
+  add('', 2, '12:00', 'Indisponibilité', 'Prévu', 120, '', 'Formation');
+  add('demo-04', 3, '14:00', 'Consultation de suivi', 'Prévu', 60, 'Cabinet / bureau', '', 'Restitution des autoquestionnaires.');
+  add('demo-07', 4, '16:30', 'Téléconsultation', 'Prévu', 20, 'Téléconsultation');
+  add('demo-06', 5, '09:30');
+  add('demo-09', 8, '11:00');
+  add('demo-08', 10, '10:00', 'Injection retard / soin', 'Prévu', 20, 'CMP');
+  add('demo-01', -7, '09:00', 'Consultation de suivi', 'Honoré');
+  add('demo-05', -2, '15:00', 'Consultation de suivi', 'Honoré');
+  add('demo-03', -6, '10:30', 'Consultation de suivi', 'Honoré', 45);
+  add('demo-09', -3, '11:00', 'Consultation de suivi', 'Non venu');
+  add('demo-02', -14, '09:45', 'Consultation de suivi', 'Honoré', 30, 'CMP');
+  add('demo-06', -4, '14:00', 'Consultation de suivi', 'Annulé (patient)');
+  return R;
+}
+
 function chargerDemo() {
   const deja = patients.some(p => p.demo);
   if (deja && !confirm('Des patients fictifs sont déjà chargés. Les remplacer par une version à jour ?')) return;
   patients = patients.filter(p => !p.demo).concat(genererPatientsDemo());
+  // Deux équipes infirmières fictives, rattachées à deux patients.
+  if (typeof lireEquipesIde === 'function') {
+    ecrireEquipesIde([...lireEquipesIde().filter(e => !e.demo),
+      { id: 'demo-ide-1', demo: true, nom: 'Cabinet infirmier des Oliviers (fictif)', type: 'Cabinet infirmier libéral', secteur: 'Marseille 4e, 5e, 12e', telephone: '04 00 00 00 10', telephone2: '06 00 00 00 10', email: 'cabinet.oliviers@exemple.mssante.fr', adresse: '10 rue Exemple, 13005 Marseille', contacts: 'Mme MARTIN (référente), M. DURAND', notes: 'Passages 7 j/7 matin et soir ; injections retard au domicile.' },
+      { id: 'demo-ide-2', demo: true, nom: 'IDE du CMP secteur 13G03 (fictif)', type: 'IDE du CMP / secteur', telephone: '04 00 00 00 20', notes: 'Visites à domicile du lundi au vendredi.' }]);
+    patients.forEach(p => { if (p.id === 'demo-02') p.ideEquipe = 'demo-ide-1'; if (p.id === 'demo-08') p.ideEquipe = 'demo-ide-2'; });
+  }
+  if (typeof lireRdv === 'function') {
+    ecrireRdv([...lireRdv().filter(r => !r.demo), ...genererRdvDemo()]);
+    synchroniserProchain(patients.filter(p => p.demo).map(p => p.id));
+  }
   sauvegarderPatients();
   definirPatientCourant('demo-01', true);
   afficherTableau();
@@ -192,6 +230,8 @@ function retirerDemo() {
   if (!n) return toast('Aucun patient fictif à retirer.');
   if (!confirm(`Retirer les ${n} patients fictifs ? Les vraies fiches ne sont pas touchées.`)) return;
   patients = patients.filter(p => !p.demo);
+  if (typeof lireEquipesIde === 'function') ecrireEquipesIde(lireEquipesIde().filter(e => !e.demo));
+  if (typeof lireRdv === 'function') ecrireRdv(lireRdv().filter(r => !r.demo));
   sauvegarderPatients();
   if (typeof consPatientId !== 'undefined' && String(consPatientId).startsWith('demo-')) definirPatientCourant('', true);
   afficherTableau();

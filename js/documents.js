@@ -19,10 +19,11 @@ const TYPES_DOCUMENTS = [
     ['ordoTtt', 'Ordonnance de traitement (renouvellement)'],
     ['ordoBio', 'Ordonnance de bilans biologiques (surveillance)'],
     ['ordoBioLibre', 'Bilan biologique en texte libre'],
+    ['ordoIde', 'Ordonnance de soins infirmiers (IDE, BSI)'],
   ] },
   { groupe: 'Courriers', types: [
     ['cr', 'Compte rendu au médecin traitant'],
-    ['relais', 'Courrier de relais (CMP, confrère)'],
+    ['relais', 'Courrier de relais (CMP, confrère, structure)'],
     ['confrere', 'Réponse à un confrère'],
   ] },
   { groupe: 'Certificats', types: [
@@ -56,6 +57,25 @@ const CHAMPS_DOCUMENTS = {
     { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
     { id: 'mentions', type: 'zone', lignes: 2, label: 'Mentions complémentaires (facultatif)', aide: 'ex. délivrance fractionnée par 7 jours ; non substituable (motif) ; prise du soir…' },
   ],
+  ordoIde: [
+    { id: 'equipe', type: 'texte', label: 'Équipe à mentionner (facultatif : le patient garde le libre choix de son infirmier(e))', aide: 'ex. Cabinet infirmier des Oliviers' },
+    { id: 'lieu', type: 'choix', label: 'Lieu', options: ['À domicile', 'Au cabinet infirmier'], defaut: () => 'À domicile' },
+    { id: 'administration', type: 'case', label: 'Administration et surveillance de la prise du traitement oral, avec fiche de surveillance', defaut: () => true },
+    { id: 'passages', type: 'choix', label: 'Passages par jour', options: ['1', '2', '3'], defaut: () => '1', si: (p, v) => !!(v || docValeurs).administration },
+    { id: 'pilulier', type: 'case', label: 'Préparation hebdomadaire du pilulier' },
+    { id: 'injection', type: 'case', label: 'Injection intramusculaire d’antipsychotique d’action prolongée', defaut: p => !!lignesInjectables(p) },
+    { id: 'injDetail', type: 'texte', label: 'Spécialité, dose et rythme de l’injection', defaut: p => lignesInjectables(p), aide: 'ex. Palipéridone (Xeplion) 100 mg, toutes les 4 semaines', si: (p, v) => !!(v || docValeurs).injection },
+    { id: 'surveillance', type: 'case', label: 'Surveillance clinique (observance, tolérance, signes de rechute, risque suicidaire) avec transmissions au prescripteur', defaut: () => true },
+    { id: 'constantes', type: 'case', label: 'Surveillance des constantes (pression artérielle, pouls, poids)' },
+    { id: 'prelevement', type: 'case', label: 'Prélèvement sanguin à domicile' },
+    { id: 'prelevementDetail', type: 'texte', label: 'Examens à prélever', aide: 'ex. NFS (carnet clozapine), lithémie 12 h après la prise', si: (p, v) => !!(v || docValeurs).prelevement },
+    { id: 'bsi', type: 'case', label: 'Réalisation d’un bilan de soins infirmiers (BSI) et soins infirmiers en découlant (patient dépendant)' },
+    { id: 'autres', type: 'zone', lignes: 2, label: 'Autres soins (facultatif)', aide: 'ex. accompagnement à la reprise d’autonomie dans la prise du traitement' },
+    { id: 'duree', type: 'choix', label: 'Durée', options: ['15 jours', '1 mois', '3 mois'], defaut: () => '1 mois' },
+    { id: 'joursFeries', type: 'case', label: 'Dimanches et jours fériés inclus', defaut: () => true },
+    { id: 'renouvellement', type: 'choix', label: 'Renouvellement', options: ['Non renouvelable', 'À renouveler 1 fois', 'À renouveler 2 fois'], defaut: () => 'Non renouvelable' },
+    { id: 'ald', type: 'choix', label: 'Patient en ALD : cette prescription est', options: ['En rapport avec l’ALD', 'Sans rapport avec l’ALD'], defaut: () => 'En rapport avec l’ALD', si: p => !!p.ald },
+  ],
   certificat: [
     { id: 'objet', type: 'choix', label: 'Objet', options: ['Présence en consultation', 'Suivi en cours', 'Constatations (texte libre)'], defaut: () => 'Présence en consultation' },
     { id: 'dateConsult', type: 'texte', label: 'Date de la consultation', defaut: () => formaterDate(aujourdhuiIso()), si: (p, v) => (v || docValeurs).objet === 'Présence en consultation' },
@@ -82,13 +102,14 @@ const CHAMPS_DOCUMENTS = {
     { id: 'conduite', type: 'zone', lignes: 3, label: 'Conduite à tenir', defaut: (p, n) => conduiteNote(n) },
   ],
   relais: [
-    { id: 'destinataire', type: 'texte', label: 'Destinataire (CMP, confrère)', defaut: p => p.cmp || '' },
+    { id: 'destinataire', type: 'texte', label: 'Destinataire (CMP, confrère, structure)', defaut: p => p.cmp || '' },
     { id: 'motifRelais', type: 'texte', label: 'Motif du relais', aide: 'ex. fin de mon exercice dans le service ; déménagement ; réorientation…' },
     { id: 'histoire', type: 'zone', lignes: 5, label: 'Synthèse clinique', defaut: p => p.synthese || '' },
     { id: 'diagnostic', type: 'texte', label: 'Diagnostics', defaut: p => [p.dp, p.ds].filter(Boolean).join(' ; ') },
     { id: 'traitement', type: 'zone', lignes: 3, label: 'Traitement actuel', defaut: p => traitementsEnCours(p) },
     { id: 'surveillance', type: 'zone', lignes: 2, label: 'Surveillance biologique à prévoir', defaut: p => bilansAPrevoir(p) },
     { id: 'vigilance', type: 'zone', lignes: 2, label: 'Points de vigilance', defaut: p => (p.vigilance ? (p.vigtxt || 'Point de vigilance signalé') : '') },
+    { id: 'ide', type: 'texte', label: 'Soins infirmiers en cours', defaut: p => resumeEquipeIde(equipeDuPatient(p)) },
     { id: 'suivi', type: 'texte', label: 'Rythme de suivi actuel', defaut: p => p.rythme || '' },
   ],
   confrere: [
@@ -189,6 +210,12 @@ function conduiteNote(n) {
 function facteursProtectionNote(n) {
   return n && n.etat && Array.isArray(n.etat.facteursProtection) ? n.etat.facteursProtection.join(', ') : '';
 }
+/** Antipsychotiques d'action prolongée de la fiche (pour l'ordonnance de soins infirmiers). */
+function lignesInjectables(p) {
+  const motif = /lai|injectable|d[ée]canoa|palmitate|consta|xeplion|trevicta|byannli|maintena|zypadhera|mod[ée]cate|piportil|action prolong/i;
+  return (p.trt || []).filter(t => !t.fin && t.g !== 'somat' && motif.test(t.nom || ''))
+    .map(t => [t.nom, t.dose].filter(Boolean).join(' ')).join(' ; ');
+}
 function traitementsEnCours(p) {
   return texteTraitements(p, '\n');
 }
@@ -233,6 +260,30 @@ function redigerDocument(type, p, v) {
       `Traitement pour ${v.duree || '1 mois'}. ${v.renouvellement || 'Non renouvelable'}.`,
       (v.mentions || '').trim()].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
   }
+  if (type === 'ordoIde') {
+    const ald = p.ald && v.ald;
+    const qui = 'un(e) infirmier(e) diplômé(e) d’État' + (v.equipe && v.equipe.trim() ? `, équipe : ${v.equipe.trim()}` : '');
+    const soins = [
+      v.administration ? `Administration et surveillance de la prise du traitement par voie orale, ${v.passages || '1'} passage${(v.passages || '1') === '1' ? '' : 's'} par jour, avec établissement d’une fiche de surveillance. Du fait de ses troubles psychiatriques, ${p.sexe === 'F' ? 'la patiente' : p.sexe === 'M' ? 'le patient' : 'le/la patient(e)'} n’est pas en mesure de s’auto-administrer son traitement.` : '',
+      v.pilulier ? 'Préparation hebdomadaire du pilulier.' : '',
+      v.injection ? `Injection intramusculaire${v.injDetail ? ' : ' + v.injDetail.trim() : ' d’antipsychotique d’action prolongée (spécialité, dose, rythme : ……………………)'}.` : '',
+      v.surveillance ? 'Surveillance de l’état clinique : observance, tolérance du traitement, signes de rechute, risque suicidaire ; transmission au médecin prescripteur de tout élément inquiétant.' : '',
+      v.constantes ? 'Surveillance des constantes : pression artérielle, pouls, poids.' : '',
+      v.prelevement ? `Prélèvement sanguin à domicile${v.prelevementDetail ? ' : ' + v.prelevementDetail.trim() : ''}.` : '',
+      v.bsi ? 'Réalisation d’un bilan de soins infirmiers (BSI) et soins infirmiers en découlant, pour un patient dépendant.' : '',
+      ...String(v.autres || '').split('\n').map(l => l.trim()).filter(Boolean),
+    ].filter(Boolean);
+    const traitement = texteTraitements(p, ' ; ');
+    return [`${ville}, le ${date}`, '',
+      `${ident}${p.ddn ? ', ' + calculerAge(p.ddn) + ' ans' : ''}`, '',
+      ald ? (v.ald === 'En rapport avec l’ALD'
+        ? 'PRESCRIPTIONS RELATIVES AU TRAITEMENT DE L’AFFECTION DE LONGUE DURÉE RECONNUE (AFFECTION EXONÉRANTE)'
+        : 'PRESCRIPTIONS SANS RAPPORT AVEC L’AFFECTION DE LONGUE DURÉE (MALADIES INTERCURRENTES)') + '\n' : '',
+      `Faire pratiquer par ${qui}, ${(v.lieu || 'À domicile').toLowerCase()}, pendant ${v.duree || '1 mois'}${v.joursFeries ? ', dimanches et jours fériés inclus' : ''} :`,
+      ...(soins.length ? soins.map(l => '- ' + l) : ['- ……………………………']), '',
+      traitement ? `Traitement en cours : ${traitement}.` : '',
+      `${v.renouvellement || 'Non renouvelable'}.`].filter((l, i, t) => !(l === '' && t[i - 1] === '')).join('\n').trim();
+  }
   if (type === 'certificat') {
     const fe = p.sexe === 'F' ? 'e' : p.sexe === 'M' ? '' : '(e)';
     const corps = v.objet === 'Suivi en cours'
@@ -275,7 +326,7 @@ function redigerDocument(type, p, v) {
       'Cher confrère, chère consœur,', '',
       `Je vous adresse ${ident}, que je suis${v.suivi ? ` (suivi ${v.suivi.toLowerCase()})` : ''}, pour la poursuite de sa prise en charge${v.motifRelais ? ', ' + v.motifRelais.replace(/\.$/, '') : ''}.`, '',
       ligneSi('Diagnostics', v.diagnostic), ligneSi('Synthèse clinique', v.histoire), ligneSi('Traitement actuel', v.traitement),
-      ligneSi('Surveillance biologique à prévoir', v.surveillance), ligneSi('Points de vigilance', v.vigilance),
+      ligneSi('Surveillance biologique à prévoir', v.surveillance), ligneSi('Points de vigilance', v.vigilance), ligneSi('Soins infirmiers en cours', v.ide),
       'Je vous remercie de bien vouloir assurer la suite de la prise en charge et reste à votre disposition.', '', 'Bien confraternellement,', '', nom]
       .join('\n').replace(/\n{3,}/g, '\n\n');
   }
@@ -368,7 +419,7 @@ let docTexteModifie = false;
 const patientDoc = () => patients.find(p => p.id === docPatientId);
 
 // Raccourcis affichés en permanence ; tous les autres documents sont dans la liste déroulante.
-const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
+const DOCUMENTS_RAPIDES = [['ordoTtt', 'Ordonnance'], ['ordoBioLibre', 'Bilan biologique'], ['ordoIde', 'Soins infirmiers'], ['cr', 'Compte rendu'], ['relais', 'Relais'], ['certificat', 'Certificat']];
 
 function htmlVueDocuments() {
   return `
@@ -438,6 +489,8 @@ function initialiserDocuments() {
     const id = e.target.dataset.doc;
     if (!id) return;
     docValeurs[id] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    // Case qui fait apparaître des précisions (ordonnance de soins infirmiers) : réafficher les champs.
+    if (e.target.type === 'checkbox' && (CHAMPS_DOCUMENTS[docType] || []).some(c => c.si && c.si.length >= 2)) afficherChampsDocument();
     majDocument();
     if (docType === 'ordoTtt') afficherAvertissementOrdo();
   });
@@ -498,7 +551,8 @@ function nouveauDocument() {
   docTexteModifie = false;
   if (p) {
     const n = derniereNote(p);
-    champsDocument(docType).forEach(c => { if (c.defaut) docValeurs[c.id] = c.defaut(p, n); });
+    // Deux passages : les valeurs par défaut font apparaître des champs conditionnels qui ont eux-mêmes une valeur par défaut.
+    for (let i = 0; i < 2; i++) champsDocument(docType).forEach(c => { if (c.defaut && docValeurs[c.id] === undefined) docValeurs[c.id] = c.defaut(p, n); });
     // Plan de sécurité déjà établi : on le reprend.
     if (docType === 'plan' && p.planSecurite) Object.assign(docValeurs, p.planSecurite);
     const source = derniereNote(p);
@@ -522,6 +576,7 @@ function afficherChampsDocument() {
   }
   $('docAvertissement').textContent = estCertificat(docType)
     ? 'Modèle construit d’après le code de la santé publique : vérifiez-le avec les modèles de votre établissement. Le certificat doit décrire vos constatations personnelles (pas de diagnostic), être daté, signé et lisible.'
+    : docType === 'ordoIde' ? 'Rappels indicatifs (la NGAP en vigueur fait foi) : l’administration et la surveillance de la prise orale supposent que l’ordonnance mentionne l’impossibilité pour le patient de s’auto-administrer son traitement (mention ajoutée) ; un accord préalable de l’Assurance maladie peut être requis au-delà du premier mois ; la préparation du pilulier seule n’est pas un acte de la nomenclature ; le BSI concerne les patients dépendants, et le médecin dispose de quelques jours pour donner son avis sur le plan de soins transmis par l’infirmier(e).'
     : docType === 'plan' ? 'À remplir avec le patient, dans ses mots. Le plan imprimé lui est remis ; il est aussi gardé dans sa fiche.' : '';
   afficherHistoriqueDocs();
 }
@@ -559,10 +614,10 @@ function afficherHistoriqueDocs() {
 }
 
 function imprimerDocumentCourant() {
-  const ordonnance = ['ordoTtt', 'ordoBioLibre'].includes(docType);
+  const ordonnance = ['ordoTtt', 'ordoBioLibre', 'ordoIde'].includes(docType);
   const entete = docType !== 'plan' ? enteteImpression({ avecRpps: ordonnance || estCertificat(docType) || docType === 'certificat' }) : '';
-  const titre = docType === 'ordoBioLibre' ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
+  const titre = ['ordoBioLibre', 'ordoIde'].includes(docType) ? '<h2>Ordonnance</h2>' : docType === 'certificat' ? '<h2>Certificat médical</h2>' : '';
   imprimerDocument(`<div class="ordo doc${docType === 'plan' ? ' plan-securite' : ''}">${entete}${titre}<div style="white-space:pre-wrap">${echapper($('docTexte').value)}</div>
-    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
+    ${estCertificat(docType) || ['cr', 'relais', 'confrere', 'ordoTtt', 'ordoBioLibre', 'ordoIde', 'certificat'].includes(docType) ? `<div class="ordo-signature">${ordonnance ? 'Signature et cachet du prescripteur' : 'Signature'}</div>` : ''}</div>`,
     ['cr', 'relais', 'confrere'].includes(docType) ? 'courrier' : '');
 }

@@ -48,6 +48,7 @@
     <nav class="tabs" role="tablist" aria-label="Navigation">
       <button type="button" class="main nouveau-patient" id="btnNouveauGlobal"><span data-icone="plus"></span><span class="libelle-onglet">Nouveau patient</span></button>
       <button role="tab" id="ongletAccueil" aria-selected="false"><span data-icone="accueil"></span><span class="libelle-onglet">Aujourd’hui</span><span class="n" id="nbAccueil"></span></button>
+      <button role="tab" id="ongletAgenda" aria-selected="false"><span data-icone="calendrier"></span><span class="libelle-onglet">Agenda</span></button>
       <button role="tab" id="ongletConsultation" aria-selected="false"><span data-icone="consultation"></span><span class="libelle-onglet">Consultation</span></button>
       <button role="tab" id="ongletObservation" aria-selected="false"><span data-icone="note"></span><span class="libelle-onglet">Observation</span></button>
       <button role="tab" id="ongletEchelles" aria-selected="false"><span data-icone="echelle"></span><span class="libelle-onglet">Échelles</span></button>
@@ -56,7 +57,7 @@
       <button role="tab" id="ongletMdph" aria-selected="false"><span data-icone="mdph"></span><span class="libelle-onglet">MDPH</span></button>
       <span class="tabs-separateur" aria-hidden="true"></span>
       <button role="tab" id="ongletActive" aria-selected="true"><span data-icone="liste"></span><span class="libelle-onglet">File active</span><span class="n" id="nbActive"></span></button>
-      <button role="tab" id="ongletRelais" aria-selected="false"><span data-icone="relais"></span><span class="libelle-onglet">Relais CMP</span><span class="n" id="nbRelais"></span></button>
+      <button role="tab" id="ongletRelais" aria-selected="false"><span data-icone="relais"></span><span class="libelle-onglet">Relais</span><span class="n" id="nbRelais"></span></button>
       <span class="tabs-separateur" aria-hidden="true"></span>
       <button type="button" class="tabs-reglage" id="btnPraticien"><span data-icone="praticien"></span><span class="libelle-onglet">Profil praticien</span></button>
       <button type="button" class="tabs-reglage" id="btnParametres"><span data-icone="reglages"></span><span class="libelle-onglet">Paramètres</span></button>
@@ -73,6 +74,7 @@
       <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
       <select id="filtrePriorite" class="relais-seul" aria-label="Filtrer par priorité"></select>
       <select id="filtreStatut" class="relais-seul" aria-label="Filtrer par statut du relais"></select>
+      <select id="filtreTypeRelais" class="relais-seul" aria-label="Filtrer par type de relais"></select>
       <select id="filtreRelaisVers" class="relais-seul" aria-label="Filtrer par relais vers interne ou sénior"></select>
       <select id="filtreBilans" aria-label="Filtrer les bilans">
         <option value="">Bilans : tous</option>
@@ -140,6 +142,7 @@
 
     <!-- ===== Aujourd'hui : tableau de bord (js/accueil.js) ===== -->
     <section id="vueAccueil" hidden></section>
+    <section id="vueAgenda" hidden></section>
 
     <!-- ===== Consultation (js/consultation.js) ===== -->
     <section id="vueConsultation" hidden></section>
@@ -161,8 +164,14 @@
   <dialog id="fenetrePatient">
     <form id="formPatient" method="dialog">
       <h2 id="titreFiche">Patient</h2>
+      <div class="fiche-onglets" role="tablist">
+        <button type="button" role="tab" data-fiche-onglet="identite" class="on">1 · Identité</button>
+        <button type="button" role="tab" data-fiche-onglet="synthese">2 · Synthèse et traitements</button>
+        <button type="button" role="tab" data-fiche-onglet="relais">3 · Relais <span class="fiche-pastille" id="fichePastilleRelais" hidden>●</span></button>
+      </div>
 
-      <div class="g">
+      <!-- Onglet 1 : identité, coordonnées, entourage, intervenants -->
+      <div class="g fiche-panneau" data-fiche-panneau="identite">
         <div><label for="nom">Nom</label><input id="nom" required></div>
         <div><label for="prenom">Prénom</label><input id="prenom"></div>
         <div><label for="ddn">Date de naissance</label><input id="ddn" type="date"></div>
@@ -175,6 +184,8 @@
           </select>
         </div>
         <div><label for="dossier">N° de dossier / identifiant</label><input id="dossier"></div>
+        <div><label for="telPatient">Téléphone du patient</label><input id="telPatient" inputmode="tel"></div>
+        <div class="full"><label for="adresse">Adresse</label><input id="adresse"></div>
         <div class="chk">
           <input type="checkbox" id="ald">
           <label for="ald"><b>Patient en ALD</b> (affection de longue durée)</label>
@@ -188,6 +199,18 @@
           <label for="allergies">Allergies, contre-indications, intolérances médicamenteuses</label>
           <input id="allergies" placeholder="ex. allergie à la pénicilline ; syndrome malin des neuroleptiques en 2019 ; QT long">
         </div>
+        <div><label for="tel">Médecin traitant / contact</label><input id="tel"></div>
+        <div><label for="ideEquipe">Équipe infirmière</label>
+          <div class="ide-choix"><select id="ideEquipe"></select><button type="button" id="ideGerer" title="Ajouter ou modifier les équipes infirmières">Gérer…</button></div></div>
+
+        <div><label for="personneConfiance">Personne de confiance / à prévenir</label><input id="personneConfiance" placeholder="ex. Mme X (sœur) · 06 …"></div>
+        <div><label for="protection">Mesure de protection</label>
+          <select id="protection"><option value="">Aucune connue</option><option>Sauvegarde de justice</option><option>Curatelle simple</option><option>Curatelle renforcée</option><option>Tutelle</option><option>Habilitation familiale</option><option>Mandat de protection future</option><option>Demande en cours</option></select></div>
+        <div class="full" id="zoneProtecteur"><label for="protecteur">Mandataire, tuteur ou curateur (coordonnées)</label><input id="protecteur"></div>
+      </div>
+
+      <!-- Onglet 2 : synthèse clinique, suivi, traitements -->
+      <div class="g fiche-panneau" data-fiche-panneau="synthese" hidden>
         <div class="full">
           <label for="dp">Diagnostic principal</label>
           <input id="dp" list="listeCim" placeholder="ex. Trouble bipolaire de type I, épisode actuel en rémission">
@@ -203,7 +226,7 @@
 
         <div class="full">
           <label for="synthese">Synthèse clinique</label>
-          <textarea id="synthese" placeholder="Histoire en 3-5 lignes, évolution, points d’attention, ce que le CMP doit savoir"></textarea>
+          <textarea id="synthese" placeholder="Histoire en 3-5 lignes, évolution, points d’attention, ce que le receveur du relais doit savoir"></textarea>
         </div>
 
         <div class="full chk">
@@ -213,9 +236,7 @@
         <div class="full"><label for="vigtxt">Précision sur la vigilance</label><input id="vigtxt"></div>
 
         <div><label for="rythme">Rythme de suivi actuel</label><select id="rythme"></select></div>
-        <div><label for="prochain">Dernière / prochaine consultation</label><input id="prochain" type="date"></div>
-        <div><label for="tel">Médecin traitant / contact</label><input id="tel"></div>
-
+        <div><label for="prochain">Prochaine consultation (tenue à jour par l’agenda)</label><input id="prochain" type="date"></div>
         <!-- Lignes de traitement + surveillance (générées par js/interface.js) -->
         <div class="full">
           <label>Traitements et surveillance biologique</label>
@@ -232,21 +253,27 @@
           <textarea id="notes" style="min-height:60px"></textarea>
         </div>
 
+      </div>
+
+      <!-- Onglet 3 : relais (CMP, libéral, autre structure) -->
+      <div class="g fiche-panneau" data-fiche-panneau="relais" hidden>
         <!-- Relais vers un CMP : facultatif, les champs ne s'affichent que si la case est cochée -->
         <div class="full chk">
           <input type="checkbox" id="aRelayer">
-          <label for="aRelayer"><b>Patient à relayer vers un CMP</b> (départ, réorientation…)</label>
+          <label for="aRelayer"><b>Patient à relayer</b> (CMP, psychiatre libéral, autre structure : départ, réorientation…)</label>
         </div>
         <div class="full" id="sectionRelais">
           <div class="g">
             <div><label for="priorite">Priorité de relais</label><select id="priorite"></select></div>
             <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
-            <div><label for="cmp">CMP / référent receveur</label><input id="cmp" list="listeCmp"></div>
-            <div><label for="relaisVers">Relais vers</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
+            <div><label for="typeRelais">Type de relais</label><select id="typeRelais"></select></div>
+            <div><label for="cmp" id="libelleCmp">Destinataire du relais</label><input id="cmp" list="listeCmp"></div>
+            <div id="zoneRelaisVers"><label for="relaisVers">Interne ou sénior</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
           </div>
         </div>
       </div>
 
+      <div class="fiche-suivant"><button type="button" id="ficheSuivant">Suivant ›</button></div>
       <div class="act">
         <button type="button" class="danger" id="btnSupprimer">Supprimer</button>
         <details class="menu-plus menu-fiche">
@@ -433,11 +460,14 @@
   <script src="js/mdph.js"></script>
   <script src="js/observation.js"></script>
   <script src="js/documents.js"></script>
+  <script src="js/ide.js"></script>
   <script src="js/consultation.js"></script>
+  <script src="js/agenda.js"></script>
   <script src="js/accueil.js"></script>
   <script src="js/demo.js"></script>
   <script src="js/sauvegarde.js"></script>
   <script src="js/interface.js"></script>
+  <script src="js/fiche.js"></script>
   <script src="js/raccourcis.js"></script>
   <script src="js/apparence.js"></script>
   <script src="js/phrases.js"></script>

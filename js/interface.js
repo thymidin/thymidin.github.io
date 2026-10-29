@@ -43,7 +43,7 @@ function contexteFormulaire(traitement) {
 // Champs texte de la fiche : chaque id de champ = propriété enregistrée.
 const CHAMPS_FICHE = [
   'nom', 'prenom', 'ddn', 'sexe', 'dossier', 'aldTexte', 'allergies', 'dp', 'ds', 'synthese', 'vigtxt',
-  'rythme', 'prochain', 'tel', 'notes', 'priorite', 'statut', 'cmp', 'relaisVers',
+  'rythme', 'prochain', 'tel', 'ideEquipe', 'notes', 'priorite', 'statut', 'typeRelais', 'cmp', 'relaisVers',
 ];
 
 
@@ -56,6 +56,8 @@ function remplirListesModifiables() {
   remplirSelect($('statut'), statuts.map(s => [s, s]));
   remplirSelect($('rythme'), rythmes.map(r => [r, r]));
   remplirSelect($('relaisVers'), RELAIS_VERS.map(s => [s, s]), 'Non précisé');
+  remplirSelect($('typeRelais'), TYPES_RELAIS.map(s => [s, s]), 'Non précisé');
+  if (!$('filtreTypeRelais').options.length) remplirSelect($('filtreTypeRelais'), TYPES_RELAIS.map(s => [s, s.replace(/ \(.*\)$/, '')]), 'Tous types de relais');
   if (!$('filtreRelaisVers').options.length) remplirSelect($('filtreRelaisVers'), [...RELAIS_VERS.map(s => [s, 'Relais vers ' + s.toLowerCase()]), ['-', 'Relais vers : non précisé']], 'Relais vers : tous');
 
   const filtreActuel = $('filtreStatut').value;               // on garde la sélection en cours
@@ -82,6 +84,7 @@ function remplirListesFixes() {
 // Ordre = ordre affiché dans la navigation (et raccourcis Alt+1 … Alt+9).
 const ONGLETS = [
   ['accueil', 'ongletAccueil', 'vueAccueil'],
+  ['agenda', 'ongletAgenda', 'vueAgenda'],
   ['consultation', 'ongletConsultation', 'vueConsultation'],
   ['observation', 'ongletObservation', 'vueObservation'],
   ['echelles', 'ongletEchelles', 'vueEchelles'],
@@ -97,7 +100,7 @@ const ongletPatients = () => onglet === 'active' || onglet === 'relais';
 function afficherOnglets() {
   ONGLETS.forEach(([valeur, bouton]) => $(bouton).setAttribute('aria-selected', String(onglet === valeur)));
   const sectionVisible = (ONGLETS.find(([valeur]) => valeur === onglet) || ONGLETS[0])[2];
-  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil'].forEach(id => { $(id).hidden = id !== sectionVisible; });
+  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil', 'vueAgenda'].forEach(id => { $(id).hidden = id !== sectionVisible; });
 
   // Filtres « priorité » et « statut du relais » : uniquement dans l'onglet relais.
   document.querySelectorAll('.relais-seul').forEach(element => { element.hidden = !enRelais(); });
@@ -105,7 +108,7 @@ function afficherOnglets() {
   // Vues proposées : « Par CMP » n'existe que dans l'onglet relais.
   const vueActuelle = $('vue').value;
   const vues = [['liste', 'Vue liste']];
-  if (enRelais()) vues.push(['cmp', 'Vue par CMP']);
+  if (enRelais()) vues.push(['cmp', 'Vue par destinataire']);
   vues.push(['bilans', 'Bilans à faire']);
   remplirSelect($('vue'), vues);
   $('vue').value = vues.some(([valeur]) => valeur === vueActuelle) ? vueActuelle : 'liste';
@@ -136,6 +139,7 @@ function afficherModule(idPatient) {
   if (onglet === 'consultation') afficherVueConsultation(idPatient);
   if (onglet === 'documents') afficherVueDocuments(idPatient);
   if (onglet === 'accueil') afficherAccueil();
+  if (onglet === 'agenda') afficherAgenda();
   synchroniserPatientCourant();
 }
 
@@ -200,11 +204,13 @@ function patientsFiltres() {
   const statut = enRelais() ? $('filtreStatut').value : '';
   const seulementRetard = $('filtreBilans').value;
   const relaisVers = enRelais() ? $('filtreRelaisVers').value : '';
+  const typeRelais = enRelais() ? $('filtreTypeRelais').value : '';
   const base = enRelais() ? patients.filter(estARelayer) : patients;
 
   return base.filter(p => {
     if (priorite && p.priorite != priorite) return false;
     if (statut && p.statut !== statut) return false;
+    if (typeRelais && (p.typeRelais || 'CMP') !== typeRelais) return false;
     if (relaisVers && (relaisVers === '-' ? !!p.relaisVers : p.relaisVers !== relaisVers)) return false;
     if (seulementRetard && !listerAlertes(p).some(a => a.statut === 'retard')) return false;
 
@@ -265,7 +271,7 @@ function htmlLignePatient(p) {
 
   const cellulePatient = `
       <td>
-        <b>${echapper(p.nom.toUpperCase())}</b> ${echapper(p.prenom)}${p.ald ? ' <span class="tag t4">ALD</span>' : ''}
+        <b>${echapper(p.nom.toUpperCase())}</b> ${echapper(p.prenom)}${p.ald ? ' <span class="tag t4">ALD</span>' : ''}${equipeDuPatient(p) ? ` <span class="tag tag-ide" title="Soins infirmiers : ${echapper(resumeEquipeIde(equipeDuPatient(p)))}">IDE</span>` : ''}
         <div class="sec">
           ${[libelleSexe(p.sexe), p.ddn ? formaterDate(p.ddn) + ' · ' + calculerAge(p.ddn) + ' ans' : ''].filter(Boolean).join(' · ')}
           ${p.dossier ? '<br>N° ' + echapper(p.dossier) : ''}
@@ -301,11 +307,11 @@ function htmlLignePatient(p) {
     celluleRelais = `
       <td class="st ${clos ? 'clos' : ''}">
         ${echapper(p.statut)}
-        ${p.cmp ? `<div class="sec">${echapper(p.cmp)}</div>` : ''}
+        ${p.cmp || p.typeRelais ? `<div class="sec">${echapper(libelleDestinataire(p))}</div>` : ''}
         ${etiquetteRelaisVers(p)}
       </td>`;
   } else if (estARelayer(p)) {
-    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp ? ' · ' + echapper(p.cmp) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
+    celluleRelais = `<td class="st">${pastillePriorite}<div class="sec">${echapper(p.statut)}${p.cmp || p.typeRelais ? ' · ' + echapper(libelleDestinataire(p)) : ''}</div>${etiquetteRelaisVers(p)}</td>`;
   } else {
     celluleRelais = '<td class="st"><span class="sec">Non concerné</span></td>';
   }
@@ -317,7 +323,7 @@ function htmlLignePatient(p) {
   return `<tr data-id="${p.id}" tabindex="0">${cellules.join('')}</tr>`;
 }
 
-/** Vue « Par CMP » (onglet relais) : patients regroupés par CMP receveur. */
+/** Vue « Par destinataire » (onglet relais) : patients regroupés par CMP, praticien ou structure receveur. */
 function htmlVueParCmp(liste) {
   const groupes = {};
   liste.forEach(p => {
@@ -387,7 +393,7 @@ function afficherTableau() {
 
   $('messageVide').hidden = liste.length > 0;
   $('messageVide').textContent = enRelais()
-    ? 'Aucun patient à relayer. Cochez « Patient à relayer vers un CMP » dans une fiche.'
+    ? 'Aucun patient à relayer. Cochez « Patient à relayer » dans une fiche.'
     : 'Aucun patient. Cliquez sur « Nouveau patient » pour commencer.';
   afficherStatistiques();
   if ($('nbAccueil')) $('nbAccueil').textContent = compteurAccueil() || '';
@@ -607,6 +613,10 @@ function gererChangementTraitements(evenement) {
 /** Affiche ou masque les champs de relais selon la case « Patient à relayer ». */
 function afficherSectionRelais() {
   $('sectionRelais').hidden = !$('aRelayer').checked;
+  // « Interne ou sénior » : seulement pour un relais vers une équipe (CMP, structure).
+  const t = $('typeRelais').value;
+  $('zoneRelaisVers').hidden = RELAIS_SANS_NIVEAU.includes(t);
+  $('cmp').placeholder = t === 'Psychiatre libéral' ? 'ex. Dr NOM, psychiatre, ville' : t === 'Médecin traitant' ? 'ex. Dr NOM, médecin généraliste' : t === 'CMP' ? 'ex. CMP secteur 13G05' : t ? 'ex. CSAPA, hôpital de jour, centre expert…' : '';
 }
 
 /** Affiche ou masque le champ « ALD : numéro / intitulé » selon la case ALD. */
@@ -691,6 +701,7 @@ function brancherEvenements() {
   $('ongletConsultation').onclick = () => changerOnglet('consultation');
   $('ongletDocuments').onclick = () => changerOnglet('documents');
   $('ongletAccueil').onclick = () => changerOnglet('accueil');
+  $('ongletAgenda').onclick = () => changerOnglet('agenda');
   $('btnNouveauGlobal').onclick = () => ouvrirFiche(null);
 
   // Depuis la fiche : ouvrir un module sur ce patient (la fiche est enregistrée d'abord).
@@ -711,6 +722,7 @@ function brancherEvenements() {
   $('btnAnnuler').onclick = () => $('fenetrePatient').close();
   $('btnNouveau').onclick = () => ouvrirFiche(null);
   $('aRelayer').addEventListener('change', afficherSectionRelais);
+  $('typeRelais').addEventListener('change', afficherSectionRelais);
   $('ald').addEventListener('change', afficherSectionAld);
   $('btnSupprimer').onclick = () => {
     if (!confirm('Supprimer définitivement cette fiche ?')) return;
@@ -754,7 +766,7 @@ function brancherEvenements() {
   });
 
   // --- Recherche, filtres, choix de la vue ---
-  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreRelaisVers', 'filtreBilans', 'vue']
+  ['recherche', 'filtrePriorite', 'filtreStatut', 'filtreTypeRelais', 'filtreRelaisVers', 'filtreBilans', 'vue']
     .forEach(id => $(id).addEventListener('input', afficherTableau));
 
   // --- Import / export / impression ---

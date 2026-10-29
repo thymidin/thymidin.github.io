@@ -35,6 +35,10 @@ function chargerDonnees() {
       if (reglages.r && reglages.r.length) rythmes = reglages.r;
     }
   } catch (erreur) { /* réglages absents ou illisibles : valeurs par défaut */ }
+  // Statut renommé (« RDV CMP fixé » → « RDV fixé avec le receveur ») : reprise des fiches existantes.
+  if (statuts.includes('RDV fixé avec le receveur') && !statuts.includes('RDV CMP fixé')) {
+    patients.forEach(p => { if (p.statut === 'RDV CMP fixé') p.statut = 'RDV fixé avec le receveur'; });
+  }
 }
 
 /** Reprise des fiches créées avec une version antérieure : le champ libre « traitement »
@@ -130,7 +134,7 @@ function valeurCsv(patient, propriete) {
   if (propriete === 'sexe') return libelleSexe(patient.sexe);
   if (propriete === 'arelayer') return estARelayer(patient) ? 'Oui' : 'Non';
   // Priorité, statut et CMP n'ont de sens que pour les patients à relayer.
-  if (['priorite', 'statut', 'cmp'].includes(propriete) && !estARelayer(patient)) return '';
+  if (['priorite', 'statut', 'cmp', 'typeRelais', 'relaisVers'].includes(propriete) && !estARelayer(patient)) return '';
   if (propriete === 'priorite') return libellePriorite(patient);
 
   if (propriete === 'trt') {
