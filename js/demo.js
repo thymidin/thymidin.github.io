@@ -215,6 +215,14 @@ function chargerDemo() {
       { id: 'demo-ide-2', demo: true, nom: 'IDE du CMP secteur 13G03 (fictif)', type: 'IDE du CMP / secteur', telephone: '04 00 00 00 20', notes: 'Visites à domicile du lundi au vendredi.' }]);
     patients.forEach(p => { if (p.id === 'demo-02') p.ideEquipe = 'demo-ide-1'; if (p.id === 'demo-08') p.ideEquipe = 'demo-ide-2'; });
   }
+  if (typeof lireAttente === 'function') {
+    const il = n => versIso(ajouterJours(aujourdhui(), -n));
+    ecrireAttente([...lireAttente().filter(x => !x.demo),
+      { id: 'demo-att-1', demo: true, nom: 'Garcia', prenom: 'Emma', ddn: '1998-02-11', sexe: 'F', telephone: '06 00 00 00 31', adresseur: 'Urgences de la Conception', type: 'Première consultation', priorite: 1, motif: 'Idées suicidaires après rupture, sortie des urgences', demandeLe: il(9), statut: 'Contacté', contacts: [{ date: il(8), note: 'Message laissé' }], disponibilites: 'tous les jours', notes: '' },
+      { id: 'demo-att-2', demo: true, nom: 'Nguyen', prenom: 'Louis', ddn: '1987-07-30', sexe: 'M', telephone: '06 00 00 00 32', adresseur: 'Dr Arnaud, médecin traitant', type: 'Évaluation bipolarité (centre expert)', priorite: 2, motif: 'Épisodes dépressifs récurrents, virage sous antidépresseur', demandeLe: il(41), statut: 'En attente', contacts: [], disponibilites: 'après 16 h', notes: 'Courrier reçu.' },
+      { id: 'demo-att-3', demo: true, nom: 'Bernard', prenom: 'Chloé', ddn: '2001-12-03', sexe: 'F', telephone: '06 00 00 00 33', adresseur: 'Patiente elle-même', type: 'Bilan TDAH', priorite: 3, motif: 'Difficultés attentionnelles depuis l’enfance', demandeLe: il(63), statut: 'En attente', contacts: [], disponibilites: '', notes: '' },
+      { id: 'demo-att-4', demo: true, nom: 'Petit', prenom: 'Samir', ddn: '1975-05-20', sexe: 'M', telephone: '06 00 00 00 34', adresseur: 'CMP secteur 13G05', type: 'Avis diagnostique', priorite: 3, motif: 'Avis sur le traitement d’une schizophrénie', demandeLe: il(12), statut: 'RDV proposé', contacts: [{ date: il(3), note: 'RDV proposé, attend confirmation' }], disponibilites: '', notes: '' }]);
+  }
   if (typeof lireRdv === 'function') {
     ecrireRdv([...lireRdv().filter(r => !r.demo), ...genererRdvDemo()]);
     synchroniserProchain(patients.filter(p => p.demo).map(p => p.id));
@@ -232,6 +240,7 @@ function retirerDemo() {
   patients = patients.filter(p => !p.demo);
   if (typeof lireEquipesIde === 'function') ecrireEquipesIde(lireEquipesIde().filter(e => !e.demo));
   if (typeof lireRdv === 'function') ecrireRdv(lireRdv().filter(r => !r.demo));
+  if (typeof lireAttente === 'function') ecrireAttente(lireAttente().filter(x => !x.demo));
   sauvegarderPatients();
   if (typeof consPatientId !== 'undefined' && String(consPatientId).startsWith('demo-')) definirPatientCourant('', true);
   afficherTableau();

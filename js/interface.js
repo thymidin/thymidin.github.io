@@ -28,6 +28,7 @@ let fichePatientId = null;        // id de la fiche ouverte (null = nouveau pati
 let traitementsEnEdition = [];    // copie de travail des traitements de la fiche ouverte
 
 const enRelais = () => onglet === 'relais';
+let phaseRelaisAffichee = 'aFaire';   // onglet relais : 'aFaire', 'enCours', 'clos' ou 'tous'
 
 /** Profil (sexe, âge) du patient de la fiche ouverte, lu dans le formulaire : sert à adapter
  *  les bilans affichés dans la fiche, même avant l'enregistrement. */
@@ -85,6 +86,7 @@ function remplirListesFixes() {
 const ONGLETS = [
   ['accueil', 'ongletAccueil', 'vueAccueil'],
   ['agenda', 'ongletAgenda', 'vueAgenda'],
+  ['attente', 'ongletAttente', 'vueAttente'],
   ['consultation', 'ongletConsultation', 'vueConsultation'],
   ['observation', 'ongletObservation', 'vueObservation'],
   ['echelles', 'ongletEchelles', 'vueEchelles'],
@@ -100,7 +102,7 @@ const ongletPatients = () => onglet === 'active' || onglet === 'relais';
 function afficherOnglets() {
   ONGLETS.forEach(([valeur, bouton]) => $(bouton).setAttribute('aria-selected', String(onglet === valeur)));
   const sectionVisible = (ONGLETS.find(([valeur]) => valeur === onglet) || ONGLETS[0])[2];
-  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil', 'vueAgenda'].forEach(id => { $(id).hidden = id !== sectionVisible; });
+  ['vuePatients', 'vueObservation', 'vueHumeur', 'vueEchelles', 'vueMdph', 'vueConsultation', 'vueDocuments', 'vueAccueil', 'vueAgenda', 'vueAttente'].forEach(id => { $(id).hidden = id !== sectionVisible; });
 
   // Filtres « priorité » et « statut du relais » : uniquement dans l'onglet relais.
   document.querySelectorAll('.relais-seul').forEach(element => { element.hidden = !enRelais(); });
@@ -140,6 +142,7 @@ function afficherModule(idPatient) {
   if (onglet === 'documents') afficherVueDocuments(idPatient);
   if (onglet === 'accueil') afficherAccueil();
   if (onglet === 'agenda') afficherAgenda();
+  if (onglet === 'attente') afficherAttente();
   synchroniserPatientCourant();
 }
 
@@ -208,6 +211,7 @@ function patientsFiltres() {
   const base = enRelais() ? patients.filter(estARelayer) : patients;
 
   return base.filter(p => {
+    if (enRelais() && phaseRelaisAffichee !== 'tous' && phaseRelais(p) !== phaseRelaisAffichee) return false;
     if (priorite && p.priorite != priorite) return false;
     if (statut && p.statut !== statut) return false;
     if (typeRelais && (p.typeRelais || 'CMP') !== typeRelais) return false;
@@ -308,6 +312,7 @@ function htmlLignePatient(p) {
       <td class="st ${clos ? 'clos' : ''}">
         ${echapper(p.statut)}
         ${p.cmp || p.typeRelais ? `<div class="sec">${echapper(libelleDestinataire(p))}</div>` : ''}
+        ${p.relaisRdv ? `<div class="relais-rdv ${!estClos(p.statut) && p.relaisRdv < aujourdhuiIso() ? 'passe' : ''}">${echapper(texteRdvRelais(p))}${!estClos(p.statut) && p.relaisRdv < aujourdhuiIso() ? '<br><b>RDV passé : confirmer le relais</b>' : ''}</div>` : ''}
         ${etiquetteRelaisVers(p)}
       </td>`;
   } else if (estARelayer(p)) {
@@ -393,7 +398,7 @@ function afficherTableau() {
 
   $('messageVide').hidden = liste.length > 0;
   $('messageVide').textContent = enRelais()
-    ? 'Aucun patient à relayer. Cochez « Patient à relayer » dans une fiche.'
+    ? (phaseRelaisAffichee === 'aFaire' ? 'Aucun relais à faire.' : phaseRelaisAffichee === 'enCours' ? 'Aucun relais en cours (RDV fixé chez le receveur).' : phaseRelaisAffichee === 'clos' ? 'Aucun relais clos.' : 'Aucun patient à relayer. Cochez « Patient à relayer » dans une fiche.')
     : 'Aucun patient. Cliquez sur « Nouveau patient » pour commencer.';
   afficherStatistiques();
   if ($('nbAccueil')) $('nbAccueil').textContent = compteurAccueil() || '';
@@ -406,7 +411,11 @@ function afficherTableau() {
 function afficherStatistiques() {
   const aRelayer = patients.filter(estARelayer);
   $('nbActive').textContent = patients.length;
-  $('nbRelais').textContent = aRelayer.length;
+  $('nbRelais').textContent = aRelayer.filter(p => phaseRelais(p) === 'aFaire').length || '';
+  // Onglet relais : boutons « À faire / En cours / Clos / Tous » avec leurs effectifs.
+  const n = phase => (phase === 'tous' ? aRelayer.length : aRelayer.filter(p => phaseRelais(p) === phase).length);
+  $('phasesRelais').innerHTML = ['aFaire', 'enCours', 'clos', 'tous'].map(ph =>
+    `<button type="button" data-phase="${ph}" class="${phaseRelaisAffichee === ph ? 'on' : ''}">${LIBELLES_PHASES_RELAIS[ph]} <span class="n">${n(ph)}</span></button>`).join('');
 
   const compterAlertes = (liste, statut) =>
     liste.reduce((somme, p) => somme + listerAlertes(p).filter(a => a.statut === statut).length, 0);
@@ -416,9 +425,11 @@ function afficherStatistiques() {
     const total = aRelayer.length;
     const clos = aRelayer.filter(p => estClos(p.statut)).length;
     const urgents = aRelayer.filter(p => p.priorite == 1 && !estClos(p.statut)).length;
+    const aFaire = aRelayer.filter(p => phaseRelais(p) === 'aFaire').length;
+    const enCours = aRelayer.filter(p => phaseRelais(p) === 'enCours').length;
     compteurs = [
-      [total,                                      'à relayer'],
-      [total - clos,                               'relais restants'],
+      [aFaire,                                     'relais à faire'],
+      [enCours,                                    'en cours (RDV fixé)'],
       [urgents,                                    'urgents non relayés'],
       [clos,                                       'relais clos'],
       [total ? Math.round(clos / total * 100) + ' %' : '—', 'avancement'],
@@ -702,7 +713,10 @@ function brancherEvenements() {
   $('ongletDocuments').onclick = () => changerOnglet('documents');
   $('ongletAccueil').onclick = () => changerOnglet('accueil');
   $('ongletAgenda').onclick = () => changerOnglet('agenda');
+  $('ongletAttente').onclick = () => changerOnglet('attente');
   $('btnNouveauGlobal').onclick = () => ouvrirFiche(null);
+  $('btnImprimerRelais').onclick = imprimerTableauRelais;
+  $('phasesRelais').onclick = e => { const b = e.target.closest('[data-phase]'); if (b) { phaseRelaisAffichee = b.dataset.phase; afficherTableau(); } };
 
   // Depuis la fiche : ouvrir un module sur ce patient (la fiche est enregistrée d'abord).
   [['btnFicheConsultation', 'consultation'], ['btnFicheObservation', 'observation'], ['btnFicheHumeur', 'humeur'], ['btnFicheEchelles', 'echelles'], ['btnFicheMdph', 'mdph']]
@@ -851,3 +865,34 @@ brancherEvenements();
 brancherSauvegarde();
 afficherTableau();
 if (!ongletPatients()) afficherModule();
+
+
+/** Tableau synthétique des relais affichés (phase et filtres en cours), imprimé en A4 paysage. */
+function imprimerTableauRelais() {
+  const liste = patientsFiltres();
+  trierPatients(liste);
+  if (!liste.length) return signaler(null, 'Aucun relais à imprimer avec ces filtres.');
+  const pr = praticien || {};
+  const filtres = [LIBELLES_PHASES_RELAIS[phaseRelaisAffichee],
+    $('filtrePriorite').value && libellePriorite({ priorite: $('filtrePriorite').value }),
+    $('filtreStatut').value, $('filtreTypeRelais').value && $('filtreTypeRelais').value.replace(/ \(.*\)$/, ''),
+    $('filtreRelaisVers').value && 'vers ' + $('filtreRelaisVers').value.toLowerCase(), $('recherche').value && `« ${$('recherche').value} »`].filter(Boolean);
+  const court = (t, n) => { t = String(t || ''); return t.length > n ? t.slice(0, n - 1).trim() + '…' : t; };
+  const lignes = liste.map(p => `<tr>
+      <td>${echapper(libellePriorite(p) || '')}</td>
+      <td><b>${echapper(nomPatient(p))}</b>${p.ddn ? '<br>' + formaterDate(p.ddn) : ''}${p.dossier ? '<br>' + echapper(p.dossier) : ''}</td>
+      <td>${echapper(court([p.dp, p.ds].filter(Boolean).join(' ; '), 90))}</td>
+      <td>${echapper(court(p.synthese, 220))}${p.vigilance ? `<br><b>⚠ ${echapper(court(p.vigtxt || 'Vigilance', 90))}</b>` : ''}</td>
+      <td>${echapper(court(texteTraitements(p, ' ; '), 160))}</td>
+      <td>${echapper(libelleDestinataire(p) || '—')}${p.relaisVers && !RELAIS_SANS_NIVEAU.includes(p.typeRelais) ? '<br>vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</td>
+      <td>${echapper(p.statut || '')}${p.relaisRdv ? '<br>' + echapper(texteRdvRelais(p)) : ''}</td>
+    </tr>`).join('');
+  imprimerDocument(`<style>@page { size: A4 landscape; margin: 0; }</style>
+    <div class="ordo doc tableau-relais-impr">
+      <h2 style="text-align:left;margin:0 0 4px">Tableau des relais · ${liste.length} patient(s)</h2>
+      <p style="margin:0 0 8px;font-size:10pt">${echapper(filtres.join(' · '))} · édité le ${formaterDate(aujourdhuiIso())}${pr.nom ? ' par ' + echapper(nomMedecinComplet()) : ''}</p>
+      <table><thead><tr><th>Priorité</th><th>Patient</th><th>Diagnostics</th><th>Synthèse, vigilance</th><th>Traitement</th><th>Destinataire</th><th>Statut, RDV</th></tr></thead>
+      <tbody>${lignes}</tbody></table>
+      <p style="font-size:9pt;margin-top:6px">Document de travail interne, contenant des données de santé : à conserver et détruire selon les règles de l’établissement.</p>
+    </div>`);
+}

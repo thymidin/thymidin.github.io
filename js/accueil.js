@@ -19,6 +19,7 @@ function initialiserAccueil() {
     if (a && a.dataset.accueil === 'sauvegarde') sauvegardeChiffree();
     if (a && a.dataset.accueil === 'nouveau') ouvrirFiche(null);
     if (a && a.dataset.accueil === 'agenda') changerOnglet('agenda');
+    if (a && a.dataset.accueil === 'attente') changerOnglet('attente');
   });
 }
 
@@ -26,7 +27,8 @@ function elementsAccueil() {
   const auj = aujourdhuiIso();
   const dans7 = versIso(ajouterJours(aujourdhui(), 7));
   const brouillons = typeof lireBrouillons === 'function' ? lireBrouillons() : {};
-  const r = { rdvJour: [], rdvSemaine: [], rappels: [], alertes: [], bilans: [], relais: [], brouillons: [], nonVenus: [] };
+  const r = { rdvJour: [], rdvSemaine: [], rappels: [], alertes: [], bilans: [], relais: [], brouillons: [], nonVenus: [], relaisAConfirmer: [], attente: [] };
+  if (typeof lireAttente === 'function') r.attente = lireAttente().filter(d => demandeActive(d) && (d.priorite == 1 || enRetardAttente(d))).sort((a, b) => a.priorite - b.priorite);
   // Rendez-vous de l'agenda (les fiches sans rendez-vous gardent leur date « prochaine consultation »).
   const agenda = typeof lireRdv === 'function' ? lireRdv().filter(x => x.patientId && estActif(x)) : [];
   const avecRdv = new Set();
@@ -60,7 +62,8 @@ function elementsAccueil() {
     const retard = listerAlertes(p).filter(a => a.statut === 'retard');
     if (retard.length) r.bilans.push({ p, liste: retard });
 
-    if (estARelayer(p) && !estClos(p.statut) && (p.priorite == 1 || p.priorite == 2)) r.relais.push({ p });
+    if (estARelayer(p) && phaseRelais(p) === 'aFaire' && (p.priorite == 1 || p.priorite == 2)) r.relais.push({ p });
+    if (estARelayer(p) && phaseRelais(p) === 'enCours' && p.relaisRdv && p.relaisRdv <= auj) r.relaisAConfirmer.push({ p });
 
     if (brouillons[p.id]) r.brouillons.push({ p, maj: brouillons[p.id].maj });
   });
@@ -138,6 +141,10 @@ function afficherAccueil() {
       ${carte(`Relais prioritaires <span class="n">${r.relais.length}</span>`,
         r.relais.map(x => ligne(x.p, `${echapper(libellePriorite(x.p))} · ${echapper(x.p.statut || '')}${x.p.cmp || x.p.typeRelais ? ' · ' + echapper(libelleDestinataire(x.p)) : ''}${x.p.relaisVers && !RELAIS_SANS_NIVEAU.includes(x.p.typeRelais) ? ' · vers ' + echapper(x.p.relaisVers.toLowerCase()) : ''}`)).join(''),
         'Aucun relais urgent ou élevé en attente.')}
+      ${carte(`Liste d’attente : urgentes ou hors délai <span class="n">${r.attente.length}</span>`,
+        r.attente.map(d => `<button type="button" class="accueil-ligne rouge" data-accueil="attente"><b>${echapper(nomDemande(d))}</b><span class="sec">${['', 'Urgent', 'Rapide', 'Standard'][d.priorite]} · ${echapper(d.type || '')} · ${delaiJours(d)} j d’attente</span></button>`).join(''), '')}
+      ${carte(`Relais à confirmer <span class="n">${r.relaisAConfirmer.length}</span>`,
+        r.relaisAConfirmer.map(x => ligne(x.p, `${echapper(texteRdvRelais(x.p))} · ${echapper(libelleDestinataire(x.p))} : le patient s’est-il présenté ?`)).join(''), '')}
       ${r.brouillons.length ? carte(`Notes en brouillon <span class="n">${r.brouillons.length}</span>`,
         r.brouillons.map(x => ligne(x.p, `modifiée le ${new Date(x.maj).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`, 'observation')).join(''), '') : ''}`;
   $('vueAccueil').innerHTML = `

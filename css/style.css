@@ -799,9 +799,9 @@ dialog.fenetre-mentions[open] { display: flex; flex-direction: column; max-heigh
 .impr-logo { max-width: 70mm; object-fit: contain; flex: none; }
 .impr-entete-texte { line-height: 1.4; }
 .impr-pied { border-top: 1px solid #999; padding-top: 4px; font-size: 9pt; line-height: 1.35; color: #333; text-align: center; font-family: inherit; }
-table.impr-page, table.impr-page td { border: 0 !important; padding: 0 !important; background: none !important; min-width: 0 !important; width: 100%; border-collapse: collapse; }
+table.impr-page, table.impr-page > * > tr > td { border: 0 !important; padding: 0 !important; background: none !important; min-width: 0 !important; width: 100%; border-collapse: collapse; }
 table.impr-page { table-layout: fixed; }
-table.impr-page thead td, table.impr-page tfoot td { height: auto; }
+table.impr-page > thead > tr > td, table.impr-page > tfoot > tr > td { height: auto; }
 .police-sans .ordo, .police-sans .impr-pied, .police-sans.ordo { font-family: "Inter", "Segoe UI", Arial, sans-serif; }
 .ordo h2 { margin: 6px 0 10px; }
 @media print {
@@ -924,3 +924,35 @@ button.lien { border: 0; background: none; padding: 0; color: var(--pri); font: 
 .cons-rdv { margin-top: 2px; }
 #fenetreRdv { width: min(640px, 96vw); }
 @media (max-width: 700px) { .agenda-titre { font-size: 15px; width: 100%; margin: 4px 0 0; } .agenda-nav { flex-wrap: wrap; } }
+
+/* Relais : à faire / en cours / clos */
+.phases-relais { margin: 0 0 10px; }
+.phases-relais button .n { font-size: 11.5px; opacity: .8; margin-left: 3px; }
+.phases-relais[hidden] { display: none; }
+.relais-rdv { font-size: 12px; color: var(--p3); margin-top: 2px; }
+.relais-rdv.passe { color: var(--p2); }
+
+/* Tableau des relais imprimé */
+.tableau-relais-impr { font-family: Arial, Helvetica, sans-serif; font-size: 8.5pt; line-height: 1.3; }
+.tableau-relais-impr table { width: 100%; min-width: 0; border-collapse: collapse; table-layout: fixed; }
+.tableau-relais-impr th, .tableau-relais-impr td { border: 1px solid #999 !important; padding: 3px 4px !important; vertical-align: top; text-align: left; word-wrap: break-word; }
+.tableau-relais-impr th { background: #eee !important; font-size: 8pt; }
+.tableau-relais-impr th:nth-child(1) { width: 7%; } .tableau-relais-impr th:nth-child(2) { width: 12%; } .tableau-relais-impr th:nth-child(3) { width: 13%; }
+.tableau-relais-impr th:nth-child(4) { width: 26%; } .tableau-relais-impr th:nth-child(5) { width: 17%; } .tableau-relais-impr th:nth-child(6) { width: 12%; } .tableau-relais-impr th:nth-child(7) { width: 13%; }
+.tableau-relais-impr tr { break-inside: avoid; }
+
+/* ---------- Liste d'attente ---------- */
+#vueAttente .bar { margin: 4px 0 10px; }
+#vueAttente .segments button .n { font-size: 11.5px; opacity: .8; margin-left: 3px; }
+.attente-demande { display: grid; grid-template-columns: 84px 1fr auto; gap: 12px; align-items: start; margin: 8px 0; padding: 12px 14px; }
+.attente-demande.retard { border-left: 4px solid var(--p1); }
+.attente-corps > div { margin: 1px 0; font-size: 13.5px; }
+.attente-prio { font-size: 12px; font-weight: 700; text-align: center; border-radius: 99px; padding: 3px 6px; }
+.attente-prio.p1 { background: var(--p1b); color: var(--p1); }
+.attente-prio.p2 { background: var(--p2b); color: var(--p2); }
+.attente-prio.p3 { background: var(--p3b); color: var(--p3); }
+.attente-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; max-width: 330px; }
+.etiquette-statut { font-size: 12px; color: var(--mute); border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; }
+.attente-rdv { color: #1d7a43; font-weight: 600; font-size: 13px; }
+#fenetreAttente { width: min(720px, 96vw); }
+@media (max-width: 800px) { .attente-demande { grid-template-columns: 1fr; } .attente-actions { justify-content: flex-start; max-width: none; } }

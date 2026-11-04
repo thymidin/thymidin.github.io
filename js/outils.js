@@ -147,3 +147,16 @@ function libelleDestinataire(p) {
   const type = p.typeRelais && p.typeRelais !== 'CMP' ? p.typeRelais.replace(/ \(.*\)$/, '') : '';
   return [type, p.cmp].filter(Boolean).join(' · ');
 }
+
+/** Phase d'un relais : 'aFaire', 'enCours' (RDV fixé chez le receveur) ou 'clos'. */
+function phaseRelais(p) {
+  if (estClos(p.statut)) return 'clos';
+  if (p.relaisRdv || /rdv|rendez-vous/i.test(p.statut || '')) return 'enCours';
+  return 'aFaire';
+}
+const LIBELLES_PHASES_RELAIS = { aFaire: 'À faire', enCours: 'En cours (RDV fixé)', clos: 'Clos', tous: 'Tous' };
+/** « RDV le 12/11/2026 à 10:00 » (relais en cours). */
+function texteRdvRelais(p) {
+  if (!p.relaisRdv) return '';
+  return `RDV le ${formaterDate(p.relaisRdv)}${p.relaisRdvHeure ? ' à ' + p.relaisRdvHeure : ''}${p.relaisRdvNote ? ' · ' + p.relaisRdvNote : ''}`;
+}

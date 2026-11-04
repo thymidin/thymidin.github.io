@@ -52,6 +52,20 @@ consultation » des fiches est tenue à jour par l'agenda. « Aujourd'hui » aff
 heure et une carte « Non venus, à recontacter » ; l'écran Consultation affiche le prochain rendez-vous, le nombre de
 non-venues sur 6 mois et un bouton « + Planifier ».
 
+**Liste d'attente** (onglet « Liste d'attente ») : demandes de consultation (identité, téléphone, adressé par, type :
+première consultation, avis, bilan TSA ou TDAH, centre expert…, motif, priorité urgent / rapide / standard,
+disponibilités). Délai d'attente calculé et signalé au-delà de la cible (7, 30 ou 90 jours), contacts notés (date,
+nombre de tentatives), statuts (en attente, contacté, RDV proposé, planifié, réorienté, annulé). « Planifier » crée la
+fiche patient pré-remplie et ouvre un rendez-vous dans l'agenda ; la demande passe alors « planifiée ». Indicateurs
+(nombre, urgentes, hors délai, attente moyenne et maximale), liste imprimable, alertes dans « Aujourd'hui ».
+
+**Relais à faire / en cours / clos** : dans la fiche (onglet Relais), « RDV fixé chez le receveur le … à … » et ses
+précisions ; une date saisie fait passer le relais « en cours » (statut « RDV fixé… » appliqué automatiquement).
+L'onglet Relais s'ouvre sur les relais **à faire**, avec des boutons « En cours (RDV fixé) », « Clos » et « Tous ». Un
+RDV de relais passé non confirmé est signalé (tableau et carte « Relais à confirmer » dans « Aujourd'hui ») ; la pastille
+du menu ne compte que les relais à faire. **Tableau des relais imprimable** (bouton dans l'onglet Relais) : A4 paysage,
+filtres en cours appliqués (priorité, patient, diagnostics, synthèse et vigilance, traitement, destinataire, statut et RDV).
+
 **Fiche patient en trois onglets** : 1 · Identité (identité, coordonnées, ALD, allergies, médecin traitant, équipe
 infirmière, personne de confiance, mesure de protection et mandataire), 2 · Synthèse et traitements (diagnostics,
 synthèse, vigilance, suivi, traitements, échelles, notes), 3 · Relais. Un nouveau patient s'ouvre sur l'identité
@@ -172,7 +186,7 @@ psychiatriques »), à côté des traitements de fond et symptomatiques. Ils son
 Consultation, notes, courriers, MDPH) et ne figurent pas sur la courbe de l’humeur. Les règles de surveillance s’y
 appliquent aussi (ex. dompéridone et QT).
 
-**Raccourcis** : Ctrl+K (ou Cmd+K) rechercher un patient ; Alt+1 à Alt+9 changer d’onglet (Aujourd’hui, Agenda, Consultation, Observation, Échelles, Humeur, Documents, MDPH, File active ; Relais par le menu).
+**Raccourcis** : Ctrl+K (ou Cmd+K) rechercher un patient ; Alt+1 à Alt+9 changer d’onglet (Aujourd’hui, Agenda, Liste d’attente, Consultation, Observation, Échelles, Humeur, Documents, MDPH).
 
 **Tests** : ouvrir `tests.html` vérifie les clés de cotation, les intitulés et les échéances de surveillance
 (27 tests). À ouvrir après toute modification des échelles ou des règles.
@@ -204,6 +218,7 @@ hébergé imposerait un hébergement certifié HDS et les formalités RGPD.
 | `js/demo.js` | Patients fictifs de démonstration | Non |
 | `js/miseenpage.js` | En-tête, logo, pied de page et marges des documents imprimés | Non (réglages dans le profil praticien) |
 | `js/mentions.js` | Mentions légales, conditions d'utilisation, acceptation | Pour changer le texte (incrémenter `VERSION_CGU`) |
+| `js/attente.js` | Liste d'attente | Non (délais cibles en tête du fichier) |
 | `js/agenda.js` | Agenda des consultations | Non (types de rendez-vous en tête du fichier) |
 | `js/fiche.js` | Fiche patient en onglets | Non |
 | `js/ide.js` | Annuaire des équipes infirmières | Non |

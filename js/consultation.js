@@ -239,7 +239,7 @@ function definirPatientCourant(id, rafraichir) {
 
 /** Après l'affichage d'un module qui impose un patient : le patient choisi par défaut devient le patient courant. */
 function synchroniserPatientCourant() {
-  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil' || onglet === 'agenda') { majBandeauPatient(); return; }
+  if (consPatientId || ONGLETS_SANS_PATIENT_OBLIGATOIRE.includes(onglet) || ongletPatients() || onglet === 'accueil' || onglet === 'agenda' || onglet === 'attente') { majBandeauPatient(); return; }
   const select = { consultation: 'consPatient', humeur: 'humPatient', documents: 'docPatient', mdph: 'mdphPatient' }[onglet];
   if (select && $(select) && $(select).value) consPatientId = $(select).value;
   majBandeauPatient();

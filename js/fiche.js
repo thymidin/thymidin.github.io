@@ -8,7 +8,7 @@
    ===================================================================== */
 
 // Champs ajoutés à la fiche (identité, entourage).
-CHAMPS_FICHE.push('telPatient', 'adresse', 'personneConfiance', 'protection', 'protecteur');
+CHAMPS_FICHE.push('telPatient', 'adresse', 'personneConfiance', 'protection', 'protecteur', 'relaisRdv', 'relaisRdvHeure', 'relaisRdvNote');
 const ORDRE_ONGLETS_FICHE = ['identite', 'synthese', 'relais'];
 
 function afficherOngletFiche(nom) {
@@ -38,6 +38,12 @@ function majIndicateursFiche() {
   };
   $('aRelayer').addEventListener('change', majIndicateursFiche);
   $('protection').addEventListener('change', majIndicateursFiche);
+  // Date de RDV chez le receveur saisie : le relais passe « en cours » (statut « RDV fixé… » s'il existe).
+  $('relaisRdv').addEventListener('change', () => {
+    if (!$('relaisRdv').value) return;
+    const cible = statuts.findIndex(s => /rdv|rendez-vous/i.test(s));
+    if (cible >= 0 && statuts.indexOf($('statut').value) < cible) $('statut').value = statuts[cible];
+  });
   // Champ obligatoire vide dans un onglet masqué : afficher cet onglet avant que le navigateur ne le signale.
   $('formPatient').addEventListener('invalid', e => {
     const panneau = e.target.closest('[data-fiche-panneau]');

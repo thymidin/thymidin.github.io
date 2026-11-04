@@ -49,6 +49,7 @@
       <button type="button" class="main nouveau-patient" id="btnNouveauGlobal"><span data-icone="plus"></span><span class="libelle-onglet">Nouveau patient</span></button>
       <button role="tab" id="ongletAccueil" aria-selected="false"><span data-icone="accueil"></span><span class="libelle-onglet">Aujourd’hui</span><span class="n" id="nbAccueil"></span></button>
       <button role="tab" id="ongletAgenda" aria-selected="false"><span data-icone="calendrier"></span><span class="libelle-onglet">Agenda</span></button>
+      <button role="tab" id="ongletAttente" aria-selected="false"><span data-icone="attente"></span><span class="libelle-onglet">Liste d’attente</span><span class="n" id="nbAttente"></span></button>
       <button role="tab" id="ongletConsultation" aria-selected="false"><span data-icone="consultation"></span><span class="libelle-onglet">Consultation</span></button>
       <button role="tab" id="ongletObservation" aria-selected="false"><span data-icone="note"></span><span class="libelle-onglet">Observation</span></button>
       <button role="tab" id="ongletEchelles" aria-selected="false"><span data-icone="echelle"></span><span class="libelle-onglet">Échelles</span></button>
@@ -69,6 +70,9 @@
     <!-- Compteurs (remplis par js/interface.js) -->
     <div class="stats" id="statistiques"></div>
 
+    <!-- Onglet relais : relais à faire / en cours (RDV fixé chez le receveur) / clos -->
+    <div class="segments phases-relais relais-seul" id="phasesRelais" role="tablist"></div>
+
     <!-- Barre d'outils : recherche, filtres, vues, import/export -->
     <div class="bar">
       <input type="search" id="recherche" placeholder="Rechercher (nom, diagnostic, synthèse…)" aria-label="Rechercher">
@@ -82,6 +86,7 @@
       </select>
       <select id="vue" aria-label="Affichage"></select>
 
+      <button type="button" class="relais-seul" id="btnImprimerRelais" title="Tableau synthétique des relais affichés (filtres appliqués), format paysage">Imprimer le tableau des relais</button>
       <button class="main" id="btnNouveau">+ Nouveau patient</button>
       <details class="menu-plus">
         <summary>Plus</summary>
@@ -143,6 +148,7 @@
     <!-- ===== Aujourd'hui : tableau de bord (js/accueil.js) ===== -->
     <section id="vueAccueil" hidden></section>
     <section id="vueAgenda" hidden></section>
+    <section id="vueAttente" hidden></section>
 
     <!-- ===== Consultation (js/consultation.js) ===== -->
     <section id="vueConsultation" hidden></section>
@@ -268,6 +274,9 @@
             <div><label for="statut">Statut du relais</label><select id="statut"></select></div>
             <div><label for="typeRelais">Type de relais</label><select id="typeRelais"></select></div>
             <div><label for="cmp" id="libelleCmp">Destinataire du relais</label><input id="cmp" list="listeCmp"></div>
+            <div><label for="relaisRdv">RDV fixé chez le receveur le</label><input id="relaisRdv" type="date"></div>
+            <div><label for="relaisRdvHeure">à</label><input id="relaisRdvHeure" type="time" step="300"></div>
+            <div class="full"><label for="relaisRdvNote">Précisions sur le RDV de relais</label><input id="relaisRdvNote" placeholder="ex. avec Dr X au CMP Nord ; courrier remis au patient"></div>
             <div id="zoneRelaisVers"><label for="relaisVers">Interne ou sénior</label><select id="relaisVers" title="Le patient peut-il être relayé à un interne ou doit-il l’être à un sénior ?"></select></div>
           </div>
         </div>
@@ -463,6 +472,7 @@
   <script src="js/ide.js"></script>
   <script src="js/consultation.js"></script>
   <script src="js/agenda.js"></script>
+  <script src="js/attente.js"></script>
   <script src="js/accueil.js"></script>
   <script src="js/demo.js"></script>
   <script src="js/sauvegarde.js"></script>
