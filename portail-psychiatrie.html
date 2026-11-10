@@ -944,9 +944,12 @@ button.lien { border: 0; background: none; padding: 0; color: var(--pri); font: 
 .tableau-relais-impr table { width: 100%; min-width: 0; border-collapse: collapse; table-layout: fixed; }
 .tableau-relais-impr th, .tableau-relais-impr td { border: 1px solid #999 !important; padding: 3px 4px !important; vertical-align: top; text-align: left; word-wrap: break-word; }
 .tableau-relais-impr th { background: #eee !important; font-size: 8pt; }
-.tableau-relais-impr th:nth-child(1) { width: 7%; } .tableau-relais-impr th:nth-child(2) { width: 12%; } .tableau-relais-impr th:nth-child(3) { width: 13%; }
-.tableau-relais-impr th:nth-child(4) { width: 26%; } .tableau-relais-impr th:nth-child(5) { width: 17%; } .tableau-relais-impr th:nth-child(6) { width: 12%; } .tableau-relais-impr th:nth-child(7) { width: 13%; }
-.tableau-relais-impr tr { break-inside: avoid; }
+.tableau-relais-impr th:nth-child(1) { width: 6%; } .tableau-relais-impr th:nth-child(2) { width: 11%; } .tableau-relais-impr th:nth-child(3) { width: 12%; }
+.tableau-relais-impr th:nth-child(4) { width: 34%; } .tableau-relais-impr th:nth-child(5) { width: 15%; } .tableau-relais-impr th:nth-child(6) { width: 11%; } .tableau-relais-impr th:nth-child(7) { width: 11%; }
+/* Synthèse affichée en entier, retours à la ligne conservés ; une ligne très longue peut continuer sur la page suivante. */
+.tableau-relais-impr .synthese-complete { white-space: pre-wrap; }
+.tableau-relais-impr tr { break-inside: auto; }
+.tableau-relais-impr thead { display: table-header-group; }
 
 /* ---------- Liste d'attente ---------- */
 #vueAttente .bar { margin: 4px 0 10px; }
@@ -9922,9 +9925,9 @@ function imprimerTableauRelais() {
   const lignes = liste.map(p => `<tr>
       <td>${echapper(libellePriorite(p) || '')}</td>
       <td><b>${echapper(nomPatient(p))}</b>${p.ddn ? '<br>' + formaterDate(p.ddn) : ''}${p.dossier ? '<br>' + echapper(p.dossier) : ''}</td>
-      <td>${echapper(court([p.dp, p.ds].filter(Boolean).join(' ; '), 90))}</td>
-      <td>${echapper(court(p.synthese, 220))}${p.vigilance ? `<br><b>⚠ ${echapper(court(p.vigtxt || 'Vigilance', 90))}</b>` : ''}</td>
-      <td>${echapper(court(texteTraitements(p, ' ; '), 160))}</td>
+      <td>${echapper([p.dp, p.ds].filter(Boolean).join(' ; '))}</td>
+      <td><div class="synthese-complete">${echapper(p.synthese || '')}</div>${p.vigilance ? `<b>⚠ ${echapper(p.vigtxt || 'Vigilance')}</b>` : ''}</td>
+      <td>${echapper(texteTraitements(p, ' ; '))}</td>
       <td>${echapper(libelleDestinataire(p) || '—')}${p.relaisVers && !RELAIS_SANS_NIVEAU.includes(p.typeRelais) ? '<br>vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</td>
       <td>${echapper(p.statut || '')}${p.relaisRdv ? '<br>' + echapper(texteRdvRelais(p)) : ''}</td>
     </tr>`).join('');

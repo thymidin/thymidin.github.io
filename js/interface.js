@@ -881,9 +881,9 @@ function imprimerTableauRelais() {
   const lignes = liste.map(p => `<tr>
       <td>${echapper(libellePriorite(p) || '')}</td>
       <td><b>${echapper(nomPatient(p))}</b>${p.ddn ? '<br>' + formaterDate(p.ddn) : ''}${p.dossier ? '<br>' + echapper(p.dossier) : ''}</td>
-      <td>${echapper(court([p.dp, p.ds].filter(Boolean).join(' ; '), 90))}</td>
-      <td>${echapper(court(p.synthese, 220))}${p.vigilance ? `<br><b>⚠ ${echapper(court(p.vigtxt || 'Vigilance', 90))}</b>` : ''}</td>
-      <td>${echapper(court(texteTraitements(p, ' ; '), 160))}</td>
+      <td>${echapper([p.dp, p.ds].filter(Boolean).join(' ; '))}</td>
+      <td><div class="synthese-complete">${echapper(p.synthese || '')}</div>${p.vigilance ? `<b>⚠ ${echapper(p.vigtxt || 'Vigilance')}</b>` : ''}</td>
+      <td>${echapper(texteTraitements(p, ' ; '))}</td>
       <td>${echapper(libelleDestinataire(p) || '—')}${p.relaisVers && !RELAIS_SANS_NIVEAU.includes(p.typeRelais) ? '<br>vers ' + echapper(p.relaisVers.toLowerCase()) : ''}</td>
       <td>${echapper(p.statut || '')}${p.relaisRdv ? '<br>' + echapper(texteRdvRelais(p)) : ''}</td>
     </tr>`).join('');

@@ -64,7 +64,7 @@ précisions ; une date saisie fait passer le relais « en cours » (statut « RD
 L'onglet Relais s'ouvre sur les relais **à faire**, avec des boutons « En cours (RDV fixé) », « Clos » et « Tous ». Un
 RDV de relais passé non confirmé est signalé (tableau et carte « Relais à confirmer » dans « Aujourd'hui ») ; la pastille
 du menu ne compte que les relais à faire. **Tableau des relais imprimable** (bouton dans l'onglet Relais) : A4 paysage,
-filtres en cours appliqués (priorité, patient, diagnostics, synthèse et vigilance, traitement, destinataire, statut et RDV).
+filtres en cours appliqués (priorité, patient, diagnostics, synthèse complète et vigilance, traitement, destinataire, statut et RDV) ; une synthèse longue se poursuit sur la page suivante, avec l’en-tête du tableau répété.
 
 **Fiche patient en trois onglets** : 1 · Identité (identité, coordonnées, ALD, allergies, médecin traitant, équipe
 infirmière, personne de confiance, mesure de protection et mandataire), 2 · Synthèse et traitements (diagnostics,
